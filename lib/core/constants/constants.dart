@@ -7,6 +7,7 @@ class RouteNames {
   static const String resetPassword = '/reset-password';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String accountSetting = '/account-setting';
   static const String tools = '/tools';
 }
 
