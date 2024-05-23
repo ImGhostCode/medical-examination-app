@@ -1,54 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:medical_examination_app/core/constants/constants.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  final List<Feature> features = [
-    Feature(
-      title: 'Tạo hồ sơ bệnh nhân',
-      icon: 'assets/icons/cre-patient-removebg-preview.png',
-      onTap: () {},
-    ),
-    Feature(
-      title: 'Thăm khám',
-      icon: 'assets/icons/record-removebg-preview.png',
-      onTap: () {},
-    ),
-    // Feature(
-    //   title: 'Tạo hồ sơ bệnh nhân',
-    //   icon: 'assets/icons/cre-patient-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-    // Feature(
-    //   title: 'Thăm khám',
-    //   icon: 'assets/icons/record-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-    // Feature(
-    //   title: 'Tạo hồ sơ bệnh nhân',
-    //   icon: 'assets/icons/cre-patient-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-    // Feature(
-    //   title: 'Thăm khám',
-    //   icon: 'assets/icons/record-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-    // Feature(
-    //   title: 'Tạo hồ sơ bệnh nhân',
-    //   icon: 'assets/icons/cre-patient-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-    // Feature(
-    //   title: 'Thăm khám',
-    //   icon: 'assets/icons/record-removebg-preview.png',
-    //   onTap: () {},
-    // ),
-  ];
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<Feature> features = [
+      Feature(
+        title: 'Tạo hồ sơ bệnh nhân',
+        icon: 'assets/icons/cre-patient-removebg-preview.png',
+        onTap: () {
+          Navigator.of(context).pushNamed(RouteNames.crePatientProfile);
+        },
+      ),
+      Feature(
+        title: 'Thăm khám',
+        icon: 'assets/icons/record-removebg-preview.png',
+        onTap: () {
+          Navigator.of(context).pushNamed(RouteNames.searchPatients);
+        },
+      ),
+    ];
     return Scaffold(
         backgroundColor: Colors.blue,
         body: SafeArea(
@@ -173,50 +146,56 @@ class HomePage extends StatelessWidget {
                               ],
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(28)),
-                          child: Expanded(
-                            child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  childAspectRatio: 0.7,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 8,
-                                ),
-                                itemCount: features.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: features[index].onTap,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child:
-                                              Image.asset(features[index].icon),
-                                        ),
-                                        Text(
-                                          features[index].title,
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        )
-                                      ],
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4,
+                                      childAspectRatio: 0.7,
+                                      crossAxisSpacing: 8,
+                                      mainAxisSpacing: 8,
                                     ),
-                                  );
-                                }),
+                                    itemCount: features.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: features[index].onTap,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              height: 60,
+                                              width: 60,
+                                              decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Image.asset(
+                                                  features[index].icon),
+                                            ),
+                                            Text(
+                                              features[index].title,
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              ),
+                            ],
                           ),
                         )),
                   ],

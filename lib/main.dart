@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
 import 'package:medical_examination_app/features/home/presentation/pages/welcome_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:medical_examination_app/features/skeleton/providers/selected_page_provider.dart';
 import 'package:medical_examination_app/features/skeleton/skeleton.dart';
 import 'package:medical_examination_app/features/tool/presentation/pages/tool_page.dart';
@@ -64,6 +67,10 @@ class MainApp extends StatelessWidget {
                   .textTheme
                   .bodyMedium!
                   .copyWith(color: Colors.grey),
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(color: Colors.grey),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
@@ -78,8 +85,19 @@ class MainApp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
             )),
+            segmentedButtonTheme: SegmentedButtonThemeData(
+              style: SegmentedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                selectedForegroundColor: Colors.white,
+                selectedBackgroundColor: Colors.blue,
+                side: const BorderSide(color: Colors.blue, width: 1.5),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              ),
+            ),
             fontFamily: GoogleFonts.roboto().fontFamily),
-        initialRoute: RouteNames.welcome,
+        initialRoute: RouteNames.home,
         routes: {
           RouteNames.welcome: (context) => const WelcomePage(),
           RouteNames.login: (context) => const LoginPage(),
@@ -87,6 +105,10 @@ class MainApp extends StatelessWidget {
           RouteNames.tools: (context) => const ToolPage(),
           RouteNames.profile: (context) => ProfilePage(),
           RouteNames.accountSetting: (context) => const AccountSettingPage(),
+          RouteNames.crePatientProfile: (context) =>
+              const CreatePatientProfilePage(),
+          RouteNames.searchPatients: (context) => const SearchPatientPage(),
+          RouteNames.medialExamine: (context) => const MedicalExaminationPage(),
         },
       ),
     );

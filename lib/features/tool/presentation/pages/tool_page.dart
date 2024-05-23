@@ -8,6 +8,7 @@ class ToolPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 0,
+        leading: null,
         title: Row(
           children: [
             Text('Công cụ sức khỏe',
