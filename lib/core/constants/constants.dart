@@ -17,6 +17,9 @@ class RouteNames {
   static const String searchPatients = '/search-patients';
 
   static const String medialExamine = '/medial-examine';
+  static const String addSignal = '/add-signal';
+  static const String addStreatmentSheet = '/add-streatment-sheet';
+  static const String addCareSheet = '/add-care-sheet';
 }
 
 String kTemplate = 'template';

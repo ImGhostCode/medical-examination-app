@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
 import 'package:medical_examination_app/features/home/presentation/pages/welcome_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
@@ -78,7 +81,7 @@ class MainApp extends StatelessWidget {
               foregroundColor: Colors.white,
               textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.normal,
                   ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               shape: RoundedRectangleBorder(
@@ -109,6 +112,10 @@ class MainApp extends StatelessWidget {
               const CreatePatientProfilePage(),
           RouteNames.searchPatients: (context) => const SearchPatientPage(),
           RouteNames.medialExamine: (context) => const MedicalExaminationPage(),
+          RouteNames.addSignal: (context) => const AddSignalPage(),
+          RouteNames.addStreatmentSheet: (context) =>
+              const AddStreatmentSheetPage(),
+          RouteNames.addCareSheet: (context) => const AddCareSheetPage(),
         },
       ),
     );
