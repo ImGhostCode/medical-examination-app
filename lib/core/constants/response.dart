@@ -1,31 +1,30 @@
-import 'package:dio/dio.dart';
+import 'package:medical_examination_app/core/constants/constants.dart';
 
-class ResponseDataModel<D> {
+class ResponseModel<D> {
   final D data;
-  final int statusCode;
+  final String code;
+  final String type;
+  final String status;
   final String message;
 
-  ResponseDataModel({
-    required this.data,
-    required this.statusCode,
+  ResponseModel({
+    required this.code,
+    required this.type,
+    required this.status,
     required this.message,
+    required this.data,
   });
 
-  factory ResponseDataModel.fromJson({
+  factory ResponseModel.fromJson({
     required dynamic json,
     required D Function(dynamic) fromJsonD,
   }) {
-    if (json.runtimeType == Response<dynamic>) {
-      return ResponseDataModel(
-        data: fromJsonD(json.data),
-        message: json.statusMessage,
-        statusCode: json.statusCode,
-      );
-    }
-    return ResponseDataModel(
-      data: fromJsonD(json['data']),
-      message: json?['message'] ?? json.statusMessage,
-      statusCode: json?['statusCode'] ?? json.statusCode,
+    return ResponseModel(
+      code: json[kCode],
+      type: json[kType],
+      status: json[kStatus],
+      message: json[kMessage],
+      data: fromJsonD(json[kData]),
     );
   }
 
@@ -33,9 +32,17 @@ class ResponseDataModel<D> {
     required Map<String, dynamic> Function(D) toJsonD,
   }) {
     return {
-      'data': toJsonD(data),
-      'message': message,
-      'statusCode': statusCode,
+      kCode: code,
+      kType: type,
+      kStatus: status,
+      kMessage: message,
+      kData: toJsonD(data),
     };
   }
 }
+
+// class ResponseType {
+//   static const String success = 'success';
+//   static const String error = 'error';
+//   static const String warning = 'warning';
+// }

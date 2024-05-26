@@ -24,16 +24,10 @@ class TemplateRemoteDataSourceImpl implements TemplateRemoteDataSource {
 
       return TemplateModel.fromJson(json: response.data);
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.cancel) {
-        throw ServerException(
-            statusCode: 400, errorMessage: 'Connection Refused');
-      } else {
-        throw ServerException(
-            statusCode: e.response!.statusCode!,
-            errorMessage:
-                e.response!.data['message'] ?? 'Unknown server error');
-      }
+      throw ServerException(
+          message: 'Unknown Erorr',
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
     }
   }
 }

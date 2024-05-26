@@ -9,6 +9,7 @@ class ToolPage extends StatelessWidget {
       appBar: AppBar(
         leadingWidth: 0,
         leading: null,
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             Text('Công cụ sức khỏe',

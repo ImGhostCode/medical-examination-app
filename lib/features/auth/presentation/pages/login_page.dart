@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+// import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,6 +14,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  String user = '';
+  String password = '';
+  bool _obscureText = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +53,9 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: const InputDecoration(
                             hintText: 'Nhập tên tài khoản của bạn',
                           ),
+                          onChanged: (value) {
+                            user = value;
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Vui lòng nhập tên tài khoản của bạn';
@@ -68,9 +78,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 5),
                         TextFormField(
-                          decoration: const InputDecoration(
+                          obscureText: _obscureText,
+                          decoration: InputDecoration(
                             hintText: 'Nhập mật khẩu của bạn',
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                                icon: Icon(_obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off)),
                           ),
+                          onChanged: (value) {
+                            password = value;
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Vui lòng nhập mật khẩu của bạn';
@@ -96,15 +119,54 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   const SnackBar(content: Text('Processing Data')),
-                    // );
-                    Navigator.of(context).pushNamed(RouteNames.home);
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .eitherFailureOrLogin(
+                            dotenv.env['RD_KEY']!, user, password);
+                    if (Provider.of<AuthProvider>(context, listen: false)
+                            .failure !=
+                        null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text(
+                              Provider.of<AuthProvider>(context, listen: false)
+                                  .failure!
+                                  .errorMessage,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: Colors.white)),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text(
+                            Provider.of<AuthProvider>(context, listen: false)
+                                .message,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(color: Colors.white),
+                          ),
+                        ),
+                      );
+                      Navigator.pushNamed(context, RouteNames.home);
+                    }
                   }
                 },
-                child: const Text('Đăng nhập'),
+                child:
+                    Provider.of<AuthProvider>(context, listen: true).isLoading
+                        ? const SizedBox(
+                            height: 25,
+                            width: 25,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ))
+                        : const Text('Đăng nhập'),
               ),
             ),
             // Row(

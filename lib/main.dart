@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/core/services/api_service.dart';
+import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/home/presentation/pages/welcome_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
@@ -16,7 +20,10 @@ import 'package:medical_examination_app/features/user/presentation/pages/account
 import 'package:medical_examination_app/features/user/presentation/pages/profile_page.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: "lib/.env");
+  ApiService.init();
+  SecureStorageService.init();
   runApp(const MainApp());
 }
 
@@ -28,6 +35,7 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SelectedPageProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -125,8 +133,17 @@ class MainApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  void _checkLogin(BuildContext context) async {
+    String? token = await SecureStorageService.secureStorage.read(key: 'token');
+    if (token == null) {
+      Navigator.pushReplacementNamed(context, RouteNames.welcome);
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _checkLogin(context);
     return const Skeleton();
   }
 }

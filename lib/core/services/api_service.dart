@@ -10,24 +10,11 @@ class ApiService {
   ApiService._internal();
 
   static init() {
-    // Cấu hình Dio ở đây
     _dio.options.baseUrl = dotenv.env['BASE_URL']!;
-    // _dio.options.baseUrl = 'https://ctue-learn-english-api.onrender.com/apis';
     _dio.options.contentType = Headers.jsonContentType;
     _dio.options.connectTimeout =
-        const Duration(milliseconds: 10000); // Timeout sau 5 giây
+        const Duration(milliseconds: 500); // Timeout sau 5 giây
     _dio.options.receiveTimeout =
-        const Duration(milliseconds: 30000); // Timeout nhận dữ liệu sau 3 giây
-
-    // dio.interceptors.add(InterceptorsWrapper(onResponse: (response, handler) {
-    //   // Xử lý response trước khi trả về cho ứng dụng
-    //   var responseData = ResponseDataModel(
-    //     data: response.data['data'],
-    //     statusCode: response.statusCode!,
-    //     message: response.data['message'],
-    //   );
-
-    //   handler.resolve(responseData as Response);
-    // }));
+        const Duration(milliseconds: 3000); // Timeout nhận dữ liệu sau 3 giây
   }
 }

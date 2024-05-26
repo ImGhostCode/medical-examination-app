@@ -1,8 +1,10 @@
 class ServerException implements Exception {
-  final int statusCode;
-  final String errorMessage;
+  final String code;
+  final String status;
+  final String message;
 
-  ServerException({required this.statusCode, required this.errorMessage});
+  ServerException(
+      {required this.code, required this.status, required this.message});
 }
 
 class CacheException implements Exception {}
