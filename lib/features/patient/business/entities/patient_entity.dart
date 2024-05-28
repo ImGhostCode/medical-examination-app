@@ -1,6 +1,6 @@
 import 'package:medical_examination_app/features/patient/business/entities/health_insurance_card.dart';
 
-class PatientEntity {
+class PatientInfoEntity {
   String name;
   String birthdate;
   String gender;
@@ -18,7 +18,7 @@ class PatientEntity {
   QueueZoneReceptionEntity queueZoneReception;
   bool overwrite;
 
-  PatientEntity({
+  PatientInfoEntity({
     required this.name,
     required this.birthdate,
     required this.gender,
@@ -39,8 +39,8 @@ class PatientEntity {
 
   // Add fromJson and toJson methods here
 
-  static List<PatientEntity> fakePatients = [
-    PatientEntity(
+  static List<PatientInfoEntity> fakePatients = [
+    PatientInfoEntity(
         name: 'Nguyễn Văn A',
         birthdate: '1979',
         gender: 'male',
@@ -69,7 +69,7 @@ class PatientEntity {
         lrCode: '',
         queueZoneReception: QueueZoneReceptionEntity(zone: '', table: ''),
         overwrite: true),
-    PatientEntity(
+    PatientInfoEntity(
         name: 'Nguyễn Văn A',
         birthdate: '1979',
         gender: 'male',
@@ -176,7 +176,6 @@ class QueueZoneReceptionEntity {
 
   // Add fromJson and toJson methods here
 }
-
 
 /*
 {

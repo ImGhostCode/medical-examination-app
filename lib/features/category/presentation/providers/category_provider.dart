@@ -2,28 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
-import 'package:medical_examination_app/core/params/auth_params.dart';
+import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
-import 'package:medical_examination_app/features/auth/business/usecases/login_usecase.dart';
-import 'package:medical_examination_app/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:medical_examination_app/features/auth/data/datasources/template_local_data_source.dart';
-import 'package:medical_examination_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:medical_examination_app/features/category/business/entities/department_entity.dart';
+import 'package:medical_examination_app/features/category/business/usecases/get_department_usecase.dart';
+import 'package:medical_examination_app/features/category/data/datasources/category_remote_data_source.dart';
+import 'package:medical_examination_app/features/category/data/datasources/template_local_data_source.dart';
+import 'package:medical_examination_app/features/category/data/repositories/category_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
 import '../../../../../core/errors/failure.dart';
-import '../../../user/business/entities/user_entity.dart';
 
 final FlutterSecureStorage secureStorage = SecureStorageService.secureStorage;
 
-class AuthProvider extends ChangeNotifier {
+class CategoryProvider extends ChangeNotifier {
   String code;
   String type;
   String status;
   String message;
-  UserEntity? userEntity;
+
+  List<DepartmentEntity> listDepartment = [];
+  DepartmentEntity? selectedDepartment;
   Failure? failure;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   set isLoading(bool value) {
@@ -31,8 +34,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  AuthProvider({
-    this.userEntity,
+  CategoryProvider({
+    this.listDepartment = const [],
     this.failure,
     this.code = '',
     this.type = '',
@@ -40,14 +43,14 @@ class AuthProvider extends ChangeNotifier {
     this.message = '',
   });
 
-  Future eitherFailureOrLogin(
-      String rdKey, String user, String password) async {
-    isLoading = true;
-    AuthRepositoryImpl repository = AuthRepositoryImpl(
-      remoteDataSource: AuthRemoteDataSourceImpl(
+  void eitherFailureOrGetDepartments(String type, String kind) async {
+    listDepartment = [];
+    _isLoading = true;
+    CategoryRepositoryImpl repository = CategoryRepositoryImpl(
+      remoteDataSource: CategoryRemoteDataSourceImpl(
         dio: ApiService.dio,
       ),
-      localDataSource: AuthLocalDataSourceImpl(
+      localDataSource: CategoryLocalDataSourceImpl(
         sharedPreferences: await SharedPreferences.getInstance(),
       ),
       networkInfo: NetworkInfoImpl(
@@ -55,21 +58,24 @@ class AuthProvider extends ChangeNotifier {
       ),
     );
 
-    final failureOrAuth = await LoginUsecase(authRepository: repository).call(
-      loginParams: LoginParams(rdKey: rdKey, user: user, password: password),
+    final failureOrCategory =
+        await GetDepartmentUsecase(categoryRepository: repository).call(
+      getDepartmentPrarams: GetDepartmentPrarams(
+          kind: kind,
+          type: type,
+          token: await secureStorage.read(key: 'token') ?? ''),
     );
 
-    failureOrAuth.fold(
+    failureOrCategory.fold(
       (Failure newFailure) {
-        isLoading = false;
-        userEntity = null;
+        _isLoading = false;
+        listDepartment = [];
         failure = newFailure;
         notifyListeners();
       },
-      (ResponseModel<UserEntity> response) {
+      (ResponseModel<List<DepartmentEntity>> response) {
         isLoading = false;
-        userEntity = response.data;
-        secureStorage.write(key: 'token', value: userEntity!.token);
+        listDepartment = response.data;
         code = response.code;
         type = response.type;
         status = response.status;
@@ -78,10 +84,5 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
-  }
-
-  Future eitherFailureOrLogout() async {
-    isLoading = true;
-    await secureStorage.delete(key: 'token');
   }
 }

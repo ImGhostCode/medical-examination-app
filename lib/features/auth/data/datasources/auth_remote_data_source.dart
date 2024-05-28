@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/params/auth_params.dart';
 import '../../../../../core/errors/exceptions.dart';
-import '../../../../../core/params/params.dart';
 import '../../../user/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {

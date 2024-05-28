@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class AccountSettingPage extends StatelessWidget {
   const AccountSettingPage({super.key});
@@ -58,10 +61,11 @@ class AccountSettingPage extends StatelessWidget {
                 title: const Text('Đăng xuất',
                     style: TextStyle(color: Colors.red)),
                 leading: const Icon(Icons.logout, color: Colors.red),
-                onTap: () {
-                  // Provider.of<UserProvider>(context, listen: false).logout();
-                  // Navigator.of(context).pushNamedAndRemoveUntil(
-                  //     RouteList.loginPage, (route) => false);
+                onTap: () async {
+                  await Provider.of<AuthProvider>(context, listen: false)
+                      .eitherFailureOrLogout();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      RouteNames.welcome, (route) => false);
                 },
               ),
             ],

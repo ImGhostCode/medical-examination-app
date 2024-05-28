@@ -49,3 +49,23 @@ String kFDefault = 'default';
 // Organization
 String kOrganizationCode = 'code';
 String kValue = 'value';
+
+// Department
+String kAdmin = 'admin';
+String kDDefault = 'default';
+String kTypeCode = 'type_code';
+String kRoleGroup = 'role_group';
+String kTypeDisplay = 'type_display';
+
+// Patient
+// String kCode = 'code';
+String kName = 'name';
+String kStart = 'start';
+String kGender = 'gender';
+String kSubject = 'subject';
+String kBirthdate = 'birthdate';
+String kEncounter = 'encounter';
+String kFeeObject = 'fee_object';
+String kClassifyCode = 'classify_code';
+String kClassifyName = 'classify_name';
+String kProcessingStatus = 'processing_status';

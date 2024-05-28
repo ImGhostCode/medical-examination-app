@@ -6,6 +6,7 @@ import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
 import 'package:medical_examination_app/features/home/presentation/pages/welcome_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
@@ -13,6 +14,7 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pa
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:medical_examination_app/features/skeleton/providers/selected_page_provider.dart';
 import 'package:medical_examination_app/features/skeleton/skeleton.dart';
 import 'package:medical_examination_app/features/tool/presentation/pages/tool_page.dart';
@@ -36,6 +38,8 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => SelectedPageProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => PatientProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
