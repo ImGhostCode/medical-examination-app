@@ -69,3 +69,8 @@ String kFeeObject = 'fee_object';
 String kClassifyCode = 'classify_code';
 String kClassifyName = 'classify_name';
 String kProcessingStatus = 'processing_status';
+
+// Signal
+String kValueString = 'value_string';
+String kUnit = 'unit';
+String kAuthored = 'authored';

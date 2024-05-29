@@ -20,7 +20,7 @@ class InRoomPatientModel extends InRoomPatientEntity {
       code: json[kCode],
       name: json[kName],
       start: json[kStart],
-      gender: json[kGender],
+      gender: json[kGender] == 'male' ? 'Nam' : 'Nữ',
       subject: json[kSubject],
       birthdate: json[kBirthdate],
       encounter: json[kEncounter],

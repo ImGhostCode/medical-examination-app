@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/widgets/entered_signal_table.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
+import 'package:provider/provider.dart';
 
 class MedicalExaminationPage extends StatefulWidget {
   const MedicalExaminationPage({super.key});
@@ -12,9 +18,34 @@ class MedicalExaminationPage extends StatefulWidget {
 class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   int _index = 0;
   bool _customTileExpanded = false;
+  late PatientInfoArguments args;
+
+  List<SignalEntity> listHeartSignals = [];
+  List<SignalEntity> listBloodPressureSignals = [];
+  List<SignalEntity> listTemperatureSignals = [];
+  List<SignalEntity> listSP02Signals = [];
+  List<SignalEntity> listRespiratorySignals = [];
+  List<SignalEntity> listOxygenSignals = [];
+  List<SignalEntity> listWeightSignals = [];
+  List<SignalEntity> listHeightSignals = [];
+  List<SignalEntity> listBloodGroupSignals = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<MedicalExamineProvider>(context, listen: false)
+        .eitherFailureOrGetEnteredSignals(
+            'all', args.patient.encounter.toString());
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -55,7 +86,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     title: Text(
                       _customTileExpanded
                           ? 'Thông tin bệnh nhân'
-                          : 'Nguyễn Văn A',
+                          : args.patient.name,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium!
@@ -63,11 +94,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     ),
                     childrenPadding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Text(
-                            'STT: 24000652',
+                            'STT: ${args.patient.encounter}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -82,7 +114,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Nguyễn Văn A',
+                            args.patient.name,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -91,7 +123,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                     fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "Mã số: 123456",
+                            "Mã số: ${args.patient.subject}",
                             style: Theme.of(context).textTheme.bodyMedium,
                           )
                         ],
@@ -101,21 +133,21 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Giới tính: Nam',
+                            'Giới tính: ${args.patient.gender}',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           Text(
-                            "Ngày sinh: 1990",
+                            "Ngày sinh: ${args.patient.birthdate}",
                             style: Theme.of(context).textTheme.bodyMedium,
                           )
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text('Địa chỉ: Xã Sĩ Hai, Huyện Hà Quảng, Tỉnh Cao Bằng',
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      // const SizedBox(height: 8),
+                      // Text('Địa chỉ: ${args.patient.address}',
+                      //     style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       Text(
-                        'Chuẩn đoán: Bệnh thương hàn và phó thương hàn',
+                        'Chuẩn đoán: ${args.patient.classifyName}',
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium!
@@ -209,111 +241,183 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                   ])),
                       ],
                     ),
-                    content: Container(
-                        alignment: Alignment.centerLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const LabelTextField(label: 'Mạch'),
-                            const SizedBox(height: 8),
-                            // Table with 2 columns: value and date
-                            Table(
-                              border: TableBorder.all(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(8)),
-                              columnWidths: const {
-                                0: FlexColumnWidth(1),
-                                1: FlexColumnWidth(1),
-                              },
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              children: [
-                                // Table header
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade200,
-                                          borderRadius: const BorderRadius.only(
-                                              topLeft: Radius.circular(8)),
-                                        ),
-                                        child: Text('Giá trị',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade200,
-                                          borderRadius: const BorderRadius.only(
-                                              topRight: Radius.circular(8)),
-                                        ),
-                                        child: Text('Thời gian',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(
-                                                    fontStyle:
-                                                        FontStyle.italic)),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text('80 lần/phút',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text('25/05/2024 08:55:50',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  fontStyle: FontStyle.italic)),
-                                    ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text('80 lần/phút',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text('25/05/2024 08:55:50',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  fontStyle: FontStyle.italic)),
-                                    ),
-                                  ),
-                                ]),
-                              ],
-                            ),
+                    content: Consumer<MedicalExamineProvider>(
+                        builder: (context, value, child) {
+                      if (value.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (value.listEnteredSignals.isEmpty) {
+                        return const Center(
+                          child: Text('Không có dữ liệu'),
+                        );
+                      }
+                      if (value.failure != null) {
+                        return Center(
+                          child: Text(value.failure!.errorMessage),
+                        );
+                      }
+                      listBloodPressureSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_01.name)
+                          .toList();
+                      listHeartSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_02.name)
+                          .toList();
+                      listTemperatureSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_03.name)
+                          .toList();
+                      listSP02Signals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_04.name)
+                          .toList();
+                      listRespiratorySignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_05.name)
+                          .toList();
+                      listHeightSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_08.name)
+                          .toList();
+                      listWeightSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_06.name)
+                          .toList();
+                      listBloodGroupSignals = value.listEnteredSignals
+                          .where((element) =>
+                              element.code == SignalType.SIG_10.name)
+                          .toList();
 
-                            const SizedBox(height: 16),
-                          ],
-                        )),
+                      return Container(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (listBloodPressureSignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'Huyết áp'),
+                                        const SizedBox(height: 8),
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals:
+                                                listBloodPressureSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listHeartSignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'Mạch'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals: listHeartSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listTemperatureSignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'Nhiệt độ'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals:
+                                                listTemperatureSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listSP02Signals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'SP02'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals: listSP02Signals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listRespiratorySignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'Nhịp thở'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals:
+                                                listRespiratorySignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listWeightSignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(label: 'Cân nặng'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals: listWeightSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listHeightSignals.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const LabelTextField(
+                                            label: 'Chiều cao'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals: listHeightSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                  if (listBloodGroupSignals.isNotEmpty)
+                                    Column(
+                                      children: [
+                                        const LabelTextField(label: 'Nhóm máu'),
+                                        const SizedBox(height: 8),
+                                        // Table with 2 columns: value and date
+                                        EnteredSignalTable(
+                                            context: context,
+                                            listSignals: listBloodGroupSignals),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                              // const SizedBox(height: 16),
+                            ],
+                          ));
+                    }),
                   ),
                   Step(
                     stepStyle: StepStyle(

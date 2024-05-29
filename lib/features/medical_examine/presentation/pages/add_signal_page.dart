@@ -1,6 +1,8 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 
-enum BloodType { A, B, AB, O }
+enum BloodType { A_POS, A_NEG, B_POS, B_NEG, AB_POS, AB_NEG, O_POS, O_NEG }
 
 class AddSignalPage extends StatefulWidget {
   const AddSignalPage({super.key});
@@ -28,7 +30,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
   final _heightFormKey = GlobalKey<FormState>();
   final _weightFormKey = GlobalKey<FormState>();
   final _bloodTypeFormKey = GlobalKey<FormState>();
-  BloodType _bloodType = BloodType.A;
+  BloodType _bloodType = BloodType.A_POS;
 
   @override
   Widget build(BuildContext context) {
@@ -126,20 +128,36 @@ class _AddSignalPageState extends State<AddSignalPage> {
                       },
                       items: const [
                         DropdownMenuItem(
-                          value: BloodType.A,
-                          child: Text('A'),
+                          value: BloodType.A_POS,
+                          child: Text('A+'),
                         ),
                         DropdownMenuItem(
-                          value: BloodType.B,
-                          child: Text('B'),
+                          value: BloodType.A_NEG,
+                          child: Text('A-'),
                         ),
                         DropdownMenuItem(
-                          value: BloodType.AB,
-                          child: Text('AB'),
+                          value: BloodType.B_POS,
+                          child: Text('B+'),
                         ),
                         DropdownMenuItem(
-                          value: BloodType.O,
-                          child: Text('O'),
+                          value: BloodType.B_NEG,
+                          child: Text('B-'),
+                        ),
+                        DropdownMenuItem(
+                          value: BloodType.AB_POS,
+                          child: Text('AB+'),
+                        ),
+                        DropdownMenuItem(
+                          value: BloodType.AB_NEG,
+                          child: Text('AB-'),
+                        ),
+                        DropdownMenuItem(
+                          value: BloodType.O_POS,
+                          child: Text('O+'),
+                        ),
+                        DropdownMenuItem(
+                          value: BloodType.O_NEG,
+                          child: Text('O-'),
                         ),
                       ],
                       onChanged: (value) {
@@ -813,6 +831,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   child: TextFormField(
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
+                      fillColor: Colors.grey.shade100,
                       helperText: 'Đơn vị: lần/phút',
                       helperStyle: Theme.of(context)
                           .textTheme
@@ -827,15 +846,15 @@ class _AddSignalPageState extends State<AddSignalPage> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_heartRateFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
+                // const SizedBox(width: 8),
+                // Expanded(
+                //   flex: 1,
+                //   child: ElevatedButton(
+                //       onPressed: () {
+                //         if (_heartRateFormKey.currentState!.validate()) {}
+                //       },
+                //       child: const Text('Lưu')),
+                // )
               ],
             ),
           ),

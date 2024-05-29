@@ -12,6 +12,7 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pa
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
@@ -40,6 +41,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => PatientProvider()),
+        ChangeNotifierProvider(create: (_) => MedicalExamineProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

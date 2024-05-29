@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/category/business/entities/department_entity.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
+import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -167,7 +168,8 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                         Border.all(color: Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
@@ -228,7 +230,8 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Chuẩn đoán: ${patientProvider.listPatientInRoom[index].classifyName}',
+                                        'Khu vực: ${patientProvider.listPatientInRoom[index].classifyName}',
+                                        textAlign: TextAlign.start,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
@@ -236,13 +239,27 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                 fontStyle: FontStyle.italic),
                                       ),
                                       const SizedBox(height: 8),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pushNamed(
-                                              RouteNames.medialExamine,
-                                            );
-                                          },
-                                          child: const Text('Thăm khám'))
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pushNamed(
+                                                  RouteNames.medialExamine,
+                                                  arguments: PatientInfoArguments(
+                                                      patient: patientProvider
+                                                              .listPatientInRoom[
+                                                          index],
+                                                      division:
+                                                          _selectedDepartment!
+                                                              .value
+                                                              .toString()),
+                                                );
+                                              },
+                                              child: const Text('Thăm khám')),
+                                        ],
+                                      )
                                     ]));
                           },
                           separatorBuilder: (context, index) {
@@ -363,4 +380,11 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
           });
         });
   }
+}
+
+class PatientInfoArguments {
+  final InRoomPatientEntity patient;
+  final String division;
+
+  PatientInfoArguments({required this.patient, required this.division});
 }
