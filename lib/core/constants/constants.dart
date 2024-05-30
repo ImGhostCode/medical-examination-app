@@ -91,3 +91,8 @@ String kObsResult = 'obs_result';
 String kEditQuantity = 'edit_quantity';
 String kPriceRequired = 'price_required';
 String kPriceInsurance = 'price_insurance';
+
+// Streatment Sheet
+String kDoctor = 'doctor';
+String kRequest = 'request';
+String kCreated = 'created';

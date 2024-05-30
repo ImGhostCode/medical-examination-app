@@ -43,3 +43,39 @@ class GetEnteredSignalParams {
     };
   }
 }
+
+class GetEnteredStreamentSheetParams {
+  final String type;
+  final String encounter;
+  final String token;
+  const GetEnteredStreamentSheetParams({
+    required this.type,
+    required this.encounter,
+    required this.token,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type,
+      'encounter': encounter,
+    };
+  }
+}
+
+class GetEnteredCareSheetParams {
+  final String type;
+  final String encounter;
+  final String token;
+  const GetEnteredCareSheetParams({
+    required this.type,
+    required this.encounter,
+    required this.token,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type,
+      'encounter': encounter,
+    };
+  }
+}

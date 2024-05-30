@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 
 String paramToBase64(dynamic params) {
@@ -33,6 +35,25 @@ String codeToSignal(String code) {
   }
 }
 
+String codeToItemStreatmentSheet(String code) {
+  switch (code) {
+    case 'VST_0001':
+      return 'Diễn biến bệnh';
+    case 'VST_0002':
+      return 'Chỉ định dịch vụ';
+    case 'VST_0003':
+      return 'Chỉ định thuốc';
+    // case 'VST_0004':
+    //   return 'Diễn biến bệnh';
+    case 'VST_0005':
+      return 'Theo dõi diễn biến';
+    case 'VST_0006':
+      return 'Y lệnh chăm sóc';
+    default:
+      return '';
+  }
+}
+
 enum SignalType {
   SIG_02,
   SIG_01,
@@ -43,6 +64,7 @@ enum SignalType {
   SIG_06,
   SIG_10,
 }
+
 
 
 /*

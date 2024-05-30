@@ -18,16 +18,21 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  FocusNode passwordFocusNode = FocusNode();
   String user = '';
   String password = '';
   bool _obscureText = true;
   bool rememberMe = false;
+  String? storedUser;
 
   @override
   void initState() {
-    String? storedUser = prefs.getString('userName');
+    storedUser = prefs.getString('userName');
     if (storedUser != null) {
-      user = storedUser;
+      user = storedUser!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(passwordFocusNode);
+      });
     }
     super.initState();
   }
@@ -94,6 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 5),
                         TextFormField(
+                          focusNode: passwordFocusNode,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             hintText: 'Nhập mật khẩu của bạn',

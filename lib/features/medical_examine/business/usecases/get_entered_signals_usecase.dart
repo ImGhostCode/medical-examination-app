@@ -14,7 +14,7 @@ class GetEnteredSignalsUsecase {
   Future<Either<Failure, ResponseModel<List<SignalEntity>>>> call({
     required GetEnteredSignalParams getEnteredSignalParams,
   }) async {
-    return await medicalExamineRepository.getEnterdSignals(
+    return await medicalExamineRepository.getEnteredSignals(
       getEnteredSignalParams: getEnteredSignalParams,
     );
   }
