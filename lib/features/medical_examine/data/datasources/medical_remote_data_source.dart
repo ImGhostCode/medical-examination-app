@@ -24,7 +24,7 @@ class MedicalExamineRemoteDataSourceImpl
       {required LoadSignalParams loadSignalParams}) async {
     try {
       final response = await dio.get(
-          '/dashboard/medical/signals/${arrayParamToBase64(loadSignalParams.toMap())}',
+          '/dashboard/medical/signals/${paramToBase64(loadSignalParams.toMap())}',
           queryParameters: {},
           options: Options(headers: {
             "token": loadSignalParams.token,

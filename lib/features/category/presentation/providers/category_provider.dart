@@ -6,7 +6,9 @@ import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/features/category/business/entities/department_entity.dart';
+import 'package:medical_examination_app/features/category/business/entities/subclinic_service_entity.dart';
 import 'package:medical_examination_app/features/category/business/usecases/get_department_usecase.dart';
+import 'package:medical_examination_app/features/category/business/usecases/get_subclinic_service_usecase.dart';
 import 'package:medical_examination_app/features/category/data/datasources/category_remote_data_source.dart';
 import 'package:medical_examination_app/features/category/data/datasources/template_local_data_source.dart';
 import 'package:medical_examination_app/features/category/data/repositories/category_repository_impl.dart';
@@ -24,6 +26,7 @@ class CategoryProvider extends ChangeNotifier {
   String message;
 
   List<DepartmentEntity> listDepartment = [];
+  List<SubclinicServiceEntity> listSubclinicServices = [];
   DepartmentEntity? selectedDepartment;
   Failure? failure;
 
@@ -76,6 +79,47 @@ class CategoryProvider extends ChangeNotifier {
       (ResponseModel<List<DepartmentEntity>> response) {
         isLoading = false;
         listDepartment = response.data;
+        code = response.code;
+        type = response.type;
+        status = response.status;
+        message = response.message;
+        failure = null;
+        notifyListeners();
+      },
+    );
+  }
+
+  void eitherFailureOrGetSubclicServices(String key) async {
+    listSubclinicServices = [];
+    _isLoading = true;
+    CategoryRepositoryImpl repository = CategoryRepositoryImpl(
+      remoteDataSource: CategoryRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: CategoryLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrCategory =
+        await GetSubclinicServiceUsecase(categoryRepository: repository).call(
+      getSubclinicServicePrarams: GetSubclinicServicePrarams(
+          key: key, token: await secureStorage.read(key: 'token') ?? ''),
+    );
+
+    failureOrCategory.fold(
+      (Failure newFailure) {
+        _isLoading = false;
+        listSubclinicServices = [];
+        failure = newFailure;
+        notifyListeners();
+      },
+      (ResponseModel<List<SubclinicServiceEntity>> response) {
+        isLoading = false;
+        listSubclinicServices = response.data;
         code = response.code;
         type = response.type;
         status = response.status;

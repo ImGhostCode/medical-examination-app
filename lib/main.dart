@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
+import 'package:medical_examination_app/core/services/shared_pref_service.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
@@ -26,7 +27,8 @@ import 'package:provider/provider.dart';
 void main() async {
   await dotenv.load(fileName: "lib/.env");
   ApiService.init();
-  SecureStorageService.init();
+  await SharedPrefService.init();
+  await SecureStorageService.init();
   runApp(const MainApp());
 }
 
@@ -114,7 +116,7 @@ class MainApp extends StatelessWidget {
               ),
             ),
             fontFamily: GoogleFonts.roboto().fontFamily),
-        initialRoute: RouteNames.home,
+        initialRoute: RouteNames.welcome,
         routes: {
           RouteNames.welcome: (context) => const WelcomePage(),
           RouteNames.login: (context) => const LoginPage(),
@@ -139,17 +141,17 @@ class MainApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  void _checkLogin(BuildContext context) async {
-    String? token = await SecureStorageService.secureStorage.read(key: 'token');
-    if (token == null) {
-      Navigator.pushReplacementNamed(context, RouteNames.welcome);
-      return;
-    }
-  }
+  // void _checkLogin(BuildContext context) async {
+  //   String? token = await SecureStorageService.secureStorage.read(key: 'token');
+  //   if (token == null) {
+  //     Navigator.pushReplacementNamed(context, RouteNames.welcome);
+  //     return;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    _checkLogin(context);
+    // _checkLogin(context);
     return const Skeleton();
   }
 }

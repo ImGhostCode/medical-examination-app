@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:medical_examination_app/features/user/business/entities/user_entity.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class ProfilePage extends StatelessWidget {
         onTap: () {},
       ),
     ];
+    UserEntity user = Provider.of<AuthProvider>(context).userEntity!;
 
     return Scaffold(
         backgroundColor: Colors.blue,
@@ -147,6 +150,7 @@ class ProfilePage extends StatelessWidget {
                             child: Column(
                               children: [
                                 Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
                                       height: 80,
@@ -161,7 +165,7 @@ class ProfilePage extends StatelessWidget {
                                       ),
                                       child: ClipOval(
                                         child: Image.asset(
-                                          'assets/images/doctor-example-removebg-preview.png',
+                                          'assets/images/207159539-cartoon-character-of-doctor-with-stethoscope-on-his-neck-and-smiling.jpg',
                                           fit: BoxFit.contain,
                                         ),
                                       ),
@@ -174,7 +178,7 @@ class ProfilePage extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'BS Nguyễn Văn A',
+                                          user.display,
                                           style: Theme.of(context)
                                               .textTheme
                                               .titleMedium!
@@ -183,15 +187,15 @@ class ProfilePage extends StatelessWidget {
                                         ),
                                         RichText(
                                           text: TextSpan(
-                                            text: 'Giới tính:',
+                                            text: "Mã số: ",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!
                                                 .copyWith(color: Colors.black),
-                                            children: const <TextSpan>[
+                                            children: <TextSpan>[
                                               TextSpan(
-                                                text: ' Nam',
-                                                style: TextStyle(
+                                                text: '${user.id}',
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -200,15 +204,15 @@ class ProfilePage extends StatelessWidget {
                                         ),
                                         RichText(
                                           text: TextSpan(
-                                            text: 'Chuyên khoa: ',
+                                            text: 'Vai trò: ',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!
                                                 .copyWith(color: Colors.black),
-                                            children: const <TextSpan>[
+                                            children: <TextSpan>[
                                               TextSpan(
-                                                text: 'Nội khoa',
-                                                style: TextStyle(
+                                                text: user.work,
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),

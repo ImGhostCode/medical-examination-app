@@ -74,3 +74,20 @@ String kProcessingStatus = 'processing_status';
 String kValueString = 'value_string';
 String kUnit = 'unit';
 String kAuthored = 'authored';
+
+// Subclinic Service
+String kCc = 'cc';
+String kDv = 'dv';
+String kTt = 'tt';
+String kPrice = 'price';
+String kReport = 'report';
+String kChoosed = 'choosed';
+String kGroupId = 'group_id';
+String kQuantity = 'quantity';
+String kIsPublic = 'is_public';
+String kObsGroup = 'obs_group';
+String kCreateUid = 'create_uid';
+String kObsResult = 'obs_result';
+String kEditQuantity = 'edit_quantity';
+String kPriceRequired = 'price_required';
+String kPriceInsurance = 'price_insurance';

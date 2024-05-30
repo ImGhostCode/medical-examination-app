@@ -13,5 +13,11 @@ class GetDepartmentPrarams {
     };
   }
 }
-
 // {"type":"all","kind":"treatment_role"}
+
+class GetSubclinicServicePrarams {
+  String key;
+  String token;
+
+  GetSubclinicServicePrarams({required this.key, required this.token});
+}

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/core/services/shared_pref_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:permission_handler/permission_handler.dart';'
+
+final SharedPreferences prefs = SharedPrefService.prefs;
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -27,25 +31,6 @@ class _WelcomePageState extends State<WelcomePage>
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_printTabIndex);
   }
-
-  // void _requestPermission() async {
-  //   var status = await Permission.notification.status;
-  //   var alarmStatus = await Permission.scheduleExactAlarm.status;
-
-  //   if (status.isPermanentlyDenied) {
-  //     return;
-  //   }
-  //   if (status.isDenied) {
-  //     await Permission.notification.request();
-  //   }
-
-  //   if (alarmStatus.isPermanentlyDenied) {
-  //     return;
-  //   }
-  //   if (alarmStatus.isDenied) {
-  //     await Permission.scheduleExactAlarm.request();
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -245,4 +230,53 @@ class _WelcomePageState extends State<WelcomePage>
       ),
     );
   }
+  // void _requestPermission() async {
+  //   var status = await Permission.notification.status;
+  //   var alarmStatus = await Permission.scheduleExactAlarm.status;
+
+  //   if (status.isPermanentlyDenied) {
+  //     return;
+  //   }
+  //   if (status.isDenied) {
+  //     await Permission.notification.request();
+  //   }
+
+  //   if (alarmStatus.isPermanentlyDenied) {
+  //     return;
+  //   }
+  //   if (alarmStatus.isDenied) {
+  //     await Permission.scheduleExactAlarm.request();
+  //   }
+  // }
 }
+
+/*
+String? storedUser;
+
+@override
+void initState() {
+  super.initState();
+  _loadUserName();
+}
+
+void _loadUserName() async {
+  storedUser = await prefs.getString('userName');
+  if (storedUser != null) {
+    Navigator.of(context).pushNamed(RouteNames.login);
+  }
+}
+
+@override
+Widget build(BuildContext context) {
+  return FutureBuilder(
+    future: _loadUserName(),
+    builder: (BuildContext context, AsyncSnapshot snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator(); // Show loading while waiting for data
+      } else {
+        // Your normal build code here
+      }
+    },
+  );
+}
+*/

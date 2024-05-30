@@ -1,15 +1,13 @@
 import 'dart:convert';
 
-String paramToBase64(Map<String, dynamic> params) {
-  String jsonStr = jsonEncode(params);
-  String base64Str = base64Encode(utf8.encode(jsonStr));
-  return base64Str;
-}
-
-String arrayParamToBase64(List<Map<String, dynamic>> params) {
-  String jsonStr = jsonEncode(params);
-  String base64Str = base64Encode(utf8.encode(jsonStr));
-  return base64Str;
+String paramToBase64(dynamic params) {
+  if (params.runtimeType == String) {
+    return base64Encode(utf8.encode(params));
+  } else {
+    String jsonStr = jsonEncode(params);
+    String base64Str = base64Encode(utf8.encode(jsonStr));
+    return base64Str;
+  }
 }
 
 String codeToSignal(String code) {

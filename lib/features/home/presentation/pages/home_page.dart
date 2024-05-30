@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:medical_examination_app/features/user/business/entities/user_entity.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,6 +25,9 @@ class HomePage extends StatelessWidget {
         },
       ),
     ];
+
+    UserEntity? user = Provider.of<AuthProvider>(context).userEntity;
+
     return Scaffold(
         backgroundColor: Colors.blue,
         body: SafeArea(
@@ -46,7 +52,7 @@ class HomePage extends StatelessWidget {
                                     fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'BS.Nguyễn Văn A',
+                            user?.display ?? '',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge!

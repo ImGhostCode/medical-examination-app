@@ -147,7 +147,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                       //     style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       Text(
-                        'Chuẩn đoán: ${args.patient.classifyName}',
+                        'Loại bệnh án: ${args.patient.classifyName}',
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium!

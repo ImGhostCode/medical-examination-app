@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/core/services/shared_pref_service.dart';
 // import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final SharedPreferences prefs = SharedPrefService.prefs;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +21,17 @@ class _LoginPageState extends State<LoginPage> {
   String user = '';
   String password = '';
   bool _obscureText = true;
+  bool rememberMe = false;
+
+  @override
+  void initState() {
+    String? storedUser = prefs.getString('userName');
+    if (storedUser != null) {
+      user = storedUser;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 5),
                         TextFormField(
+                          initialValue: user,
                           decoration: const InputDecoration(
                             hintText: 'Nhập tên tài khoản của bạn',
                           ),
@@ -103,9 +119,27 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 8),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              checkColor: Colors.white,
+                              activeColor: Theme.of(context).primaryColor,
+                              // fillColor: WidgetStatePropertyAll(
+                              //     Theme.of(context).primaryColor),
+                              value: rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  rememberMe = value!;
+                                });
+                              },
+                            ),
+                            const Text('Ghi nhớ tài khoản'),
+                          ],
+                        ),
                         TextButton(
                           onPressed: () {},
                           child: const Text('Quên mật khẩu?',
@@ -141,6 +175,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     } else {
+                      if (rememberMe) {
+                        await prefs.setString('userName', user);
+                      } else {
+                        await prefs.remove('userName');
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.green,

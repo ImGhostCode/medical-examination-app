@@ -230,7 +230,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Khu vực: ${patientProvider.listPatientInRoom[index].classifyName}',
+                                        'Loại bệnh án: ${patientProvider.listPatientInRoom[index].classifyName}',
                                         textAlign: TextAlign.start,
                                         style: Theme.of(context)
                                             .textTheme
