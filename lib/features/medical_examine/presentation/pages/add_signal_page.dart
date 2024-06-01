@@ -1,8 +1,12 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
-
-enum BloodType { A_POS, A_NEG, B_POS, B_NEG, AB_POS, AB_NEG, O_POS, O_NEG }
+import 'package:medical_examination_app/core/common/enums.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/widgets/signal_row.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
+import 'package:provider/provider.dart';
 
 class AddSignalPage extends StatefulWidget {
   const AddSignalPage({super.key});
@@ -20,6 +24,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
   bool _heightExpanded = true;
   bool _weightExpanded = true;
   bool _bloodTypeExpanded = true;
+  late PatientInfoArguments args;
 
   // final _formKey = GlobalKey<FormState>();
   final _heartRateFormKey = GlobalKey<FormState>();
@@ -30,7 +35,61 @@ class _AddSignalPageState extends State<AddSignalPage> {
   final _heightFormKey = GlobalKey<FormState>();
   final _weightFormKey = GlobalKey<FormState>();
   final _bloodTypeFormKey = GlobalKey<FormState>();
-  BloodType _bloodType = BloodType.A_POS;
+  String _bloodType = bloodTypes[0];
+
+  List<SignalEntity> listHeartRateSignals = [];
+  List<SignalEntity> listBloodPressureSignals = [];
+  List<SignalEntity> listTemperatureSignals = [];
+  List<SignalEntity> listSP02Signals = [];
+  List<SignalEntity> listRespiratoryRateSignals = [];
+  List<SignalEntity> listHeightSignals = [];
+  List<SignalEntity> listWeightSignals = [];
+  List<SignalEntity> listBloodTypeSignals = [];
+
+  @override
+  void didChangeDependencies() async {
+    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+    final provider =
+        Provider.of<MedicalExamineProvider>(context, listen: false);
+    final encounter =
+        ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+
+    void updateState() {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+
+    Future<void> loadSignals(String signalType, Function setSignalList) async {
+      final signals = await provider.eitherFailureOrGetEnteredSignals(
+          signalType, encounter.patient.encounter.toString());
+      setSignalList(signals);
+      updateState();
+    }
+
+    loadSignals(
+        SignalType.SIG_02.name, (signals) => listHeartRateSignals = signals);
+    loadSignals(SignalType.SIG_01.name,
+        (signals) => listBloodPressureSignals = signals);
+    loadSignals(
+        SignalType.SIG_03.name, (signals) => listTemperatureSignals = signals);
+    loadSignals(SignalType.SIG_04.name, (signals) => listSP02Signals = signals);
+    loadSignals(SignalType.SIG_05.name,
+        (signals) => listRespiratoryRateSignals = signals);
+    loadSignals(
+        SignalType.SIG_08.name, (signals) => listHeightSignals = signals);
+    loadSignals(
+        SignalType.SIG_06.name, (signals) => listWeightSignals = signals);
+    loadSignals(
+        SignalType.SIG_10.name, (signals) => listBloodTypeSignals = signals);
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,43 +185,15 @@ class _AddSignalPageState extends State<AddSignalPage> {
                         }
                         return null;
                       },
-                      items: const [
-                        DropdownMenuItem(
-                          value: BloodType.A_POS,
-                          child: Text('A+'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.A_NEG,
-                          child: Text('A-'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.B_POS,
-                          child: Text('B+'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.B_NEG,
-                          child: Text('B-'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.AB_POS,
-                          child: Text('AB+'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.AB_NEG,
-                          child: Text('AB-'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.O_POS,
-                          child: Text('O+'),
-                        ),
-                        DropdownMenuItem(
-                          value: BloodType.O_NEG,
-                          child: Text('O-'),
-                        ),
-                      ],
+                      items: bloodTypes
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ))
+                          .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _bloodType = value as BloodType;
+                          _bloodType = value.toString();
                         });
                       }),
                 ),
@@ -178,41 +209,8 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('A'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          const SizedBox(height: 16),
+          SignalRow(listSignals: listBloodTypeSignals),
         ]);
   }
 
@@ -275,41 +273,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('60 Kg'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listWeightSignals),
         ]);
   }
 
@@ -372,41 +336,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('160 cm'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listHeightSignals),
         ]);
   }
 
@@ -469,41 +399,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('20 lần/phút'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listRespiratoryRateSignals),
         ]);
   }
 
@@ -566,41 +462,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('36.5 độ C'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listTemperatureSignals),
         ]);
   }
 
@@ -663,41 +525,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('98%'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listSP02Signals),
         ]);
   }
 
@@ -760,41 +588,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('120/80 mmHg'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listBloodPressureSignals),
         ]);
   }
 
@@ -846,53 +640,19 @@ class _AddSignalPageState extends State<AddSignalPage> {
                     },
                   ),
                 ),
-                // const SizedBox(width: 8),
-                // Expanded(
-                //   flex: 1,
-                //   child: ElevatedButton(
-                //       onPressed: () {
-                //         if (_heartRateFormKey.currentState!.validate()) {}
-                //       },
-                //       child: const Text('Lưu')),
-                // )
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (_heartRateFormKey.currentState!.validate()) {}
+                      },
+                      child: const Text('Lưu')),
+                )
               ],
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('80 lần/phút'),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-                subtitle: const Text('12/12/2021 12:00:44'),
-                subtitleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.edit_rounded,
-                          color: Colors.blue,
-                        )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.delete_rounded,
-                            color: Colors.red)),
-                  ],
-                ),
-              );
-            },
-          ),
+          SignalRow(listSignals: listHeartRateSignals),
         ]);
   }
 }

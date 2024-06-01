@@ -20,6 +20,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
       TextEditingController();
 
   DepartmentEntity? _selectedDepartment;
+  List<InRoomPatientEntity> listRenderPatient = [];
 
   @override
   void initState() {
@@ -120,7 +121,10 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                   color: Colors.white,
                   child: TextField(
                     controller: _searchController,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      Provider.of<PatientProvider>(context, listen: false)
+                          .searchPatientInRoom(value);
+                    },
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       focusColor: Colors.white,
@@ -132,7 +136,11 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                       ),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear),
-                        onPressed: () {},
+                        onPressed: () {
+                          _searchController.clear();
+                          Provider.of<PatientProvider>(context, listen: false)
+                              .searchPatientInRoom('');
+                        },
                       ),
                     ),
                   ),
@@ -156,6 +164,8 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                       );
                     }
 
+                    listRenderPatient = patientProvider.listRenderPatientInRoom;
+
                     return Expanded(
                       child: ListView.separated(
                           shrinkWrap: true,
@@ -174,7 +184,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                       Row(
                                         children: [
                                           Text(
-                                            'STT: ${patientProvider.listPatientInRoom[index].encounter}',
+                                            'STT: ${listRenderPatient[index].encounter}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!
@@ -202,7 +212,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                         FontWeight.bold),
                                           ),
                                           Text(
-                                            "Mã số: ${patientProvider.listPatientInRoom[index].subject}",
+                                            "Mã số: ${listRenderPatient[index].subject}",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -215,29 +225,39 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            'Giới tính: ${patientProvider.listPatientInRoom[index].gender}',
+                                            'Giới tính: ${listRenderPatient[index].gender}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
                                           ),
                                           Text(
-                                            "Ngày sinh: ${patientProvider.listPatientInRoom[index].birthdate}",
+                                            "Ngày sinh: ${listRenderPatient[index].birthdate}",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
                                           )
                                         ],
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Loại bệnh án: ${patientProvider.listPatientInRoom[index].classifyName}',
-                                        textAlign: TextAlign.start,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                fontStyle: FontStyle.italic),
-                                      ),
+                                      if (listRenderPatient[index]
+                                              .classifyName !=
+                                          '')
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Loại bệnh án: ${listRenderPatient[index].classifyName}',
+                                              textAlign: TextAlign.start,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                      fontStyle:
+                                                          FontStyle.italic),
+                                            ),
+                                          ],
+                                        ),
                                       const SizedBox(height: 8),
                                       Row(
                                         mainAxisAlignment:
@@ -248,9 +268,9 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                 Navigator.of(context).pushNamed(
                                                   RouteNames.medialExamine,
                                                   arguments: PatientInfoArguments(
-                                                      patient: patientProvider
-                                                              .listPatientInRoom[
-                                                          index],
+                                                      patient:
+                                                          listRenderPatient[
+                                                              index],
                                                       division:
                                                           _selectedDepartment!
                                                               .value
@@ -265,7 +285,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                           separatorBuilder: (context, index) {
                             return const SizedBox(height: 16);
                           },
-                          itemCount: patientProvider.listPatientInRoom.length),
+                          itemCount: listRenderPatient.length),
                     );
                   })
               ],

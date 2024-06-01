@@ -24,6 +24,8 @@ class PatientProvider extends ChangeNotifier {
   String message;
 
   List<InRoomPatientEntity> listPatientInRoom;
+  List<InRoomPatientEntity> listRenderPatientInRoom = [];
+
   Failure? failure;
 
   bool _isLoading = false;
@@ -75,12 +77,14 @@ class PatientProvider extends ChangeNotifier {
       (Failure newFailure) {
         _isLoading = false;
         listPatientInRoom = [];
+        listRenderPatientInRoom = [];
         failure = newFailure;
         notifyListeners();
       },
       (ResponseModel<List<InRoomPatientEntity>> response) {
         _isLoading = false;
         listPatientInRoom = response.data;
+        listRenderPatientInRoom = response.data;
         code = response.code;
         type = response.type;
         status = response.status;
@@ -89,5 +93,17 @@ class PatientProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  void searchPatientInRoom(String key) async {
+    print(key);
+    listRenderPatientInRoom = listPatientInRoom
+        .where(
+            (element) => element.name.toLowerCase().contains(key.toLowerCase())
+            // ||
+            // element.subject.toString().contains(key)
+            )
+        .toList();
+    notifyListeners();
   }
 }

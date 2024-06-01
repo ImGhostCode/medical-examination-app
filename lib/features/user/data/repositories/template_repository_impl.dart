@@ -31,17 +31,20 @@ class TemplateRepositoryImpl implements TemplateRepository {
         localDataSource.cacheTemplate(templateToCache: remoteTemplate);
 
         return Right(remoteTemplate);
-      } on ServerException {
+      } on ServerException catch (e) {
         return Left(ServerFailure(
-            errorMessage: 'This is a server exception', statusCode: 400));
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
       }
     } else {
-      try {
-        TemplateModel localTemplate = await localDataSource.getLastTemplate();
-        return Right(localTemplate);
-      } on CacheException {
-        return Left(CacheFailure(errorMessage: 'This is a cache exception'));
-      }
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
     }
   }
 }

@@ -99,7 +99,8 @@ class MedicalExamineProvider extends ChangeNotifier {
     );
   }
 
-  void eitherFailureOrGetEnteredSignals(String type, String encounter) async {
+  Future<List<SignalEntity>> eitherFailureOrGetEnteredSignals(
+      String type, String encounter) async {
     listEnteredSignals = [];
     _isLoading = true;
     MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
@@ -141,6 +142,7 @@ class MedicalExamineProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+    return listEnteredSignals;
   }
 
   void eitherFailureOrGetEnteredStreatSheets(

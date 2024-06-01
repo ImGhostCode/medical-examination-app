@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/services/shared_pref_service.dart';
@@ -17,7 +19,7 @@ class _WelcomePageState extends State<WelcomePage>
     with TickerProviderStateMixin {
   late final TabController _tabController;
   int currTab = 0;
-
+  Timer? _timer;
   void _printTabIndex() {
     setState(() {
       currTab = _tabController.index;
@@ -30,10 +32,16 @@ class _WelcomePageState extends State<WelcomePage>
     // _requestPermission();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_printTabIndex);
+    _timer = Timer.periodic(const Duration(seconds: 2), (Timer t) {
+      setState(() {
+        _tabController.index = (_tabController.index + 1) % 3;
+      });
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _tabController.dispose();
     super.dispose();
   }

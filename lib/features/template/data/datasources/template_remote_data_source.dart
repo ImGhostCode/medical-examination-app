@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical_examination_app/core/constants/constants.dart';
 import '../../../../../core/errors/exceptions.dart';
 import '../../../../../core/params/params.dart';
 import '../models/template_model.dart';
@@ -24,16 +25,10 @@ class TemplateRemoteDataSourceImpl implements TemplateRemoteDataSource {
 
       return TemplateModel.fromJson(json: response.data);
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.cancel) {
-        throw ServerException(
-            statusCode: 400, errorMessage: 'Connection Refused');
-      } else {
-        throw ServerException(
-            statusCode: e.response!.statusCode!,
-            errorMessage:
-                e.response!.data['message'] ?? 'Unknown server error');
-      }
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
     }
   }
 }

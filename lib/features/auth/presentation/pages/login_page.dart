@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   String user = '';
   String password = '';
   bool _obscureText = true;
-  bool rememberMe = false;
+  bool rememberMe = true;
   String? storedUser;
 
   @override

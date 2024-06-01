@@ -54,16 +54,20 @@ String codeToItemStreatmentSheet(String code) {
   }
 }
 
-enum SignalType {
-  SIG_02,
-  SIG_01,
-  SIG_03,
-  SIG_04,
-  SIG_05,
-  SIG_08,
-  SIG_06,
-  SIG_10,
+String workToRole(String work) {
+  switch (work) {
+    case 'doctor':
+      return 'Bác sĩ';
+    case 'nurse':
+      return 'Y tá';
+    case 'other':
+      return 'Khác';
+    default:
+      return 'Không xác định';
+  }
 }
+
+
 
 
 

@@ -20,7 +20,7 @@ class MedicalExaminationPage extends StatefulWidget {
 
 class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   int _index = 0;
-  bool _customTileExpanded = false;
+  bool _userInfoExpanded = false;
   late PatientInfoArguments args;
 
   List<SignalEntity> listHeartSignals = [];
@@ -524,7 +524,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     padding: const EdgeInsets.all(8),
                     backgroundColor: Colors.blue),
                 onPressed: () {
-                  Navigator.of(context).pushNamed(RouteNames.addSignal);
+                  Navigator.of(context).pushNamed(RouteNames.addSignal,
+                      arguments: PatientInfoArguments(
+                          patient: args.patient, division: args.division));
                 },
                 child: const Row(
                     mainAxisSize: MainAxisSize.min,
@@ -610,7 +612,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Huyết áp'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           EnteredSignalTable(
                               context: context,
                               listSignals: listBloodPressureSignals),
@@ -622,7 +624,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Mạch'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context, listSignals: listHeartSignals),
@@ -634,7 +636,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Nhiệt độ'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context,
@@ -647,7 +649,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'SP02'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context, listSignals: listSP02Signals),
@@ -659,7 +661,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Nhịp thở'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context,
@@ -672,7 +674,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Cân nặng'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context, listSignals: listWeightSignals),
@@ -684,7 +686,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Chiều cao'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context, listSignals: listHeightSignals),
@@ -696,7 +698,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const LabelTextField(label: 'Nhóm máu'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           // Table with 2 columns: value and date
                           EnteredSignalTable(
                               context: context,
@@ -719,7 +721,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
       child: ExpansionTile(
           onExpansionChanged: (bool expanded) {
             setState(() {
-              _customTileExpanded = expanded;
+              _userInfoExpanded = expanded;
             });
           },
           collapsedShape: RoundedRectangleBorder(
@@ -729,7 +731,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
               side: BorderSide(color: Colors.grey.shade300, width: 1.5),
               borderRadius: BorderRadius.circular(8)),
           title: Text(
-            _customTileExpanded ? 'Thông tin bệnh nhân' : args.patient.name,
+            _userInfoExpanded ? 'Thông tin bệnh nhân' : args.patient.name,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium!

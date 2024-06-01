@@ -122,7 +122,7 @@ class MainApp extends StatelessWidget {
           RouteNames.login: (context) => const LoginPage(),
           RouteNames.home: (context) => const HomeScreen(),
           RouteNames.tools: (context) => const ToolPage(),
-          RouteNames.profile: (context) => ProfilePage(),
+          RouteNames.profile: (context) => const ProfilePage(),
           RouteNames.accountSetting: (context) => const AccountSettingPage(),
           RouteNames.crePatientProfile: (context) =>
               const CreatePatientProfilePage(),

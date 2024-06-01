@@ -1,3 +1,5 @@
+import 'package:medical_examination_app/core/common/helpers.dart';
+
 import '../../../../../core/constants/constants.dart';
 import '../../business/entities/user_entity.dart';
 
@@ -18,7 +20,7 @@ class UserModel extends UserEntity {
     return UserModel(
       id: json[kId],
       code: json[kCode],
-      work: json[kWork],
+      work: workToRole(json[kWork]),
       token: json[kToken],
       display: json[kDisplay],
       expired: json[kExpired],

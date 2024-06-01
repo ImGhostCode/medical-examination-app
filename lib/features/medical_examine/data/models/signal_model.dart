@@ -8,7 +8,13 @@ class SignalModel extends SignalEntity {
       super.display,
       super.unit,
       super.valueString,
-      super.authored});
+      super.authored,
+      super.performer,
+      super.location,
+      super.requester,
+      super.unitRoot,
+      super.organization,
+      super.status});
 
   factory SignalModel.fromJson({required Map<String, dynamic> json}) {
     return SignalModel(
@@ -18,6 +24,12 @@ class SignalModel extends SignalEntity {
       unit: json[kUnit] ?? '',
       display: json[kDisplay] ?? '',
       authored: json[kAuthored] ?? '',
+      performer: json[kPerformer] ?? '',
+      location: json[kLocation] ?? '',
+      requester: json[kRequester] ?? '',
+      unitRoot: json[kUnitRoot] ?? '',
+      organization: json[kOrganization] ?? '',
+      status: json[kStatus] ?? '',
     );
   }
 
@@ -29,6 +41,12 @@ class SignalModel extends SignalEntity {
       kUnit: super.unit,
       kDisplay: super.display,
       kAuthored: super.authored,
+      kPerformer: super.performer,
+      kLocation: super.location,
+      kRequester: super.requester,
+      kUnitRoot: super.unitRoot,
+      kOrganization: super.organization,
+      kStatus: super.status,
     };
   }
 }

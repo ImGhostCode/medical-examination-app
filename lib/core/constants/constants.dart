@@ -74,6 +74,10 @@ String kProcessingStatus = 'processing_status';
 String kValueString = 'value_string';
 String kUnit = 'unit';
 String kAuthored = 'authored';
+String kPerformer = 'performer';
+String kLocation = 'location';
+String kRequester = 'requester';
+String kUnitRoot = 'unit_root';
 
 // Subclinic Service
 String kCc = 'cc';
