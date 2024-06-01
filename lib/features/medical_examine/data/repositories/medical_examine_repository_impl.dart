@@ -143,4 +143,32 @@ class MedicalExamineRepositoryImpl implements MedicalExamineRepository {
       // }
     }
   }
+
+  @override
+  Future<Either<Failure, ResponseModel<String>>> modifySignal(
+      {required ModifySignalParams modifySignalParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<String> remoteMedicalExamine = await remoteDataSource
+            .modifySignal(modifySignalParams: modifySignalParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
 }

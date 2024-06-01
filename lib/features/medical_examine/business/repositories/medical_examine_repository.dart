@@ -13,6 +13,9 @@ abstract class MedicalExamineRepository {
   Future<Either<Failure, ResponseModel<List<SignalEntity>>>> getEnteredSignals({
     required GetEnteredSignalParams getEnteredSignalParams,
   });
+  Future<Either<Failure, ResponseModel<String>>> modifySignal({
+    required ModifySignalParams modifySignalParams,
+  });
   Future<Either<Failure, ResponseModel<List<StreatmentSheetEntity>>>>
       getEnteredStreatmentSheets({
     required GetEnteredStreamentSheetParams getEnteredStreamentSheetParams,

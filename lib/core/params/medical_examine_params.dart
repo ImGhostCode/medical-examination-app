@@ -1,3 +1,5 @@
+import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
+
 class LoadSignalParams {
   final List<SignalParamItem> loadSignalParams;
   final String token;
@@ -78,4 +80,23 @@ class GetEnteredCareSheetParams {
       'encounter': encounter,
     };
   }
+}
+
+class ModifySignalParams {
+  final SignalEntity data;
+  final int encounter;
+  final int? request;
+  final String? division;
+  final String code;
+  final String ip;
+  final String token;
+  const ModifySignalParams({
+    required this.data,
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.encounter,
+    this.request,
+    this.division,
+  });
 }

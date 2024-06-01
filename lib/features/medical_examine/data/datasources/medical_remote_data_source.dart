@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
@@ -11,6 +12,8 @@ import '../../../../../core/errors/exceptions.dart';
 abstract class MedicalExamineRemoteDataSource {
   Future<ResponseModel<List<SignalModel>>> loadSignals(
       {required LoadSignalParams loadSignalParams});
+  Future<ResponseModel<String>> modifySignal(
+      {required ModifySignalParams modifySignalParams});
   Future<ResponseModel<List<SignalModel>>> getEnteredSignals(
       {required GetEnteredSignalParams getEnteredSignalParams});
   Future<ResponseModel<List<StreatmentSheetModel>>> getEnteredStreatmentSheets(
@@ -143,6 +146,65 @@ class MedicalExamineRemoteDataSourceImpl
           fromJsonD: (json) => json
               .map<CareSheetModel>((e) => CareSheetModel.fromJson(json: e))
               .toList());
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String>> modifySignal(
+      {required ModifySignalParams modifySignalParams}) async {
+    try {
+      final response = await dio.put('/observation/signal',
+          queryParameters: {},
+          data: {
+            if (modifySignalParams.data.status == SignalStatus.NEW)
+              "data": {
+                "type": modifySignalParams.data.status,
+                "code": modifySignalParams.data.code,
+                "value": modifySignalParams.data.value,
+                "value_string": modifySignalParams.data.valueString,
+                "unit": modifySignalParams.data.unit,
+                "encounter": modifySignalParams.encounter,
+                "request": modifySignalParams.request,
+                "division": modifySignalParams.division,
+              },
+            if (modifySignalParams.data.status == SignalStatus.EDIT)
+              "data": {
+                "type": modifySignalParams.data.status,
+                "code": modifySignalParams.data.code,
+                "seq": modifySignalParams.data.seq,
+                "value": modifySignalParams.data.value,
+                "value_string": modifySignalParams.data.valueString,
+                "unit": modifySignalParams.data.unit,
+                "encounter": modifySignalParams.encounter,
+              },
+            if (modifySignalParams.data.status == SignalStatus.CANCEL)
+              "data": {
+                "type": modifySignalParams.data.status,
+                "code": modifySignalParams.data.id,
+                "seq": modifySignalParams.data.seq,
+                "encounter": modifySignalParams.encounter,
+                "note": modifySignalParams.data.note,
+              },
+            "token": modifySignalParams.token,
+            "ip": "192:168:1:18",
+            "code": "ad568891-dbc4-4241-a122-abb127901972"
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
     } on DioException catch (e) {
       throw ServerException(
           message: e.response!.data[kMessage],

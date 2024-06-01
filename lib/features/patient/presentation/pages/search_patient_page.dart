@@ -273,8 +273,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                               index],
                                                       division:
                                                           _selectedDepartment!
-                                                              .value
-                                                              .toString()),
+                                                              .value),
                                                 );
                                               },
                                               child: const Text('Thăm khám')),
@@ -404,7 +403,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
 
 class PatientInfoArguments {
   final InRoomPatientEntity patient;
-  final String division;
+  final int division;
 
   PatientInfoArguments({required this.patient, required this.division});
 }

@@ -1,4 +1,6 @@
 class SignalEntity {
+  final String? id;
+  final String? seq;
   final String code;
   final String? value;
   final String? valueString;
@@ -11,8 +13,11 @@ class SignalEntity {
   final String? unitRoot;
   final String? organization;
   final String? status;
+  final String? note;
 
   SignalEntity({
+    this.id,
+    this.seq,
     required this.code,
     this.value,
     this.valueString,
@@ -25,6 +30,7 @@ class SignalEntity {
     this.unitRoot,
     this.organization,
     this.status,
+    this.note,
   });
 }
 

@@ -210,7 +210,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
             ),
           ),
           const SizedBox(height: 16),
-          SignalRow(listSignals: listBloodTypeSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listBloodTypeSignals),
         ]);
   }
 
@@ -273,7 +277,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listWeightSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listWeightSignals),
         ]);
   }
 
@@ -336,7 +344,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listHeightSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listHeightSignals),
         ]);
   }
 
@@ -399,7 +411,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listRespiratoryRateSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listRespiratoryRateSignals),
         ]);
   }
 
@@ -462,7 +478,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listTemperatureSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listTemperatureSignals),
         ]);
   }
 
@@ -525,7 +545,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listSP02Signals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listSP02Signals),
         ]);
   }
 
@@ -588,7 +612,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listBloodPressureSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listBloodPressureSignals),
         ]);
   }
 
@@ -652,7 +680,11 @@ class _AddSignalPageState extends State<AddSignalPage> {
               ],
             ),
           ),
-          SignalRow(listSignals: listHeartRateSignals),
+          SignalRow(
+              encounter: args.patient.encounter,
+              division: args.division,
+              request: 0,
+              listSignals: listHeartRateSignals),
         ]);
   }
 }

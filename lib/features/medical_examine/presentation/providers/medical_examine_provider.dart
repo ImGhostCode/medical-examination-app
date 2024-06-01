@@ -11,6 +11,7 @@ import 'package:medical_examination_app/features/medical_examine/business/entiti
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_care_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_signals_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_streatm_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/modify_signal_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -27,6 +28,7 @@ class MedicalExamineProvider extends ChangeNotifier {
   String type;
   String status;
   String message;
+  // String modifyResult;
 
   List<SignalEntity> listSignals;
   List<SignalEntity> listEnteredSignals;
@@ -233,5 +235,53 @@ class MedicalExamineProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  dynamic eitherFailureOrModifySignal(SignalEntity signal, final int encounter,
+      final int? request, final int? division) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOModifySignal =
+        await ModifySignalUsecase(medicalExamineRepository: repository).call(
+            modifySignalParams: ModifySignalParams(
+      encounter: encounter,
+      token: await secureStorage.read(key: 'token') ?? '',
+      data: signal,
+      ip: '',
+      code: '',
+    ));
+
+    var result = failureOModifySignal.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
   }
 }

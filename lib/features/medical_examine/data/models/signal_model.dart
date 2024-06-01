@@ -3,7 +3,9 @@ import 'package:medical_examination_app/features/medical_examine/business/entiti
 
 class SignalModel extends SignalEntity {
   SignalModel(
-      {required super.code,
+      {super.id,
+      super.seq,
+      required super.code,
       super.value,
       super.display,
       super.unit,
@@ -14,10 +16,13 @@ class SignalModel extends SignalEntity {
       super.requester,
       super.unitRoot,
       super.organization,
-      super.status});
+      super.status,
+      super.note});
 
   factory SignalModel.fromJson({required Map<String, dynamic> json}) {
     return SignalModel(
+      id: json[kId] ?? '',
+      seq: json[kSeq] ?? '',
       code: json[kCode],
       value: json[kValue] ?? '',
       valueString: json[kValueString] ?? '',
@@ -30,11 +35,14 @@ class SignalModel extends SignalEntity {
       unitRoot: json[kUnitRoot] ?? '',
       organization: json[kOrganization] ?? '',
       status: json[kStatus] ?? '',
+      note: json[kNote] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      kId: super.id,
+      kSeq: super.seq,
       kCode: super.code,
       kValue: super.value,
       kValueString: super.valueString,
@@ -47,6 +55,7 @@ class SignalModel extends SignalEntity {
       kUnitRoot: super.unitRoot,
       kOrganization: super.organization,
       kStatus: super.status,
+      kNote: super.note,
     };
   }
 }

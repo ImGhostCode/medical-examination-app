@@ -71,6 +71,7 @@ String kClassifyName = 'classify_name';
 String kProcessingStatus = 'processing_status';
 
 // Signal
+String kSeq = 'seq';
 String kValueString = 'value_string';
 String kUnit = 'unit';
 String kAuthored = 'authored';
@@ -78,6 +79,7 @@ String kPerformer = 'performer';
 String kLocation = 'location';
 String kRequester = 'requester';
 String kUnitRoot = 'unit_root';
+String kNote = 'note';
 
 // Subclinic Service
 String kCc = 'cc';

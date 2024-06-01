@@ -48,3 +48,31 @@ List<String> bloodTypes = [
   'O/Rh+',
   'O/Rh-',
 ];
+
+class Unit {
+  static const String MMHG = 'mmHg';
+  static const String timePerMinute = 'lần/phút';
+  static const String CELSIUS = 'độ C';
+  static const String PERCENT = '%';
+  static const String CM = 'cm';
+  static const String KG = 'Kg';
+}
+
+
+/*
+- Mạch: "code":"SIG_02", "unit":"lần/phút"
+
+- Huyết áp: "code":"SIG_01" , "unit":"mmHg"
+
+- Nhiệt độ: "code":"SIG_03", "unit":"độ C"
+
+- SPO2: "code":"SIG_04", "unit":"%"
+
+- Nhịp thở: "code":"SIG_05", "unit":"lần/phút"
+
+- Chiều cao: "code":"SIG_08", "unit":"cm"
+
+- Cân nặng: "code":"SIG_06", "unit":"Kg"
+
+- Nhóm máu: "code":"SIG_10", "value_string":"O/Rh-" 
+*/
