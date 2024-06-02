@@ -2,8 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/common/enums.dart';
+import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/errors/failure.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/widgets/input_blood_signal_form.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/widgets/input_signal_form.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/signal_row.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:provider/provider.dart';
@@ -24,18 +28,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
   bool _heightExpanded = true;
   bool _weightExpanded = true;
   bool _bloodTypeExpanded = true;
-  late PatientInfoArguments args;
-
-  // final _formKey = GlobalKey<FormState>();
-  final _heartRateFormKey = GlobalKey<FormState>();
-  final _bloolPressureFormKey = GlobalKey<FormState>();
-  final _temperatureFormKey = GlobalKey<FormState>();
-  final _sp02FormKey = GlobalKey<FormState>();
-  final _respiratoryRateFormKey = GlobalKey<FormState>();
-  final _heightFormKey = GlobalKey<FormState>();
-  final _weightFormKey = GlobalKey<FormState>();
-  final _bloodTypeFormKey = GlobalKey<FormState>();
-  String _bloodType = bloodTypes[0];
+  PatientInfoArguments? args;
 
   List<SignalEntity> listHeartRateSignals = [];
   List<SignalEntity> listBloodPressureSignals = [];
@@ -46,43 +39,51 @@ class _AddSignalPageState extends State<AddSignalPage> {
   List<SignalEntity> listWeightSignals = [];
   List<SignalEntity> listBloodTypeSignals = [];
 
+  void updateState() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> loadSignals(final provider, int encounter, String signalType,
+      Function setSignalList) async {
+    final signals = await provider.eitherFailureOrGetEnteredSignals(
+        signalType, encounter.toString());
+    setSignalList(signals);
+    updateState();
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+      final provider =
+          Provider.of<MedicalExamineProvider>(context, listen: false);
+      // final encounter =
+      //     ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_02.name,
+          (signals) => listHeartRateSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_01.name,
+          (signals) => listBloodPressureSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_03.name,
+          (signals) => listTemperatureSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_04.name,
+          (signals) => listSP02Signals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_05.name,
+          (signals) => listRespiratoryRateSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_08.name,
+          (signals) => listHeightSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_06.name,
+          (signals) => listWeightSignals = signals);
+      loadSignals(provider, args!.patient.encounter, SignalType.SIG_10.name,
+          (signals) => listBloodTypeSignals = signals);
+    });
+    super.initState();
+  }
+
   @override
   void didChangeDependencies() async {
-    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-    final provider =
-        Provider.of<MedicalExamineProvider>(context, listen: false);
-    final encounter =
-        ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-
-    void updateState() {
-      if (mounted) {
-        setState(() {});
-      }
-    }
-
-    Future<void> loadSignals(String signalType, Function setSignalList) async {
-      final signals = await provider.eitherFailureOrGetEnteredSignals(
-          signalType, encounter.patient.encounter.toString());
-      setSignalList(signals);
-      updateState();
-    }
-
-    loadSignals(
-        SignalType.SIG_02.name, (signals) => listHeartRateSignals = signals);
-    loadSignals(SignalType.SIG_01.name,
-        (signals) => listBloodPressureSignals = signals);
-    loadSignals(
-        SignalType.SIG_03.name, (signals) => listTemperatureSignals = signals);
-    loadSignals(SignalType.SIG_04.name, (signals) => listSP02Signals = signals);
-    loadSignals(SignalType.SIG_05.name,
-        (signals) => listRespiratoryRateSignals = signals);
-    loadSignals(
-        SignalType.SIG_08.name, (signals) => listHeightSignals = signals);
-    loadSignals(
-        SignalType.SIG_06.name, (signals) => listWeightSignals = signals);
-    loadSignals(
-        SignalType.SIG_10.name, (signals) => listBloodTypeSignals = signals);
-
     super.didChangeDependencies();
   }
 
@@ -168,51 +169,51 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _bloodTypeFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: DropdownButtonFormField(
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                      value: _bloodType,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Vui lòng chọn nhóm máu';
-                        }
-                        return null;
-                      },
-                      items: bloodTypes
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _bloodType = value.toString();
-                        });
-                      }),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_weightFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+          InputBloodTypeForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_10.name,
+                        value: "",
+                        valueString: value,
+                        unit: "",
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_10.name,
+                    (signals) => listBloodTypeSignals = signals);
+              }
+            },
           ),
           const SizedBox(height: 16),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listBloodTypeSignals),
         ]);
@@ -241,45 +242,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _weightFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: Kg',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_06.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.KG,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_weightFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_06.name,
+                    (signals) => listWeightSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.KG,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listWeightSignals),
         ]);
@@ -308,45 +317,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _heightFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: cm',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_08.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.CM,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_heightFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_08.name,
+                    (signals) => listHeightSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.CM,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listHeightSignals),
         ]);
@@ -375,45 +392,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _respiratoryRateFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: lần/phút',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_05.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.timePerMinute,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_respiratoryRateFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_05.name,
+                    (signals) => listRespiratoryRateSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.timePerMinute,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listRespiratoryRateSignals),
         ]);
@@ -442,45 +467,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _temperatureFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: độ C',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_03.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.CELSIUS,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_temperatureFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_03.name,
+                    (signals) => listTemperatureSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.CELSIUS,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listTemperatureSignals),
         ]);
@@ -509,45 +542,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _sp02FormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: %',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_04.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.PERCENT,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_sp02FormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_04.name,
+                    (signals) => listSP02Signals = signals);
+                return true;
+              }
+            },
+            unit: Unit.PERCENT,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listSP02Signals),
         ]);
@@ -576,45 +617,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _bloolPressureFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      helperText: 'Đơn vị: mmHg',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_01.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.MMHG,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_bloolPressureFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_01.name,
+                    (signals) => listBloodPressureSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.MMHG,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listBloodPressureSignals),
         ]);
@@ -643,46 +692,53 @@ class _AddSignalPageState extends State<AddSignalPage> {
         ),
         childrenPadding: const EdgeInsets.only(left: 16, right: 16),
         children: [
-          Form(
-            key: _heartRateFormKey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      fillColor: Colors.grey.shade100,
-                      helperText: 'Đơn vị: lần/phút',
-                      helperStyle: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng điền vào chỗ trống';
-                      }
-                      return null;
-                    },
+          InputSignalForm(
+            onSubmitted: (value) async {
+              final result = await Provider.of<MedicalExamineProvider>(context,
+                      listen: false)
+                  .eitherFailureOrModifySignal(
+                      SignalEntity(
+                        status: SignalStatus.NEW,
+                        code: SignalType.SIG_02.name,
+                        value: value,
+                        valueString: "",
+                        unit: Unit.timePerMinute,
+                      ),
+                      args?.patient.encounter ?? 0,
+                      0,
+                      args?.division ?? 0);
+
+              if (result.runtimeType == Failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as Failure).errorMessage),
+                    backgroundColor: Colors.red,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (_heartRateFormKey.currentState!.validate()) {}
-                      },
-                      child: const Text('Lưu')),
-                )
-              ],
-            ),
+                );
+                return false;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((result as ResponseModel).message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh the list of signals
+                final provider =
+                    Provider.of<MedicalExamineProvider>(context, listen: false);
+                loadSignals(
+                    provider,
+                    args!.patient.encounter,
+                    SignalType.SIG_02.name,
+                    (signals) => listHeartRateSignals = signals);
+                return true;
+              }
+            },
+            unit: Unit.timePerMinute,
           ),
           SignalRow(
-              encounter: args.patient.encounter,
-              division: args.division,
+              encounter: args?.patient.encounter ?? 0,
+              division: args?.division ?? 0,
               request: 0,
               listSignals: listHeartRateSignals),
         ]);
