@@ -19,7 +19,9 @@ class RouteNames {
   static const String medialExamine = '/medial-examine';
   static const String addSignal = '/add-signal';
   static const String addStreatmentSheet = '/add-streatment-sheet';
+  static const String editStreatmentSheet = '/edit-streatment-sheet';
   static const String addCareSheet = '/add-care-sheet';
+  static const String editCareSheet = '/edit-care-sheet';
 }
 
 String kTemplate = 'template';

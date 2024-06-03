@@ -1,4 +1,6 @@
+import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
 
 class LoadSignalParams {
   final List<SignalParamItem> loadSignalParams;
@@ -98,5 +100,65 @@ class ModifySignalParams {
     required this.encounter,
     this.request,
     this.division,
+  });
+}
+
+class CreateStreatmentSheetParams {
+  final StreatmentSheetEntity data;
+  final String division;
+  final String token;
+  final String ip;
+  final String code;
+  const CreateStreatmentSheetParams({
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.data,
+    required this.division,
+  });
+}
+
+class EditStreatmentSheetParams {
+  final StreatmentSheetEntity data;
+  final int request;
+  final String token;
+  final String ip;
+  final String code;
+  const EditStreatmentSheetParams({
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.data,
+    required this.request,
+  });
+}
+
+class CreateCareSheetParams {
+  final CareSheetEntity data;
+  final String division;
+  final String token;
+  final String ip;
+  final String code;
+  const CreateCareSheetParams({
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.data,
+    required this.division,
+  });
+}
+
+class EditCareSheetParams {
+  final CareSheetEntity data;
+  final int request;
+  final String token;
+  final String ip;
+  final String code;
+  const EditCareSheetParams({
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.data,
+    required this.request,
   });
 }

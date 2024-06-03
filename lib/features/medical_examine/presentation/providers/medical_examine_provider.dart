@@ -8,6 +8,10 @@ import 'package:medical_examination_app/core/services/secure_storage_service.dar
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/cre_care_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/cre_streatment_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/edit_care_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/edit_streatment_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_care_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_signals_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_streatm_sheet_usecase.dart';
@@ -271,6 +275,200 @@ class MedicalExamineProvider extends ChangeNotifier {
         return newFailure; // return false in case of failure
       },
       (ResponseModel<String> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
+  }
+
+  dynamic eitherFailureOrCreStreatmentSheet(
+      StreatmentSheetEntity streatmentSheet, int division) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrCreStreatmentSheet =
+        await CreStreatmentSheetUsecase(medicalExamineRepository: repository)
+            .call(
+                createStreatmentSheetParams: CreateStreatmentSheetParams(
+      division: division.toString(),
+      token: await secureStorage.read(key: 'token') ?? '',
+      data: streatmentSheet,
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrCreStreatmentSheet.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
+  }
+
+  dynamic eitherFailureOrEditStreatmentSheet(
+      StreatmentSheetEntity streatmentSheet, int request) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrEditStreatmentSheet =
+        await EditStreatmentSheetUsecase(medicalExamineRepository: repository)
+            .call(
+                editStreatmentSheetParams: EditStreatmentSheetParams(
+      request: request,
+      token: await secureStorage.read(key: 'token') ?? '',
+      data: streatmentSheet,
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrEditStreatmentSheet.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String?> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
+  }
+
+  dynamic eitherFailureOrCreCareSheet(
+      CareSheetEntity streatmentSheet, int division) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrCreCareSheet =
+        await CreCareSheetUsecase(medicalExamineRepository: repository).call(
+            createCareSheetParams: CreateCareSheetParams(
+      division: division.toString(),
+      token: await secureStorage.read(key: 'token') ?? '',
+      data: streatmentSheet,
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrCreCareSheet.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
+  }
+
+  dynamic eitherFailureOrEditCareSheet(
+      CareSheetEntity careSheet, int request) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrEditCareSheet =
+        await EditCareSheetUsecase(medicalExamineRepository: repository).call(
+            editCareSheetParams: EditCareSheetParams(
+      request: request,
+      token: await secureStorage.read(key: 'token') ?? '',
+      data: careSheet,
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrEditCareSheet.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String?> response) {
         isLoading = false;
         // modifyResult = response.data;
         // code = response.code;

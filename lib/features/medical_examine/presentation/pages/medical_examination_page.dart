@@ -175,8 +175,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
             children: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed(RouteNames.addStreatmentSheet);
+                  Navigator.of(context).pushNamed(RouteNames.addCareSheet,
+                      arguments: PatientInfoArguments(
+                          patient: args.patient, division: args.division));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -231,7 +232,15 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.all(8),
                                           backgroundColor: Colors.blue),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, RouteNames.editCareSheet,
+                                            arguments:
+                                                ModifyMedicalSheetArguments<
+                                                        CareSheetEntity>(
+                                                    patientInfo: args,
+                                                    medicalSheet: careSheet));
+                                      },
                                       child: const Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -306,7 +315,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed(RouteNames.addCareSheet);
+                    Navigator.of(context).pushNamed(RouteNames.addCareSheet,
+                        arguments: PatientInfoArguments(
+                            patient: args.patient, division: args.division));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -351,8 +362,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
             children: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed(RouteNames.addStreatmentSheet);
+                  Navigator.of(context).pushNamed(RouteNames.addStreatmentSheet,
+                      arguments: PatientInfoArguments(
+                          patient: args.patient, division: args.division));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -407,7 +419,16 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.all(8),
                                           backgroundColor: Colors.blue),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.pushNamed(context,
+                                            RouteNames.editStreatmentSheet,
+                                            arguments:
+                                                ModifyMedicalSheetArguments<
+                                                        StreatmentSheetEntity>(
+                                                    patientInfo: args,
+                                                    medicalSheet:
+                                                        streatmentSheet));
+                                      },
                                       child: const Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -482,8 +503,10 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(RouteNames.addStreatmentSheet);
+                    Navigator.of(context).pushNamed(
+                        RouteNames.addStreatmentSheet,
+                        arguments: PatientInfoArguments(
+                            patient: args.patient, division: args.division));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -793,4 +816,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
           ]),
     );
   }
+}
+
+class ModifyMedicalSheetArguments<T> {
+  final PatientInfoArguments patientInfo;
+  final T medicalSheet;
+
+  ModifyMedicalSheetArguments(
+      {required this.patientInfo, required this.medicalSheet});
 }

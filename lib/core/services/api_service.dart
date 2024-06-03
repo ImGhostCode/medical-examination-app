@@ -15,6 +15,6 @@ class ApiService {
     _dio.options.connectTimeout =
         const Duration(milliseconds: 500); // Timeout sau 5 giây
     _dio.options.receiveTimeout =
-        const Duration(milliseconds: 10000); // Timeout nhận dữ liệu sau 3 giây
+        const Duration(milliseconds: 15000); // Timeout nhận dữ liệu sau 3 giây
   }
 }

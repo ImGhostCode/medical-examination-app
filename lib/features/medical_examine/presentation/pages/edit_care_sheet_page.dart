@@ -4,32 +4,40 @@ import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/errors/failure.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
-import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:provider/provider.dart';
 
-class AddStreatmentSheetPage extends StatefulWidget {
-  const AddStreatmentSheetPage({super.key});
+class EditCareSheetPage extends StatefulWidget {
+  const EditCareSheetPage({super.key});
 
   @override
-  State<AddStreatmentSheetPage> createState() => _AddStreatmentSheetPageState();
+  State<EditCareSheetPage> createState() => _EditCareSheetPageState();
 }
 
-class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
+class _EditCareSheetPageState extends State<EditCareSheetPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _deseaseProgressController =
       TextEditingController();
-  final TextEditingController _serviceIndicationController =
-      TextEditingController();
-  final TextEditingController _drugIndicationController =
-      TextEditingController();
-  late PatientInfoArguments args;
+  final TextEditingController _careOrderController = TextEditingController();
+
+  late ModifyMedicalSheetArguments args;
 
   @override
   void initState() {
-    // Provider.of<CategoryProvider>(context, listen: false)
-    //     .eitherFailureOrGetSubclicServices('subclinic');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      args = ModalRoute.of(context)!.settings.arguments
+          as ModifyMedicalSheetArguments;
+      _deseaseProgressController.text = args.medicalSheet.value!
+          .firstWhere((element) => element.code == VST.VST_0005.name)
+          .value
+          .first;
+      _careOrderController.text = args.medicalSheet.value!
+          .firstWhere((element) => element.code == VST.VST_0006.name)
+          .value
+          .first;
+    });
     super.initState();
   }
 
@@ -37,26 +45,24 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
     if (_formKey.currentState!.validate()) {
       final result =
           await Provider.of<MedicalExamineProvider>(context, listen: false)
-              .eitherFailureOrCreStreatmentSheet(
-                  StreatmentSheetEntity(
-                      type: OET.OET_001.name,
-                      encounter: args.patient.encounter,
-                      subject: args.patient.subject,
+              .eitherFailureOrEditCareSheet(
+                  CareSheetEntity(
+                      id: args.medicalSheet.id,
+                      type: OET.OET_002.name,
+                      encounter: args.patientInfo.patient.encounter,
+                      subject: args.patientInfo.patient.subject,
                       doctor: Provider.of<AuthProvider>(context, listen: false)
                           .userEntity!
                           .id,
                       value: [
-                        StreatmentSheetItemEntity(
-                            code: VST.VST_0001.name,
+                        CareSheetItemEntity(
+                            code: VST.VST_0005.name,
                             value: [_deseaseProgressController.text]),
-                        StreatmentSheetItemEntity(
-                            code: VST.VST_0002.name,
-                            value: [_serviceIndicationController.text]),
-                        StreatmentSheetItemEntity(
-                            code: VST.VST_0003.name,
-                            value: [_drugIndicationController.text]),
+                        CareSheetItemEntity(
+                            code: VST.VST_0006.name,
+                            value: [_careOrderController.text]),
                       ]),
-                  args.division);
+                  29664);
 
       if (result.runtimeType == Failure) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,13 +85,11 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
 
   @override
   Widget build(BuildContext context) {
-    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Tờ điều trị',
+          'Chỉnh sửa tờ chăm sóc',
           textAlign: TextAlign.center,
         ),
         leading: IconButton(
@@ -106,24 +110,23 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const LabelTextField(label: 'Diễn biến bệnh'),
+                    const LabelTextField(label: 'Theo dõi diễn biến'),
                     const SizedBox(height: 5),
                     TextFormField(
                       controller: _deseaseProgressController,
                       maxLines: 5,
                       decoration: InputDecoration(
-                        // hintText: 'Nhập diễn biến bệnh',
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            // Add your microphone button functionality here
-                          },
+                          // hintText: 'Nhập diễn biến bệnh',
+                          suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.mic,
+                          color: Colors.blue,
+                          size: 30,
                         ),
-                      ),
+                        onPressed: () {
+                          // Edit your microphone button functionality here
+                        },
+                      )),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Vui lòng điền vào chỗ trống';
@@ -132,24 +135,24 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                       },
                     ),
                     const SizedBox(height: 8),
-                    const LabelTextField(label: 'Chỉ định dịch vụ'),
+                    const LabelTextField(label: 'Y lệnh chăm sóc'),
                     const SizedBox(height: 5),
                     TextFormField(
-                      controller: _serviceIndicationController,
+                      controller: _careOrderController,
                       maxLines: 5,
                       decoration: InputDecoration(
-                        // hintText: 'Nhập diễn biến bệnh',
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            // Add your microphone button functionality here
-                          },
+                          // hintText: 'Nhập diễn biến bệnh',
+                          suffixIcon: IconButton(
+                        alignment: Alignment.bottomRight,
+                        icon: const Icon(
+                          Icons.mic,
+                          color: Colors.blue,
+                          size: 30,
                         ),
-                      ),
+                        onPressed: () {
+                          // Edit your microphone button functionality here
+                        },
+                      )),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Vui lòng điền vào chỗ trống';
@@ -157,33 +160,6 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 8),
-                    const LabelTextField(label: 'Chỉ định thuốc'),
-                    const SizedBox(height: 5),
-                    TextFormField(
-                      controller: _drugIndicationController,
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        // hintText: 'Nhập diễn biến bệnh',
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            // Add your microphone button functionality here
-                          },
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng điền vào chỗ trống';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -198,18 +174,10 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                         side:
                             BorderSide(color: Colors.grey.shade300, width: 1.5),
                       ),
-                      onPressed: Provider.of<MedicalExamineProvider>(context,
-                                  listen: true)
-                              .isLoading
-                          ? null
-                          : () async {
-                              saveData(() {
-                                _deseaseProgressController.clear();
-                                _serviceIndicationController.clear();
-                                _drugIndicationController.clear();
-                              });
-                            },
-                      child: const Text('Tiếp tục nhập'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Hủy bỏ'),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -224,7 +192,7 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                                 Navigator.of(context).pop();
                               });
                             },
-                      child: const Text('Hoàn tất'),
+                      child: const Text('Lưu thay đổi'),
                     ),
                   ),
                 ],

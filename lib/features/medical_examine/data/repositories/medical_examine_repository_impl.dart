@@ -171,4 +171,119 @@ class MedicalExamineRepositoryImpl implements MedicalExamineRepository {
       // }
     }
   }
+
+  @override
+  Future<Either<Failure, ResponseModel<String>>> createStreatmentSheet(
+      {required CreateStreatmentSheetParams
+          createStreatmentSheetParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<String> remoteMedicalExamine =
+            await remoteDataSource.creStreatmentSheet(
+                createStreatmentSheetParams: createStreatmentSheetParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<String>>> createCareSheet(
+      {required CreateCareSheetParams createCareSheetParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<String> remoteMedicalExamine = await remoteDataSource
+            .creCareSheet(createCareSheetParams: createCareSheetParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<String?>>> editStreatmentSheet(
+      {required EditStreatmentSheetParams editStreatmentSheetParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<String?> remoteMedicalExamine =
+            await remoteDataSource.editStreatmentSheet(
+                editStreatmentSheetParams: editStreatmentSheetParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<String?>>> editCareSheet(
+      {required EditCareSheetParams editCareSheetParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<String?> remoteMedicalExamine = await remoteDataSource
+            .editCareSheet(editCareSheetParams: editCareSheetParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
 }

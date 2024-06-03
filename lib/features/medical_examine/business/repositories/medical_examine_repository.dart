@@ -16,12 +16,26 @@ abstract class MedicalExamineRepository {
   Future<Either<Failure, ResponseModel<String>>> modifySignal({
     required ModifySignalParams modifySignalParams,
   });
+
   Future<Either<Failure, ResponseModel<List<StreatmentSheetEntity>>>>
       getEnteredStreatmentSheets({
     required GetEnteredStreamentSheetParams getEnteredStreamentSheetParams,
   });
+  Future<Either<Failure, ResponseModel<String>>> createStreatmentSheet({
+    required CreateStreatmentSheetParams createStreatmentSheetParams,
+  });
+  Future<Either<Failure, ResponseModel<String?>>> editStreatmentSheet({
+    required EditStreatmentSheetParams editStreatmentSheetParams,
+  });
+
   Future<Either<Failure, ResponseModel<List<CareSheetEntity>>>>
       getEnteredCareSheets({
     required GetEnteredCareSheetParams getEnteredCareSheetParams,
+  });
+  Future<Either<Failure, ResponseModel<String>>> createCareSheet({
+    required CreateCareSheetParams createCareSheetParams,
+  });
+  Future<Either<Failure, ResponseModel<String?>>> editCareSheet({
+    required EditCareSheetParams editCareSheetParams,
   });
 }

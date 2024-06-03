@@ -16,10 +16,20 @@ abstract class MedicalExamineRemoteDataSource {
       {required ModifySignalParams modifySignalParams});
   Future<ResponseModel<List<SignalModel>>> getEnteredSignals(
       {required GetEnteredSignalParams getEnteredSignalParams});
+
   Future<ResponseModel<List<StreatmentSheetModel>>> getEnteredStreatmentSheets(
       {required GetEnteredStreamentSheetParams getEnteredStreamentSheetParams});
+  Future<ResponseModel<String>> creStreatmentSheet(
+      {required CreateStreatmentSheetParams createStreatmentSheetParams});
+  Future<ResponseModel<String?>> editStreatmentSheet(
+      {required EditStreatmentSheetParams editStreatmentSheetParams});
+
   Future<ResponseModel<List<CareSheetModel>>> getEnteredCareSheets(
       {required GetEnteredCareSheetParams getEnteredCareSheetParams});
+  Future<ResponseModel<String>> creCareSheet(
+      {required CreateCareSheetParams createCareSheetParams});
+  Future<ResponseModel<String?>> editCareSheet(
+      {required EditCareSheetParams editCareSheetParams});
 }
 
 class MedicalExamineRemoteDataSourceImpl
@@ -185,9 +195,9 @@ class MedicalExamineRemoteDataSourceImpl
             if (modifySignalParams.data.status == SignalStatus.CANCEL)
               "data": {
                 "type": modifySignalParams.data.status,
-                "code": modifySignalParams.data.id,
+                "code": modifySignalParams.data.code,
                 "seq": modifySignalParams.data.seq,
-                "encounter": modifySignalParams.encounter,
+                "encounter": modifySignalParams.encounter.toString(),
                 "note": modifySignalParams.data.note,
               },
             "token": modifySignalParams.token,
@@ -204,6 +214,181 @@ class MedicalExamineRemoteDataSourceImpl
       }
 
       return ResponseModel<String>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String>> creStreatmentSheet(
+      {required CreateStreatmentSheetParams
+          createStreatmentSheetParams}) async {
+    try {
+      final response = await dio.post('/medical/visit',
+          queryParameters: {},
+          data: {
+            "data": {
+              "type": OET.OET_001.name,
+              "encounter": createStreatmentSheetParams.data.encounter,
+              "subject": createStreatmentSheetParams.data.subject,
+              "division": createStreatmentSheetParams.division,
+              "doctor": createStreatmentSheetParams.data.doctor,
+              "items": createStreatmentSheetParams.data.value!.map((e) {
+                return {
+                  "code": e.code,
+                  "value": e.value,
+                };
+              }).toList(),
+            },
+            "token": createStreatmentSheetParams.token,
+            "ip": createStreatmentSheetParams.ip,
+            "code": createStreatmentSheetParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String>> creCareSheet(
+      {required CreateCareSheetParams createCareSheetParams}) async {
+    try {
+      final response = await dio.post('/medical/visit',
+          queryParameters: {},
+          data: {
+            "data": {
+              "type": createCareSheetParams.data.type,
+              "encounter": createCareSheetParams.data.encounter,
+              "subject": createCareSheetParams.data.subject,
+              "division": createCareSheetParams.division,
+              "doctor": createCareSheetParams.data.doctor,
+              "items": createCareSheetParams.data.value!.map((e) {
+                return {
+                  "code": e.code,
+                  "value": e.value,
+                };
+              }).toList(),
+            },
+            "token": createCareSheetParams.token,
+            "ip": createCareSheetParams.ip,
+            "code": createCareSheetParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String?>> editStreatmentSheet(
+      {required EditStreatmentSheetParams editStreatmentSheetParams}) async {
+    try {
+      final response = await dio.put('/medical/visit',
+          queryParameters: {},
+          data: {
+            "data": {
+              "id": editStreatmentSheetParams.data.id,
+              "encounter": editStreatmentSheetParams.data.encounter,
+              "subject": editStreatmentSheetParams.data.subject,
+              "type": editStreatmentSheetParams.data.type,
+              "request": editStreatmentSheetParams.request,
+              "doctor": editStreatmentSheetParams.data.doctor,
+              "items": editStreatmentSheetParams.data.value!.map((e) {
+                return {
+                  "code": e.code,
+                  "value": e.value,
+                };
+              }).toList(),
+            },
+            "token": editStreatmentSheetParams.token,
+            "ip": editStreatmentSheetParams.ip,
+            "code": editStreatmentSheetParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String?>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String?>> editCareSheet(
+      {required EditCareSheetParams editCareSheetParams}) async {
+    try {
+      final response = await dio.put('/medical/visit',
+          queryParameters: {},
+          data: {
+            "data": {
+              "id": editCareSheetParams.data.id,
+              "encounter": editCareSheetParams.data.encounter,
+              "subject": editCareSheetParams.data.subject,
+              "type": editCareSheetParams.data.type,
+              "request": editCareSheetParams.request,
+              "doctor": editCareSheetParams.data.doctor,
+              "items": editCareSheetParams.data.value!.map((e) {
+                return {
+                  "code": e.code,
+                  "value": e.value,
+                };
+              }).toList(),
+            },
+            "token": editCareSheetParams.token,
+            "ip": editCareSheetParams.ip,
+            "code": editCareSheetParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String?>.fromJson(
           json: response.data, fromJsonD: (json) => json);
     } on DioException catch (e) {
       throw ServerException(

@@ -5,18 +5,19 @@ import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/errors/failure.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
-import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:provider/provider.dart';
 
-class AddStreatmentSheetPage extends StatefulWidget {
-  const AddStreatmentSheetPage({super.key});
+class EditStreatmentSheetPage extends StatefulWidget {
+  const EditStreatmentSheetPage({super.key});
 
   @override
-  State<AddStreatmentSheetPage> createState() => _AddStreatmentSheetPageState();
+  State<EditStreatmentSheetPage> createState() =>
+      _EditStreatmentSheetPageState();
 }
 
-class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
+class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _deseaseProgressController =
       TextEditingController();
@@ -24,12 +25,26 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
       TextEditingController();
   final TextEditingController _drugIndicationController =
       TextEditingController();
-  late PatientInfoArguments args;
+  late ModifyMedicalSheetArguments args;
 
   @override
   void initState() {
-    // Provider.of<CategoryProvider>(context, listen: false)
-    //     .eitherFailureOrGetSubclicServices('subclinic');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      args = ModalRoute.of(context)!.settings.arguments
+          as ModifyMedicalSheetArguments;
+      _deseaseProgressController.text = args.medicalSheet.value!
+          .firstWhere((element) => element.code == VST.VST_0001.name)
+          .value
+          .first;
+      _serviceIndicationController.text = args.medicalSheet.value!
+          .firstWhere((element) => element.code == VST.VST_0002.name)
+          .value
+          .first;
+      _drugIndicationController.text = args.medicalSheet.value!
+          .firstWhere((element) => element.code == VST.VST_0003.name)
+          .value
+          .first;
+    });
     super.initState();
   }
 
@@ -37,11 +52,12 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
     if (_formKey.currentState!.validate()) {
       final result =
           await Provider.of<MedicalExamineProvider>(context, listen: false)
-              .eitherFailureOrCreStreatmentSheet(
+              .eitherFailureOrEditStreatmentSheet(
                   StreatmentSheetEntity(
+                      id: args.medicalSheet.id,
                       type: OET.OET_001.name,
-                      encounter: args.patient.encounter,
-                      subject: args.patient.subject,
+                      encounter: args.patientInfo.patient.encounter,
+                      subject: args.patientInfo.patient.subject,
                       doctor: Provider.of<AuthProvider>(context, listen: false)
                           .userEntity!
                           .id,
@@ -56,7 +72,7 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                             code: VST.VST_0003.name,
                             value: [_drugIndicationController.text]),
                       ]),
-                  args.division);
+                  1123734);
 
       if (result.runtimeType == Failure) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,13 +95,11 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
 
   @override
   Widget build(BuildContext context) {
-    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Tờ điều trị',
+          'Chỉnh sửa tờ điều trị',
           textAlign: TextAlign.center,
         ),
         leading: IconButton(
@@ -198,18 +212,10 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                         side:
                             BorderSide(color: Colors.grey.shade300, width: 1.5),
                       ),
-                      onPressed: Provider.of<MedicalExamineProvider>(context,
-                                  listen: true)
-                              .isLoading
-                          ? null
-                          : () async {
-                              saveData(() {
-                                _deseaseProgressController.clear();
-                                _serviceIndicationController.clear();
-                                _drugIndicationController.clear();
-                              });
-                            },
-                      child: const Text('Tiếp tục nhập'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Hủy bỏ'),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -224,7 +230,7 @@ class _AddStreatmentSheetPageState extends State<AddStreatmentSheetPage> {
                                 Navigator.of(context).pop();
                               });
                             },
-                      child: const Text('Hoàn tất'),
+                      child: const Text('Lưu thay đổi'),
                     ),
                   ),
                 ],

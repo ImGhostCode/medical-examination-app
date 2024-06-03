@@ -12,6 +12,8 @@ import 'package:medical_examination_app/features/home/presentation/pages/welcome
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_streatment_sheet_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_care_sheet_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
@@ -131,7 +133,10 @@ class MainApp extends StatelessWidget {
           RouteNames.addSignal: (context) => const AddSignalPage(),
           RouteNames.addStreatmentSheet: (context) =>
               const AddStreatmentSheetPage(),
+          RouteNames.editStreatmentSheet: (context) =>
+              const EditStreatmentSheetPage(),
           RouteNames.addCareSheet: (context) => const AddCareSheetPage(),
+          RouteNames.editCareSheet: (context) => const EditCareSheetPage(),
         },
       ),
     );

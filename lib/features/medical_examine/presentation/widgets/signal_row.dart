@@ -247,8 +247,21 @@ class _SignalRowState extends State<SignalRow> {
                           ? null
                           : () async {
                               if (modifyFormKey.currentState!.validate()) {
-                                final result =
-                                    await Provider.of<MedicalExamineProvider>(
+                                final result = isRemove
+                                    ? await Provider.of<MedicalExamineProvider>(
+                                            context,
+                                            listen: false)
+                                        .eitherFailureOrModifySignal(
+                                            SignalEntity(
+                                              status: SignalStatus.CANCEL,
+                                              seq: signal.seq,
+                                              code: signal.id!,
+                                              note: noteController.text,
+                                            ),
+                                            widget.encounter,
+                                            null,
+                                            null)
+                                    : await Provider.of<MedicalExamineProvider>(
                                             context,
                                             listen: false)
                                         .eitherFailureOrModifySignal(
