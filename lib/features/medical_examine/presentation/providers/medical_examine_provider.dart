@@ -16,6 +16,7 @@ import 'package:medical_examination_app/features/medical_examine/business/usecas
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_signals_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_streatm_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/modify_signal_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/publish_sheet_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -32,7 +33,6 @@ class MedicalExamineProvider extends ChangeNotifier {
   String type;
   String status;
   String message;
-  // String modifyResult;
 
   List<SignalEntity> listSignals;
   List<SignalEntity> listEnteredSignals;
@@ -107,7 +107,9 @@ class MedicalExamineProvider extends ChangeNotifier {
 
   Future<List<SignalEntity>> eitherFailureOrGetEnteredSignals(
       String type, String encounter) async {
-    listEnteredSignals = [];
+    if (type == 'all') {
+      listEnteredSignals = [];
+    }
     _isLoading = true;
     MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
       remoteDataSource: MedicalExamineRemoteDataSourceImpl(
@@ -130,6 +132,8 @@ class MedicalExamineProvider extends ChangeNotifier {
       token: await secureStorage.read(key: 'token') ?? '',
     ));
 
+    List<SignalEntity> temp = [];
+
     failureOrTemplate.fold(
       (Failure newFailure) {
         _isLoading = false;
@@ -139,7 +143,11 @@ class MedicalExamineProvider extends ChangeNotifier {
       },
       (ResponseModel<List<SignalEntity>> response) {
         _isLoading = false;
-        listEnteredSignals = response.data;
+        if (type == 'all') {
+          listEnteredSignals = response.data;
+        } else {
+          temp = response.data;
+        }
         code = response.code;
         type = response.type;
         status = response.status;
@@ -148,7 +156,7 @@ class MedicalExamineProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
-    return listEnteredSignals;
+    return temp;
   }
 
   void eitherFailureOrGetEnteredStreatSheets(
@@ -461,6 +469,56 @@ class MedicalExamineProvider extends ChangeNotifier {
     ));
 
     var result = failureOrEditCareSheet.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<String?> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
+  }
+
+  dynamic eitherFailureOrPublishSheet(
+      int encounter, String id, String type, int doctor) async {
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrPublishSheet =
+        await PublishSheetUsecase(medicalExamineRepository: repository).call(
+            publishMedicalSheetParams: PublishMedicalSheetParams(
+      encounter: encounter,
+      id: id,
+      type: type,
+      doctor: doctor,
+      token: await secureStorage.read(key: 'token') ?? '',
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrPublishSheet.fold(
       (Failure newFailure) {
         isLoading = false;
         // modifyResult = '';

@@ -30,6 +30,9 @@ abstract class MedicalExamineRemoteDataSource {
       {required CreateCareSheetParams createCareSheetParams});
   Future<ResponseModel<String?>> editCareSheet(
       {required EditCareSheetParams editCareSheetParams});
+
+  Future<ResponseModel<String?>> publishMedicalSheet(
+      {required PublishMedicalSheetParams publishMedicalSheetParams});
 }
 
 class MedicalExamineRemoteDataSourceImpl
@@ -378,6 +381,42 @@ class MedicalExamineRemoteDataSourceImpl
             "token": editCareSheetParams.token,
             "ip": editCareSheetParams.ip,
             "code": editCareSheetParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<String?>.fromJson(
+          json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<String?>> publishMedicalSheet(
+      {required PublishMedicalSheetParams publishMedicalSheetParams}) async {
+    try {
+      final response = await dio.put('/medical/visit/status',
+          queryParameters: {},
+          data: {
+            "data": {
+              "encounter": publishMedicalSheetParams.encounter,
+              "id": publishMedicalSheetParams.id,
+              "type": publishMedicalSheetParams.type,
+              "doctor": publishMedicalSheetParams.doctor,
+            },
+            "token": publishMedicalSheetParams.token,
+            "ip": publishMedicalSheetParams.ip,
+            "code": publishMedicalSheetParams.code
           },
           options: Options(headers: {}));
 

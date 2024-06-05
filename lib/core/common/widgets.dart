@@ -52,3 +52,47 @@ class SearchInputField extends StatelessWidget {
     );
   }
 }
+
+Future<void> showConfirmDialog(
+    BuildContext context, String message, Function callback) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext contextInner) {
+      return AlertDialog(
+        title: const Text('Xác nhận'),
+        content: Text(message),
+        actions: <Widget>[
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                  ),
+                  child: const Text('Hủy bỏ'),
+                  onPressed: () {
+                    Navigator.of(contextInner).pop();
+                  },
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text('Xác nhận'),
+                  onPressed: () async {
+                    await callback(contextInner);
+                    Navigator.of(contextInner).pop();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
+}

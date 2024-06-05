@@ -38,7 +38,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
   List<SignalEntity> listHeightSignals = [];
   List<SignalEntity> listWeightSignals = [];
   List<SignalEntity> listBloodTypeSignals = [];
-
+  late MedicalExamineProvider provider;
   void updateState() {
     if (mounted) {
       setState(() {});
@@ -50,40 +50,51 @@ class _AddSignalPageState extends State<AddSignalPage> {
     final signals = await provider.eitherFailureOrGetEnteredSignals(
         signalType, encounter.toString());
     setSignalList(signals);
-    updateState();
+    // updateState();
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-      final provider =
-          Provider.of<MedicalExamineProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // final encounter =
       //     ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
 
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_02.name,
-          (signals) => listHeartRateSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_01.name,
+      await loadSignals(provider, args!.patient.encounter,
+          SignalType.SIG_02.name, (signals) => listHeartRateSignals = signals);
+      await loadSignals(
+          provider,
+          args!.patient.encounter,
+          SignalType.SIG_01.name,
           (signals) => listBloodPressureSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_03.name,
+      await loadSignals(
+          provider,
+          args!.patient.encounter,
+          SignalType.SIG_03.name,
           (signals) => listTemperatureSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_04.name,
-          (signals) => listSP02Signals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_05.name,
+      await loadSignals(provider, args!.patient.encounter,
+          SignalType.SIG_04.name, (signals) => listSP02Signals = signals);
+      await loadSignals(
+          provider,
+          args!.patient.encounter,
+          SignalType.SIG_05.name,
           (signals) => listRespiratoryRateSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_08.name,
-          (signals) => listHeightSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_06.name,
-          (signals) => listWeightSignals = signals);
-      loadSignals(provider, args!.patient.encounter, SignalType.SIG_10.name,
-          (signals) => listBloodTypeSignals = signals);
+      await loadSignals(provider, args!.patient.encounter,
+          SignalType.SIG_08.name, (signals) => listHeightSignals = signals);
+      await loadSignals(provider, args!.patient.encounter,
+          SignalType.SIG_06.name, (signals) => listWeightSignals = signals);
+      await loadSignals(provider, args!.patient.encounter,
+          SignalType.SIG_10.name, (signals) => listBloodTypeSignals = signals);
+
+      updateState();
     });
+
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
+    args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
+    provider = Provider.of<MedicalExamineProvider>(context, listen: false);
     super.didChangeDependencies();
   }
 
@@ -133,9 +144,17 @@ class _AddSignalPageState extends State<AddSignalPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: Provider.of<MedicalExamineProvider>(context,
+                              listen: true)
+                          .isLoading
+                      ? null
+                      : () {
+                          Provider.of<MedicalExamineProvider>(context,
+                                  listen: false)
+                              .eitherFailureOrGetEnteredSignals(
+                                  'all', args!.patient.encounter.toString());
+                          Navigator.of(context).pop();
+                        },
                   child: const Text('Hoàn tất'),
                 ),
               )
@@ -200,22 +219,31 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_10.name,
-                    (signals) => listBloodTypeSignals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_10.name,
+                    (signals) {
+                  listBloodTypeSignals = signals;
+                  updateState();
+                });
               }
             },
           ),
           const SizedBox(height: 16),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listBloodTypeSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listBloodTypeSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_10.name,
+                  (signals) {
+                listBloodTypeSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -274,23 +302,32 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_06.name,
-                    (signals) => listWeightSignals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_06.name,
+                    (signals) {
+                  listWeightSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.KG,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listWeightSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listWeightSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_06.name,
+                  (signals) {
+                listWeightSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -349,23 +386,32 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_08.name,
-                    (signals) => listHeightSignals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_08.name,
+                    (signals) {
+                  listHeightSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.CM,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listHeightSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listHeightSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_08.name,
+                  (signals) {
+                listHeightSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -424,23 +470,32 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_05.name,
-                    (signals) => listRespiratoryRateSignals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_05.name,
+                    (signals) {
+                  listRespiratoryRateSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.timePerMinute,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listRespiratoryRateSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listRespiratoryRateSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_05.name,
+                  (signals) {
+                listRespiratoryRateSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -499,23 +554,31 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_03.name,
-                    (signals) => listTemperatureSignals = signals);
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_03.name,
+                    (signals) {
+                  listTemperatureSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.CELSIUS,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listTemperatureSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listTemperatureSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_03.name,
+                  (signals) {
+                listTemperatureSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -574,23 +637,32 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_04.name,
-                    (signals) => listSP02Signals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_04.name,
+                    (signals) {
+                  listSP02Signals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.PERCENT,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listSP02Signals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listSP02Signals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_04.name,
+                  (signals) {
+                listSP02Signals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -649,23 +721,31 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_01.name,
-                    (signals) => listBloodPressureSignals = signals);
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_01.name,
+                    (signals) {
+                  listBloodPressureSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.MMHG,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listBloodPressureSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listBloodPressureSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_01.name,
+                  (signals) {
+                listBloodPressureSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 
@@ -724,23 +804,32 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-                final provider =
-                    Provider.of<MedicalExamineProvider>(context, listen: false);
-                loadSignals(
-                    provider,
-                    args!.patient.encounter,
-                    SignalType.SIG_02.name,
-                    (signals) => listHeartRateSignals = signals);
+
+                await loadSignals(
+                    provider, args!.patient.encounter, SignalType.SIG_02.name,
+                    (signals) {
+                  listHeartRateSignals = signals;
+                  updateState();
+                });
                 return true;
               }
             },
             unit: Unit.timePerMinute,
           ),
           SignalRow(
-              encounter: args?.patient.encounter ?? 0,
-              division: args?.division ?? 0,
-              request: 0,
-              listSignals: listHeartRateSignals),
+            encounter: args?.patient.encounter ?? 0,
+            division: args?.division ?? 0,
+            request: 0,
+            listSignals: listHeartRateSignals,
+            onRefresh: () async {
+              await loadSignals(
+                  provider, args!.patient.encounter, SignalType.SIG_02.name,
+                  (signals) {
+                listHeartRateSignals = signals;
+                updateState();
+              });
+            },
+          ),
         ]);
   }
 }

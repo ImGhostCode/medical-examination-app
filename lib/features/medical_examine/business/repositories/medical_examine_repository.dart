@@ -7,6 +7,7 @@ import 'package:medical_examination_app/features/medical_examine/business/entiti
 import '../../../../../core/errors/failure.dart';
 
 abstract class MedicalExamineRepository {
+  // Sinh hiệu
   Future<Either<Failure, ResponseModel<List<SignalEntity>>>> loadSignals({
     required LoadSignalParams loadSignalParams,
   });
@@ -17,6 +18,7 @@ abstract class MedicalExamineRepository {
     required ModifySignalParams modifySignalParams,
   });
 
+// Tờ điều trị
   Future<Either<Failure, ResponseModel<List<StreatmentSheetEntity>>>>
       getEnteredStreatmentSheets({
     required GetEnteredStreamentSheetParams getEnteredStreamentSheetParams,
@@ -28,6 +30,7 @@ abstract class MedicalExamineRepository {
     required EditStreatmentSheetParams editStreatmentSheetParams,
   });
 
+// Tờ chăm sóc
   Future<Either<Failure, ResponseModel<List<CareSheetEntity>>>>
       getEnteredCareSheets({
     required GetEnteredCareSheetParams getEnteredCareSheetParams,
@@ -37,5 +40,9 @@ abstract class MedicalExamineRepository {
   });
   Future<Either<Failure, ResponseModel<String?>>> editCareSheet({
     required EditCareSheetParams editCareSheetParams,
+  });
+// Ban hành
+  Future<Either<Failure, ResponseModel<String?>>> publishMedicalSheet({
+    required PublishMedicalSheetParams publishMedicalSheetParams,
   });
 }

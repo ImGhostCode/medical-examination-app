@@ -14,12 +14,14 @@ class SignalRow extends StatefulWidget {
     required this.encounter,
     required this.request,
     required this.division,
+    required this.onRefresh,
   });
 
   final List<SignalEntity> listSignals;
   final int encounter;
   final int request;
   final int division;
+  final VoidCallback onRefresh;
 
   @override
   State<SignalRow> createState() => _SignalRowState();
@@ -299,6 +301,7 @@ class _SignalRowState extends State<SignalRow> {
                                       backgroundColor: Colors.green,
                                     ),
                                   );
+                                  widget.onRefresh();
                                   Navigator.of(context).pop();
                                 }
                               }

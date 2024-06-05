@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/errors/failure.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
@@ -35,21 +38,23 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<MedicalExamineProvider>(context, listen: false)
+          .eitherFailureOrGetEnteredSignals(
+              'all', args.patient.encounter.toString());
+      Provider.of<MedicalExamineProvider>(context, listen: false)
+          .eitherFailureOrGetEnteredStreatSheets(
+              OET.OET_001.name, args.patient.encounter.toString());
+      Provider.of<MedicalExamineProvider>(context, listen: false)
+          .eitherFailureOrGetEnteredCareSheets(
+              OET.OET_002.name, args.patient.encounter.toString());
+    });
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
     args = ModalRoute.of(context)!.settings.arguments as PatientInfoArguments;
-    Provider.of<MedicalExamineProvider>(context, listen: false)
-        .eitherFailureOrGetEnteredSignals(
-            'all', args.patient.encounter.toString());
-    Provider.of<MedicalExamineProvider>(context, listen: false)
-        .eitherFailureOrGetEnteredStreatSheets(
-            OET.OET_001.name, args.patient.encounter.toString());
-    Provider.of<MedicalExamineProvider>(context, listen: false)
-        .eitherFailureOrGetEnteredCareSheets(
-            OET.OET_002.name, args.patient.encounter.toString());
     super.didChangeDependencies();
   }
 
@@ -131,6 +136,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     ),
                   ],
                 ),
+                margin: EdgeInsets.zero,
                 steps: <Step>[
                   _buildInputSignalStep(context),
                   _buildInputStreatmentSheetStep(context),
@@ -142,7 +148,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                   child: const Text('Hoàn tất'),
                 ),
               ),
@@ -221,44 +229,119 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Tờ chăm sóc số ${index + 1}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontWeight: FontWeight.bold)),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  careSheet.status == OETTYPE.draft.name
+                                      ? const Tooltip(
+                                          triggerMode: TooltipTriggerMode.tap,
+                                          message: "Bản nháp",
+                                          child: Icon(FontAwesomeIcons.file,
+                                              color: Colors.amber),
+                                        )
+                                      : const Tooltip(
+                                          triggerMode: TooltipTriggerMode.tap,
+                                          message: "Đã ban hành",
+                                          child: Icon(Icons.verified_outlined,
+                                              color: Colors.green),
+                                        ),
+                                  const SizedBox(width: 4),
+                                  Text('Tờ số ${index + 1}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold)),
+                                ],
+                              ),
                               Row(
                                 children: [
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(8),
-                                          backgroundColor: Colors.blue),
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, RouteNames.editCareSheet,
-                                            arguments:
-                                                ModifyMedicalSheetArguments<
-                                                        CareSheetEntity>(
-                                                    patientInfo: args,
-                                                    medicalSheet: careSheet));
-                                      },
-                                      child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.edit_outlined),
-                                            Text('Chỉnh sửa')
-                                          ])),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(8),
-                                          backgroundColor: Colors.red),
-                                      onPressed: () {},
-                                      child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.close_rounded),
-                                            Text('Xóa')
-                                          ])),
+                                  if (careSheet.status == OETTYPE.draft.name)
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.all(8),
+                                            backgroundColor: Colors.blue),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, RouteNames.editCareSheet,
+                                              arguments:
+                                                  ModifyMedicalSheetArguments<
+                                                          CareSheetEntity>(
+                                                      patientInfo: args,
+                                                      medicalSheet: careSheet));
+                                        },
+                                        child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.edit_outlined),
+                                              Text('Chỉnh sửa')
+                                            ])),
+                                  if (careSheet.status == OETTYPE.draft.name)
+                                    const SizedBox(width: 8),
+                                  if (careSheet.status == OETTYPE.draft.name)
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.all(8),
+                                            backgroundColor: Colors.green),
+                                        onPressed: () async {
+                                          await showConfirmDialog(
+                                            context,
+                                            'Bạn có chắc chắn muốn ban hành tờ chăm sóc này không?',
+                                            (BuildContext contextInner) async {
+                                              final result = await Provider.of<
+                                                          MedicalExamineProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .eitherFailureOrPublishSheet(
+                                                      careSheet.encounter!,
+                                                      careSheet.id!,
+                                                      OETTYPE.publish.name,
+                                                      args.patient.encounter);
+
+                                              if (result.runtimeType ==
+                                                  Failure) {
+                                                ScaffoldMessenger.of(
+                                                        contextInner)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        (result as Failure)
+                                                            .errorMessage),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                        contextInner)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text((result
+                                                            as ResponseModel)
+                                                        .message),
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                  ),
+                                                );
+                                                Provider.of<MedicalExamineProvider>(
+                                                        contextInner,
+                                                        listen: false)
+                                                    .eitherFailureOrGetEnteredCareSheets(
+                                                        OET.OET_002.name,
+                                                        args.patient.encounter
+                                                            .toString());
+                                              }
+                                            },
+                                          );
+                                        },
+                                        child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.verified_outlined),
+                                              SizedBox(
+                                                width: 4,
+                                              ),
+                                              Text('Ban hành')
+                                            ])),
                                 ],
                               )
                             ],
@@ -270,7 +353,8 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                 horizontal: 16, vertical: 16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey),
+                              border: Border.all(
+                                  color: Colors.grey.shade300, width: 1.5),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,45 +492,124 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Tờ điều trị số ${index + 1}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontWeight: FontWeight.bold)),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  streatmentSheet.status == OETTYPE.draft.name
+                                      ? const Tooltip(
+                                          triggerMode: TooltipTriggerMode.tap,
+                                          message: "Bản nháp",
+                                          child: Icon(FontAwesomeIcons.file,
+                                              color: Colors.amber),
+                                        )
+                                      : const Tooltip(
+                                          triggerMode: TooltipTriggerMode.tap,
+                                          message: "Đã ban hành",
+                                          child: Icon(Icons.verified_outlined,
+                                              color: Colors.green),
+                                        ),
+                                  const SizedBox(width: 4),
+                                  Text('Tờ số ${index + 1}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold)),
+                                ],
+                              ),
                               Row(
                                 children: [
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(8),
-                                          backgroundColor: Colors.blue),
-                                      onPressed: () {
-                                        Navigator.pushNamed(context,
-                                            RouteNames.editStreatmentSheet,
-                                            arguments:
-                                                ModifyMedicalSheetArguments<
-                                                        StreatmentSheetEntity>(
-                                                    patientInfo: args,
-                                                    medicalSheet:
-                                                        streatmentSheet));
-                                      },
-                                      child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.edit_outlined),
-                                            Text('Chỉnh sửa')
-                                          ])),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(8),
-                                          backgroundColor: Colors.red),
-                                      onPressed: () {},
-                                      child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.close_rounded),
-                                            Text('Xóa')
-                                          ])),
+                                  if (streatmentSheet.status ==
+                                      OETTYPE.draft.name)
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.all(8),
+                                            backgroundColor: Colors.blue),
+                                        onPressed: () {
+                                          Navigator.pushNamed(context,
+                                              RouteNames.editStreatmentSheet,
+                                              arguments:
+                                                  ModifyMedicalSheetArguments<
+                                                          StreatmentSheetEntity>(
+                                                      patientInfo: args,
+                                                      medicalSheet:
+                                                          streatmentSheet));
+                                        },
+                                        child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.edit_outlined),
+                                              Text('Chỉnh sửa')
+                                            ])),
+                                  if (streatmentSheet.status ==
+                                      OETTYPE.draft.name)
+                                    const SizedBox(width: 8),
+                                  if (streatmentSheet.status ==
+                                      OETTYPE.draft.name)
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.all(8),
+                                            backgroundColor: Colors.green),
+                                        onPressed: () async {
+                                          await showConfirmDialog(
+                                            context,
+                                            'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
+                                            (BuildContext contextInner) async {
+                                              final result = await Provider.of<
+                                                          MedicalExamineProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .eitherFailureOrPublishSheet(
+                                                      streatmentSheet
+                                                          .encounter!,
+                                                      streatmentSheet.id!,
+                                                      OETTYPE.publish.name,
+                                                      args.patient.encounter);
+
+                                              if (result.runtimeType ==
+                                                  Failure) {
+                                                ScaffoldMessenger.of(
+                                                        contextInner)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        (result as Failure)
+                                                            .errorMessage),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                        contextInner)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text((result
+                                                            as ResponseModel)
+                                                        .message),
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                  ),
+                                                );
+                                                Provider.of<MedicalExamineProvider>(
+                                                        contextInner,
+                                                        listen: false)
+                                                    .eitherFailureOrGetEnteredStreatSheets(
+                                                        OET.OET_001.name,
+                                                        args.patient.encounter
+                                                            .toString());
+                                              }
+                                            },
+                                          );
+                                        },
+                                        child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.verified_outlined),
+                                              SizedBox(
+                                                width: 4,
+                                              ),
+                                              Text('Ban hành')
+                                            ])),
                                 ],
                               )
                             ],
@@ -458,7 +621,8 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                 horizontal: 16, vertical: 16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey),
+                              border: Border.all(
+                                  color: Colors.grey.shade300, width: 1.5),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

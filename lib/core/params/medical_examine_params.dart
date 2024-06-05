@@ -162,3 +162,22 @@ class EditCareSheetParams {
     required this.request,
   });
 }
+
+class PublishMedicalSheetParams {
+  final int encounter;
+  final String id;
+  final String type;
+  final int doctor;
+  final String token;
+  final String ip;
+  final String code;
+  const PublishMedicalSheetParams({
+    required this.token,
+    required this.ip,
+    required this.code,
+    required this.encounter,
+    required this.id,
+    required this.type,
+    required this.doctor,
+  });
+}
