@@ -14,6 +14,7 @@ import '../../business/usecases/get_patient_in_room_usecase.dart';
 import '../../data/datasources/patient_local_data_source.dart';
 import '../../data/datasources/patient_remote_data_source.dart';
 import '../../data/repositories/patient_repository_impl.dart';
+import 'package:tiengviet/tiengviet.dart';
 
 final FlutterSecureStorage secureStorage = SecureStorageService.secureStorage;
 
@@ -96,13 +97,11 @@ class PatientProvider extends ChangeNotifier {
   }
 
   void searchPatientInRoom(String key) async {
-    print(key);
+    key = TiengViet.parse(key);
     listRenderPatientInRoom = listPatientInRoom
-        .where(
-            (element) => element.name.toLowerCase().contains(key.toLowerCase())
-            // ||
-            // element.subject.toString().contains(key)
-            )
+        .where((element) => (TiengViet.parse(element.name.toLowerCase())
+                .contains(key.toLowerCase()) ||
+            element.subject.toString().contains(key)))
         .toList();
     notifyListeners();
   }

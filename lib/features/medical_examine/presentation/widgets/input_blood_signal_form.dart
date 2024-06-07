@@ -41,9 +41,7 @@ class _InputBloodTypeFormState extends State<InputBloodTypeForm> {
                           child: Text(e),
                         ))
                     .toList(),
-                onTap: () {
-                  print('object');
-                },
+                onTap: () {},
                 onChanged: (value) {
                   setState(() {
                     bloodType = value.toString();

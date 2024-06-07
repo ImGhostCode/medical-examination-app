@@ -112,7 +112,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         if (_index > 0)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey.shade400,
+                                backgroundColor: Colors.grey,
                                 padding: const EdgeInsets.all(12)),
                             onPressed: details.onStepCancel,
                             child: const Text('Quay lại'),
@@ -367,7 +367,13 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            '${codeToItemStreatmentSheet(careSheet.value![index1].code)}:'),
+                                          '${codeToItemStreatmentSheet(careSheet.value![index1].code)}:',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
                                         const SizedBox(height: 4),
                                         ListView(
                                           padding: const EdgeInsets.symmetric(
@@ -380,7 +386,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                                 careSheet.value![index1].value
                                                     .length, (index2) {
                                               return Text(
-                                                  '${index2 + 1}. ${careSheet.value![index1].value[index2]}');
+                                                  '- ${careSheet.value![index1].value[index2]}');
                                             })
                                           ],
                                         ),
@@ -635,7 +641,13 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            '${codeToItemStreatmentSheet(streatmentSheet.value![index1].code)}:'),
+                                          '${codeToItemStreatmentSheet(streatmentSheet.value![index1].code)}:',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
                                         const SizedBox(height: 4),
                                         ListView(
                                           padding: const EdgeInsets.symmetric(
@@ -648,7 +660,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                                 streatmentSheet.value![index1]
                                                     .value.length, (index2) {
                                               return Text(
-                                                  '${index2 + 1}. ${streatmentSheet.value![index1].value[index2]}');
+                                                  '- ${streatmentSheet.value![index1].value[index2]}');
                                             })
                                           ],
                                         ),
@@ -729,29 +741,6 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
           );
         }
         if (value.listEnteredSignals.isEmpty) {
-          // return Row(
-          //   mainAxisAlignment: MainAxisAlignment.start,
-          //   children: [
-          //     TextButton(
-          //       onPressed: () {
-          //         Navigator.of(context)
-          //             .pushNamed(RouteNames.addStreatmentSheet);
-          //       },
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.start,
-          //         mainAxisSize: MainAxisSize.min,
-          //         children: [
-          //           const Icon(Icons.add_rounded, color: Colors.blue),
-          //           Text('Thêm sinh hiệu mới',
-          //               style: Theme.of(context)
-          //                   .textTheme
-          //                   .bodyMedium!
-          //                   .copyWith(color: Colors.blue)),
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // );
           return const Center(
             child: Text('Chưa có dữ liệu'),
           );

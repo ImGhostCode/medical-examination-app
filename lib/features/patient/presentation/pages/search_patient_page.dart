@@ -201,8 +201,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            patientProvider
-                                                .listPatientInRoom[index].name,
+                                            listRenderPatient[index].name,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!

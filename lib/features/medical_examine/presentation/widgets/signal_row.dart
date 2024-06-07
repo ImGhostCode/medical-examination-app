@@ -43,13 +43,25 @@ class _SignalRowState extends State<SignalRow> {
               Text(
                   '${widget.listSignals[index].valueString} ${widget.listSignals[index].unit}'),
               const SizedBox(width: 5),
-              Text(
-                '(${SignalStatus.convert(widget.listSignals[index].status!)})',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(color: Colors.grey),
-              ),
+              if (widget.listSignals[index].status! == SignalStatus.CANCEL)
+                Text(
+                  '(${SignalStatus.convert(widget.listSignals[index].status!)})',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(color: Colors.grey),
+                ),
+              if (widget.listSignals[index].status! == SignalStatus.CANCEL)
+                const SizedBox(width: 5),
+              if (widget.listSignals[index].status! == SignalStatus.CANCEL)
+                Tooltip(
+                  triggerMode: TooltipTriggerMode.tap,
+                  message: widget.listSignals[index].note,
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.blue,
+                  ),
+                )
             ],
           ),
           titleTextStyle: Theme.of(context)
@@ -92,7 +104,7 @@ class _SignalRowState extends State<SignalRow> {
                           );
                         },
                         icon: const Icon(
-                          Icons.delete_rounded,
+                          Icons.cancel_rounded,
                           color: Colors.red,
                         )),
                   ],
@@ -229,7 +241,7 @@ class _SignalRowState extends State<SignalRow> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade400,
+                        backgroundColor: Colors.grey,
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();

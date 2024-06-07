@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Medical Examination App needs access to your microphone to record your voice</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Medical Examination App needs access to your microphone to record your voice</string>
 </dict>
 </plist>

@@ -3,11 +3,14 @@ import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/errors/failure.dart';
+import 'package:medical_examination_app/core/services/stt_service.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/widgets/dialog_record.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class EditStreatmentSheetPage extends StatefulWidget {
   const EditStreatmentSheetPage({super.key});
@@ -26,6 +29,9 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
   final TextEditingController _drugIndicationController =
       TextEditingController();
   late ModifyMedicalSheetArguments args;
+  final SpeechToText _speechToText = STTService.speechToText;
+  final bool _speechEnabled = STTService.speechEnabled;
+  final LocaleName selectedLocale = STTService.getLocale('vi_VN');
 
   @override
   void initState() {
@@ -128,13 +134,22 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
                       decoration: InputDecoration(
                         // hintText: 'Nhập diễn biến bệnh',
                         suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
+                          icon: Icon(
+                            _speechEnabled
+                                ? Icons.mic_rounded
+                                : Icons.mic_off_rounded,
                             color: Colors.blue,
                             size: 30,
                           ),
                           onPressed: () {
-                            // Add your microphone button functionality here
+                            dialogRecordBuilder(
+                                    context, _speechToText, selectedLocale)
+                                .then((value) {
+                              if (value != null) {
+                                _deseaseProgressController.text +=
+                                    value.toString();
+                              }
+                            });
                           },
                         ),
                       ),
@@ -154,13 +169,22 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
                       decoration: InputDecoration(
                         // hintText: 'Nhập diễn biến bệnh',
                         suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
+                          icon: Icon(
+                            _speechEnabled
+                                ? Icons.mic_rounded
+                                : Icons.mic_off_rounded,
                             color: Colors.blue,
                             size: 30,
                           ),
                           onPressed: () {
-                            // Add your microphone button functionality here
+                            dialogRecordBuilder(
+                                    context, _speechToText, selectedLocale)
+                                .then((value) {
+                              if (value != null) {
+                                _serviceIndicationController.text +=
+                                    value.toString();
+                              }
+                            });
                           },
                         ),
                       ),
@@ -180,13 +204,22 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
                       decoration: InputDecoration(
                         // hintText: 'Nhập diễn biến bệnh',
                         suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.mic,
+                          icon: Icon(
+                            _speechEnabled
+                                ? Icons.mic_rounded
+                                : Icons.mic_off_rounded,
                             color: Colors.blue,
                             size: 30,
                           ),
                           onPressed: () {
-                            // Add your microphone button functionality here
+                            dialogRecordBuilder(
+                                    context, _speechToText, selectedLocale)
+                                .then((value) {
+                              if (value != null) {
+                                _drugIndicationController.text +=
+                                    value.toString();
+                              }
+                            });
                           },
                         ),
                       ),
@@ -227,6 +260,12 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
                           ? null
                           : () async {
                               saveData(() {
+                                Provider.of<MedicalExamineProvider>(context,
+                                        listen: false)
+                                    .eitherFailureOrGetEnteredStreatSheets(
+                                        OET.OET_001.name,
+                                        args.patientInfo.patient.encounter
+                                            .toString());
                                 Navigator.of(context).pop();
                               });
                             },

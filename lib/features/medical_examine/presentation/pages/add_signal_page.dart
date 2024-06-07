@@ -29,6 +29,8 @@ class _AddSignalPageState extends State<AddSignalPage> {
   bool _weightExpanded = true;
   bool _bloodTypeExpanded = true;
   PatientInfoArguments? args;
+  bool isLoadingPage = true;
+  bool isEdited = false;
 
   List<SignalEntity> listHeartRateSignals = [];
   List<SignalEntity> listBloodPressureSignals = [];
@@ -85,6 +87,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
       await loadSignals(provider, args!.patient.encounter,
           SignalType.SIG_10.name, (signals) => listBloodTypeSignals = signals);
 
+      isLoadingPage = false;
       updateState();
     });
 
@@ -119,49 +122,65 @@ class _AddSignalPageState extends State<AddSignalPage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeartRate(context),
-              const SizedBox(height: 16),
-              _buildBloodPressure(context),
-              const SizedBox(height: 16),
-              _buildSP02(context),
-              const SizedBox(height: 16),
-              _buildTemperature(context),
-              const SizedBox(height: 16),
-              _buildRespiratory(context),
-              const SizedBox(height: 16),
-              _buildHeight(context),
-              const SizedBox(height: 16),
-              _buildWeight(context),
-              const SizedBox(height: 16),
-              _buildBloodType(context),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: Provider.of<MedicalExamineProvider>(context,
-                              listen: true)
-                          .isLoading
-                      ? null
-                      : () {
-                          Provider.of<MedicalExamineProvider>(context,
-                                  listen: false)
-                              .eitherFailureOrGetEnteredSignals(
-                                  'all', args!.patient.encounter.toString());
-                          Navigator.of(context).pop();
-                        },
-                  child: const Text('Hoàn tất'),
+      body: isLoadingPage
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : PopScope(
+              onPopInvoked: (didPop) {
+                if (isEdited) {
+                  Provider.of<MedicalExamineProvider>(context, listen: false)
+                      .eitherFailureOrGetEnteredSignals(
+                          'all', args!.patient.encounter.toString());
+                }
+                if (didPop) {
+                  return;
+                }
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeartRate(context),
+                      const SizedBox(height: 16),
+                      _buildBloodPressure(context),
+                      const SizedBox(height: 16),
+                      _buildSP02(context),
+                      const SizedBox(height: 16),
+                      _buildTemperature(context),
+                      const SizedBox(height: 16),
+                      _buildRespiratory(context),
+                      const SizedBox(height: 16),
+                      _buildHeight(context),
+                      const SizedBox(height: 16),
+                      _buildWeight(context),
+                      const SizedBox(height: 16),
+                      _buildBloodType(context),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: Provider.of<MedicalExamineProvider>(
+                                      context,
+                                      listen: true)
+                                  .isLoading
+                              ? null
+                              : () {
+                                  Navigator.of(context).pop();
+                                },
+                          child: const Text('Hoàn tất'),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 
@@ -219,7 +238,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_10.name,
                     (signals) {
@@ -236,6 +255,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listBloodTypeSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_10.name,
                   (signals) {
@@ -302,7 +322,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_06.name,
                     (signals) {
@@ -320,6 +340,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listWeightSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_06.name,
                   (signals) {
@@ -386,7 +407,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_08.name,
                     (signals) {
@@ -404,6 +425,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listHeightSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_08.name,
                   (signals) {
@@ -470,7 +492,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_05.name,
                     (signals) {
@@ -488,6 +510,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listRespiratoryRateSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_05.name,
                   (signals) {
@@ -554,6 +577,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_03.name,
                     (signals) {
@@ -571,6 +595,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listTemperatureSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_03.name,
                   (signals) {
@@ -637,7 +662,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_04.name,
                     (signals) {
@@ -655,6 +680,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listSP02Signals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_04.name,
                   (signals) {
@@ -721,6 +747,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_01.name,
                     (signals) {
@@ -738,6 +765,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listBloodPressureSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_01.name,
                   (signals) {
@@ -804,7 +832,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
                   ),
                 );
                 // Refresh the list of signals
-
+                isEdited = true;
                 await loadSignals(
                     provider, args!.patient.encounter, SignalType.SIG_02.name,
                     (signals) {
@@ -822,6 +850,7 @@ class _AddSignalPageState extends State<AddSignalPage> {
             request: 0,
             listSignals: listHeartRateSignals,
             onRefresh: () async {
+              isEdited = true;
               await loadSignals(
                   provider, args!.patient.encounter, SignalType.SIG_02.name,
                   (signals) {

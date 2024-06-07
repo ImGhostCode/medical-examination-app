@@ -137,7 +137,11 @@ class MedicalExamineProvider extends ChangeNotifier {
     failureOrTemplate.fold(
       (Failure newFailure) {
         _isLoading = false;
-        listEnteredSignals = [];
+        if (type == 'all') {
+          listEnteredSignals = [];
+        } else {
+          temp = [];
+        }
         failure = newFailure;
         notifyListeners();
       },

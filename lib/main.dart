@@ -5,6 +5,7 @@ import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/core/services/shared_pref_service.dart';
+import 'package:medical_examination_app/core/services/stt_service.dart';
 import 'package:medical_examination_app/features/auth/presentation/pages/login_page.dart';
 import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
@@ -29,6 +30,7 @@ import 'package:provider/provider.dart';
 void main() async {
   await dotenv.load(fileName: "lib/.env");
   ApiService.init();
+  STTService.init();
   await SharedPrefService.init();
   await SecureStorageService.init();
   runApp(const MainApp());
@@ -106,6 +108,10 @@ class MainApp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
             )),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: CircleBorder()),
             segmentedButtonTheme: SegmentedButtonThemeData(
               style: SegmentedButton.styleFrom(
                 backgroundColor: Colors.white,
