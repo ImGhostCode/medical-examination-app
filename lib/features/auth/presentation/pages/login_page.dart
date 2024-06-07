@@ -53,6 +53,16 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Logo
+            Container(
+              alignment: Alignment.center,
+              // margin: const EdgeInsets.only(bottom: 20),
+              child: Image.asset(
+                  'assets/images/meddiary-high-resolution-logo.png',
+                  fit: BoxFit.fill,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: MediaQuery.of(context).size.width * 0.5),
+            ),
             Form(
                 key: _formKey,
                 child: Column(
@@ -199,7 +209,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       );
-                      Navigator.pushNamed(context, RouteNames.home);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, RouteNames.home, (route) => false);
                     }
                   }
                 },
