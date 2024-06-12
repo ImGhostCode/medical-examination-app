@@ -5,6 +5,7 @@ import 'package:medical_examination_app/features/category/presentation/providers
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:tiengviet/tiengviet.dart';
 
 class SearchPatientPage extends StatefulWidget {
   const SearchPatientPage({super.key});
@@ -317,10 +318,11 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                     controller: _searchLocationController,
                     style: Theme.of(context).textTheme.bodyMedium,
                     onChanged: (value) => setState(() {
+                      value = TiengViet.parse(value);
                       renderDepartment = listDepartment
-                          .where((element) => element.display
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
+                          .where((element) =>
+                              TiengViet.parse(element.display.toLowerCase())
+                                  .contains(value.toLowerCase()))
                           .toList();
                     }),
                     decoration: InputDecoration(

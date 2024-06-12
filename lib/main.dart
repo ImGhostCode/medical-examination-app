@@ -13,6 +13,7 @@ import 'package:medical_examination_app/features/home/presentation/pages/welcome
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_streatment_sheet_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/clinical_service_request_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
@@ -53,77 +54,73 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.light,
         theme: ThemeData(
-            useMaterial3: true,
-            primaryColor: Colors.blue,
-            scaffoldBackgroundColor: Colors.white,
+          useMaterial3: true,
+          primaryColor: Colors.blue,
+          scaffoldBackgroundColor: Colors.white,
+          brightness: Brightness.light,
+          // primaryColorDark: Colors.blue,
+          // primaryColorLight: Colors.blue[100],
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            // ···
             brightness: Brightness.light,
-            // primaryColorDark: Colors.blue,
-            // primaryColorLight: Colors.blue[100],
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              // ···
-              brightness: Brightness.light,
+          ),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            foregroundColor: Colors.black,
+            scrolledUnderElevation: 0,
+            titleTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+            centerTitle: true,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade300, width: 2)),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue, width: 2)),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade300, width: 2)),
+            errorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2)),
+            hintStyle: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(color: Colors.grey),
+            labelStyle: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(color: Colors.grey),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
             ),
-            appBarTheme: AppBarTheme(
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.white,
-              foregroundColor: Colors.black,
-              scrolledUnderElevation: 0,
-              titleTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
-              centerTitle: true,
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              border: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: Colors.grey.shade300, width: 2)),
-              focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue, width: 2)),
-              enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: Colors.grey.shade300, width: 2)),
-              errorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red, width: 2)),
-              hintStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Colors.grey),
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Colors.grey),
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
+          )),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
-              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                  ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-            )),
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: CircleBorder()),
-            segmentedButtonTheme: SegmentedButtonThemeData(
-              style: SegmentedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                selectedForegroundColor: Colors.white,
-                selectedBackgroundColor: Colors.blue,
-                side: const BorderSide(color: Colors.blue, width: 1.5),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              ),
+              shape: CircleBorder()),
+          segmentedButtonTheme: SegmentedButtonThemeData(
+            style: SegmentedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              selectedForegroundColor: Colors.white,
+              selectedBackgroundColor: Colors.blue,
+              side: const BorderSide(color: Colors.blue, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             ),
-            fontFamily: GoogleFonts.roboto().fontFamily),
+          ),
+          fontFamily: GoogleFonts.roboto().fontFamily,
+        ),
         initialRoute: RouteNames.welcome,
         routes: {
           RouteNames.welcome: (context) => const WelcomePage(),
@@ -143,6 +140,8 @@ class MainApp extends StatelessWidget {
               const EditStreatmentSheetPage(),
           RouteNames.addCareSheet: (context) => const AddCareSheetPage(),
           RouteNames.editCareSheet: (context) => const EditCareSheetPage(),
+          RouteNames.requestClinicalService: (context) =>
+              const ClinicalServiceRequestPage(),
         },
       ),
     );

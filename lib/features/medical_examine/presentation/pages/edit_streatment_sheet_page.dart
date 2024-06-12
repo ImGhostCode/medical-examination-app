@@ -78,7 +78,7 @@ class _EditStreatmentSheetPageState extends State<EditStreatmentSheetPage> {
                             code: VST.VST_0003.name,
                             value: [_drugIndicationController.text]),
                       ]),
-                  1123734);
+                  args.patientInfo.division);
 
       if (result.runtimeType == Failure) {
         ScaffoldMessenger.of(context).showSnackBar(

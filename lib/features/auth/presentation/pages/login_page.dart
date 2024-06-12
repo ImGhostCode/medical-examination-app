@@ -51,194 +51,203 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Logo
-            Container(
-              alignment: Alignment.center,
-              // margin: const EdgeInsets.only(bottom: 20),
-              child: Image.asset(
-                  'assets/images/meddiary-high-resolution-logo.png',
-                  fit: BoxFit.fill,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  height: MediaQuery.of(context).size.width * 0.5),
-            ),
-            Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Tên tài khoản',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        const SizedBox(height: 5),
-                        TextFormField(
-                          initialValue: user,
-                          decoration: const InputDecoration(
-                            hintText: 'Nhập tên tài khoản của bạn',
-                          ),
-                          onChanged: (value) {
-                            user = value;
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Vui lòng nhập tên tài khoản của bạn';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Mật khẩu',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        const SizedBox(height: 5),
-                        TextFormField(
-                          focusNode: passwordFocusNode,
-                          obscureText: _obscureText,
-                          decoration: InputDecoration(
-                            hintText: 'Nhập mật khẩu của bạn',
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                                icon: Icon(_obscureText
-                                    ? Icons.visibility
-                                    : Icons.visibility_off)),
-                          ),
-                          onChanged: (value) {
-                            password = value;
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Vui lòng nhập mật khẩu của bạn';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              checkColor: Colors.white,
-                              activeColor: Theme.of(context).primaryColor,
-                              // fillColor: WidgetStatePropertyAll(
-                              //     Theme.of(context).primaryColor),
-                              value: rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  rememberMe = value!;
-                                });
-                              },
-                            ),
-                            const Text('Ghi nhớ tài khoản'),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('Quên mật khẩu?',
-                              style: TextStyle(color: Colors.blue)),
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
-            const Spacer(),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await Provider.of<AuthProvider>(context, listen: false)
-                        .eitherFailureOrLogin(
-                            dotenv.env['RD_KEY']!, user, password);
-                    if (Provider.of<AuthProvider>(context, listen: false)
-                            .failure !=
-                        null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text(
-                              Provider.of<AuthProvider>(context, listen: false)
-                                  .failure!
-                                  .errorMessage,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(color: Colors.white)),
-                        ),
-                      );
-                    } else {
-                      if (rememberMe) {
-                        await prefs.setString('userName', user);
-                      } else {
-                        await prefs.remove('userName');
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text(
-                            Provider.of<AuthProvider>(context, listen: false)
-                                .message,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Logo
+              Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.width * 0.5,
+                alignment: Alignment.center,
+                // margin: const EdgeInsets.only(bottom: 20),
+                child: Image.asset(
+                    'assets/images/meddiary-high-resolution-logo.png',
+                    fit: BoxFit.fill,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.width * 0.5),
+              ),
+              Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tên tài khoản',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
-                                .copyWith(color: Colors.white),
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                        ),
-                      );
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, RouteNames.home, (route) => false);
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            initialValue: user,
+                            decoration: const InputDecoration(
+                              hintText: 'Nhập tên tài khoản của bạn',
+                            ),
+                            onChanged: (value) {
+                              user = value;
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vui lòng nhập tên tài khoản của bạn';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Mật khẩu',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            focusNode: passwordFocusNode,
+                            obscureText: _obscureText,
+                            decoration: InputDecoration(
+                              hintText: 'Nhập mật khẩu của bạn',
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                  icon: Icon(_obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off)),
+                            ),
+                            onChanged: (value) {
+                              password = value;
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vui lòng nhập mật khẩu của bạn';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: Theme.of(context).primaryColor,
+                                // fillColor: WidgetStatePropertyAll(
+                                //     Theme.of(context).primaryColor),
+                                value: rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    rememberMe = value!;
+                                  });
+                                },
+                              ),
+                              const Text('Ghi nhớ tài khoản'),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Quên mật khẩu?',
+                                style: TextStyle(color: Colors.blue)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )),
+              // const Spacer(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await Provider.of<AuthProvider>(context, listen: false)
+                          .eitherFailureOrLogin(
+                              dotenv.env['RD_KEY']!, user, password);
+                      if (Provider.of<AuthProvider>(context, listen: false)
+                              .failure !=
+                          null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                                Provider.of<AuthProvider>(context,
+                                        listen: false)
+                                    .failure!
+                                    .errorMessage,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(color: Colors.white)),
+                          ),
+                        );
+                      } else {
+                        if (rememberMe) {
+                          await prefs.setString('userName', user);
+                        } else {
+                          await prefs.remove('userName');
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text(
+                              Provider.of<AuthProvider>(context, listen: false)
+                                  .message,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: Colors.white),
+                            ),
+                          ),
+                        );
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, RouteNames.home, (route) => false);
+                      }
                     }
-                  }
-                },
-                child:
-                    Provider.of<AuthProvider>(context, listen: true).isLoading
-                        ? const SizedBox(
-                            height: 25,
-                            width: 25,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ))
-                        : const Text('Đăng nhập'),
+                  },
+                  child:
+                      Provider.of<AuthProvider>(context, listen: true).isLoading
+                          ? const SizedBox(
+                              height: 25,
+                              width: 25,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ))
+                          : const Text('Đăng nhập'),
+                ),
               ),
-            ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     const Text('Bạn chưa có tài khoản?'),
-            //     TextButton(
-            //       onPressed: () {
-            //         // Navigator.of(context).pushNamed('/register');
-            //       },
-            //       child: const Text('Đăng ký',
-            //           style: TextStyle(color: Colors.blue)),
-            //     ),
-            //   ],
-            // ),
-          ],
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     const Text('Bạn chưa có tài khoản?'),
+              //     TextButton(
+              //       onPressed: () {
+              //         // Navigator.of(context).pushNamed('/register');
+              //       },
+              //       child: const Text('Đăng ký',
+              //           style: TextStyle(color: Colors.blue)),
+              //     ),
+              //   ],
+              // ),
+            ],
+          ),
         ),
       ),
     );

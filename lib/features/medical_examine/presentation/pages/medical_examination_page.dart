@@ -246,7 +246,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                               color: Colors.green),
                                         ),
                                   const SizedBox(width: 4),
-                                  Text('Tờ số ${index + 1}',
+                                  Text('Lần thứ ${index + 1}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
@@ -515,7 +515,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                               color: Colors.green),
                                         ),
                                   const SizedBox(width: 4),
-                                  Text('Tờ số ${index + 1}',
+                                  Text('Lần thứ ${index + 1}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
@@ -690,6 +690,83 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     children: [
                       const Icon(Icons.add_rounded, color: Colors.blue),
                       Text('Thêm tờ điều trị mới',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Colors.blue)),
+                    ],
+                  ),
+                ),
+                Text('Các dịch vụ cận lâm sàng',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: Colors.grey.shade300, width: 1.5)),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${index + 1}. Xét nghiệm đông máu nhanh tại giường (thời gian máu đông)',
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Kết quả: máu bị đông 1 giờ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Colors.blue,
+                                      fontStyle: FontStyle.italic),
+                            ),
+                            const SizedBox(height: 4),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.all(8),
+                                    backgroundColor: Colors.green),
+                                onPressed: () {},
+                                child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.verified_outlined),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text('Ban hành')
+                                    ])),
+                          ],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(height: 5);
+                    },
+                    itemCount: 2),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                        RouteNames.requestClinicalService,
+                        arguments: PatientInfoArguments(
+                            patient: args.patient, division: args.division));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.add_rounded, color: Colors.blue),
+                      Text('Chỉ định dịch vụ',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium!

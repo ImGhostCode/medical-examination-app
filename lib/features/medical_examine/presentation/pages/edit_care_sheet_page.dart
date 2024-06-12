@@ -68,7 +68,7 @@ class _EditCareSheetPageState extends State<EditCareSheetPage> {
                             code: VST.VST_0006.name,
                             value: [_careOrderController.text]),
                       ]),
-                  29664);
+                  args.patientInfo.division);
 
       if (result.runtimeType == Failure) {
         ScaffoldMessenger.of(context).showSnackBar(
