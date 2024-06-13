@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/params/medical_examine_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
+import 'package:medical_examination_app/features/category/business/entities/subclinic_service_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
@@ -15,6 +17,7 @@ import 'package:medical_examination_app/features/medical_examine/business/usecas
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_care_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_signals_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_streatm_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_subcli_serv_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/modify_signal_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/publish_sheet_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +41,7 @@ class MedicalExamineProvider extends ChangeNotifier {
   List<SignalEntity> listEnteredSignals;
   List<StreatmentSheetEntity> listEnteredStreatmentSheets;
   List<CareSheetEntity> listEnteredCareSheets;
+  List<SubclinicServiceEntity> listEnteredSubclinicServices;
   Failure? failure;
   Failure? failureSignal;
   Failure? failureStreatmentSheet;
@@ -57,6 +61,7 @@ class MedicalExamineProvider extends ChangeNotifier {
     this.message = '',
     this.listSignals = const [],
     this.listEnteredSignals = const [],
+    this.listEnteredSubclinicServices = const [],
     this.listEnteredStreatmentSheets = const [],
     this.listEnteredCareSheets = const [],
     this.failure,
@@ -543,5 +548,51 @@ class MedicalExamineProvider extends ChangeNotifier {
       },
     );
     return result;
+  }
+
+  void eitherFailureOrGetEnteredSubclinicSerivce(
+      String type, String encounter) async {
+    listEnteredSubclinicServices = [];
+    _isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrTemplate =
+        await GetEnteredSubcliServUsecase(medicalExamineRepository: repository)
+            .call(
+                getEnteredSubclinicServicePrarams:
+                    GetEnteredSubclinicServicePrarams(
+      type: type,
+      encounter: encounter,
+      token: await secureStorage.read(key: 'token') ?? '',
+    ));
+
+    failureOrTemplate.fold(
+      (Failure newFailure) {
+        _isLoading = false;
+        listEnteredSubclinicServices = [];
+        failure = newFailure;
+        notifyListeners();
+      },
+      (ResponseModel<List<SubclinicServiceEntity>> response) {
+        _isLoading = false;
+        listEnteredSubclinicServices = response.data;
+        failure = null;
+        code = response.code;
+        type = response.type;
+        status = response.status;
+        message = response.message;
+        notifyListeners();
+      },
+    );
   }
 }

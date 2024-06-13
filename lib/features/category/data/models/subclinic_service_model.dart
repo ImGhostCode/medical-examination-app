@@ -3,25 +3,29 @@ import 'package:medical_examination_app/features/category/business/entities/subc
 
 class SubclinicServiceModel extends SubclinicServiceEntity {
   SubclinicServiceModel(
-      {required super.cc,
-      required super.dv,
-      required super.tt,
-      required super.code,
-      required super.unit,
-      required super.price,
-      required super.value,
-      required super.report,
-      required super.choosed,
-      required super.display,
-      required super.groupId,
-      required super.quantity,
-      required super.isPublic,
-      required super.obsGroup,
-      required super.createUid,
-      required super.obsResult,
-      required super.editQuantity,
-      required super.priceRequired,
-      required super.priceInsurance});
+      {super.cc,
+      super.dv,
+      super.tt,
+      super.code,
+      super.unit,
+      super.price,
+      super.value,
+      super.report,
+      super.choosed,
+      super.display,
+      super.groupId,
+      super.quantity,
+      super.isPublic,
+      super.obsGroup,
+      super.createUid,
+      super.obsResult,
+      super.editQuantity,
+      super.priceRequired,
+      super.priceInsurance,
+      super.result,
+      super.creators,
+      super.id,
+      super.location});
 
   factory SubclinicServiceModel.fromJson({required Map<String, dynamic> json}) {
     return SubclinicServiceModel(
@@ -44,6 +48,10 @@ class SubclinicServiceModel extends SubclinicServiceEntity {
       editQuantity: json[kEditQuantity],
       priceRequired: json[kPriceRequired],
       priceInsurance: json[kPriceInsurance],
+      result: json[kResult],
+      creators: json[kCreators],
+      id: json[kId],
+      location: json[kLocation],
     );
   }
 
@@ -68,6 +76,10 @@ class SubclinicServiceModel extends SubclinicServiceEntity {
       kEditQuantity: editQuantity,
       kPriceRequired: priceRequired,
       kPriceInsurance: priceInsurance,
+      kResult: result,
+      kCreators: creators,
+      kId: id,
+      kLocation: location,
     };
   }
 }

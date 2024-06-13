@@ -1,44 +1,52 @@
 class SubclinicServiceEntity {
-  bool cc;
-  bool dv;
-  bool tt;
-  int code;
-  String unit;
-  int price;
-  int value;
-  String report;
-  bool choosed;
-  String display;
-  int groupId;
-  int quantity;
-  bool isPublic;
-  String obsGroup;
-  String createUid;
-  bool obsResult;
-  bool editQuantity;
-  int priceRequired;
-  int priceInsurance;
+  bool? cc;
+  bool? dv;
+  bool? tt;
+  int? code;
+  String? unit;
+  int? price;
+  int? value;
+  String? report;
+  bool? choosed;
+  String? display;
+  int? groupId;
+  int? quantity;
+  bool? isPublic;
+  String? obsGroup;
+  String? createUid;
+  bool? obsResult;
+  bool? editQuantity;
+  int? priceRequired;
+  int? priceInsurance;
+  String? result;
+  int? id;
+  String? creators;
+  String? location;
 
   SubclinicServiceEntity({
-    required this.cc,
-    required this.dv,
-    required this.tt,
-    required this.code,
-    required this.unit,
-    required this.price,
-    required this.value,
-    required this.report,
-    required this.choosed,
-    required this.display,
-    required this.groupId,
-    required this.quantity,
-    required this.isPublic,
-    required this.obsGroup,
-    required this.createUid,
-    required this.obsResult,
-    required this.editQuantity,
-    required this.priceRequired,
-    required this.priceInsurance,
+    this.cc,
+    this.dv,
+    this.tt,
+    this.code,
+    this.unit,
+    this.price,
+    this.value,
+    this.report,
+    this.choosed,
+    this.display,
+    this.groupId,
+    this.quantity,
+    this.isPublic,
+    this.obsGroup,
+    this.createUid,
+    this.obsResult,
+    this.editQuantity,
+    this.priceRequired,
+    this.priceInsurance,
+    this.result,
+    this.id,
+    this.creators,
+    this.location,
   });
 }
 
@@ -61,6 +69,6 @@ class SubclinicServiceEntity {
 //             "create_uid": "16630",
 //             "obs_result": false,
 //             "edit_quantity": false,
-//             "price_required": 539000,
+//             "price_: 539000,
 //             "price_insurance": 539000
 //         },

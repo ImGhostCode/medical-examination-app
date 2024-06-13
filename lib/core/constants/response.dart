@@ -29,7 +29,7 @@ class ResponseModel<D> {
   }
 
   Map<String, dynamic> toJson({
-    required Map<String, dynamic> Function(D) toJsonD,
+    required dynamic Function(D) toJsonD,
   }) {
     return {
       kCode: code,

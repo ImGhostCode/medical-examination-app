@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/params/medical_examine_params.dart';
+import 'package:medical_examination_app/features/category/data/models/subclinic_service_model.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/care_sheet_model.dart';
@@ -295,6 +297,38 @@ class MedicalExamineRepositoryImpl implements MedicalExamineRepository {
         ResponseModel<String?> remoteMedicalExamine =
             await remoteDataSource.publishMedicalSheet(
                 publishMedicalSheetParams: publishMedicalSheetParams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<List<SubclinicServiceModel>>>>
+      getEnteredSubclinicService(
+          {required GetEnteredSubclinicServicePrarams
+              getEnteredSubclinicServicePrarams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<List<SubclinicServiceModel>> remoteMedicalExamine =
+            await remoteDataSource.getEnteredSubclinicService(
+                getEnteredSubclinicServicePrarams:
+                    getEnteredSubclinicServicePrarams);
 
         // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
 

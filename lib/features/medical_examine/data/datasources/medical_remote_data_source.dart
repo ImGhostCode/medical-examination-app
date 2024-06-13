@@ -3,7 +3,9 @@ import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/params/medical_examine_params.dart';
+import 'package:medical_examination_app/features/category/data/models/subclinic_service_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/care_sheet_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/signal_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/streatment_sheet_model.dart';
@@ -33,6 +35,10 @@ abstract class MedicalExamineRemoteDataSource {
 
   Future<ResponseModel<String?>> publishMedicalSheet(
       {required PublishMedicalSheetParams publishMedicalSheetParams});
+
+  Future<ResponseModel<List<SubclinicServiceModel>>> getEnteredSubclinicService(
+      {required GetEnteredSubclinicServicePrarams
+          getEnteredSubclinicServicePrarams});
 }
 
 class MedicalExamineRemoteDataSourceImpl
@@ -429,6 +435,39 @@ class MedicalExamineRemoteDataSourceImpl
 
       return ResponseModel<String?>.fromJson(
           json: response.data, fromJsonD: (json) => json);
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<List<SubclinicServiceModel>>> getEnteredSubclinicService(
+      {required GetEnteredSubclinicServicePrarams
+          getEnteredSubclinicServicePrarams}) async {
+    try {
+      final response = await dio.get(
+          '/medical/service/${paramToBase64(getEnteredSubclinicServicePrarams.toMap())}',
+          queryParameters: {},
+          options: Options(headers: {
+            "token": getEnteredSubclinicServicePrarams.token,
+          }));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<List<SubclinicServiceModel>>.fromJson(
+          json: response.data,
+          fromJsonD: (json) => json
+              .map<SubclinicServiceModel>(
+                  (e) => SubclinicServiceModel.fromJson(json: e))
+              .toList());
     } on DioException catch (e) {
       throw ServerException(
           message: e.response!.data[kMessage],

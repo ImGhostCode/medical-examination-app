@@ -1,104 +1,100 @@
 import 'package:medical_examination_app/features/patient/business/entities/health_insurance_card.dart';
 
-class PatientInfoEntity {
-  String name;
-  String birthdate;
-  String gender;
-  MedicalEntity medical;
-  HealthInsuranceCardEntity? healthInsuranceCard;
-  String ethnic;
-  String nationality;
-  CiEntity ci;
+class PatientEntity {
+  CiEntity? ci;
   String job;
-  List<TelecomEntity> telecom;
-  List<ContactEnitity> contact;
-  AddressEntity address;
-  ServicesEntity services;
-  String lrCode;
-  QueueZoneReceptionEntity queueZoneReception;
-  bool overwrite;
+  HealthInsuranceCardEntity? healthInsuranceCard;
+  String name;
+  bool open;
+  String? start;
+  String ethnic;
+  String gender;
+  String status;
+  String address;
+  int subject;
+  String? dateEnd;
+  String? literacy;
+  List<LocationEntity> location;
+  List<String> pictures;
+  String? religion;
+  String birthdate;
+  int encounter;
+  String birthYear;
+  String dateStart;
+  String diagnostic;
+  String genderName;
+  String nationality;
+  Organization organization;
+  String medicalClass;
+  String? relativeInfo;
+  String medicalObject;
+  String treatmentStart;
+  String templateClassify;
 
-  PatientInfoEntity({
+  // MedicalEntity medical;
+  // List<TelecomEntity> telecom;
+  // List<ContactEnitity> contact;
+  // ServicesEntity services;
+  // String lrCode;
+  // QueueZoneReceptionEntity queueZoneReception;
+  // bool overwrite;
+
+  PatientEntity({
     required this.name,
     required this.birthdate,
     required this.gender,
-    required this.medical,
     this.healthInsuranceCard,
     required this.ethnic,
     required this.nationality,
-    required this.ci,
+    this.ci,
     required this.job,
-    required this.telecom,
-    required this.contact,
     required this.address,
-    required this.services,
-    required this.lrCode,
-    required this.queueZoneReception,
-    required this.overwrite,
+    required this.open,
+    this.start,
+    required this.status,
+    required this.subject,
+    this.dateEnd,
+    this.literacy,
+    required this.location,
+    required this.pictures,
+    this.religion,
+    required this.encounter,
+    required this.birthYear,
+    required this.dateStart,
+    required this.diagnostic,
+    required this.genderName,
+    required this.organization,
+    required this.medicalClass,
+    this.relativeInfo,
+    required this.medicalObject,
+    required this.treatmentStart,
+    required this.templateClassify,
   });
+}
 
-  // Add fromJson and toJson methods here
+class Organization {
+  String code;
+  int value;
+  String display;
 
-  static List<PatientInfoEntity> fakePatients = [
-    PatientInfoEntity(
-        name: 'Nguyễn Văn A',
-        birthdate: '1979',
-        gender: 'male',
-        medical: MedicalEntity(create: true, type: 'MRC.AMB'),
-        ethnic: '1796',
-        nationality: 'VNM',
-        ci: CiEntity(date: '', issuer: '', number: ''),
-        job: '481',
-        telecom: [
-          TelecomEntity(type: 'tax', value: ''),
-          TelecomEntity(type: 'sms', value: ''),
-          TelecomEntity(type: 'phone', value: ''),
-        ],
-        contact: [
-          ContactEnitity(name: 'Nguyen Van C', relation: 'S'),
-          ContactEnitity(name: 'Nguyen Van B', relation: 'N')
-        ],
-        address: AddressEntity(home: '', uses: 'home', ward: '826'),
-        services: ServicesEntity(
-            doctor: 16631,
-            type: 'fee',
-            isCard: 'off',
-            option: [],
-            request: '29664',
-            emergency: false),
-        lrCode: '',
-        queueZoneReception: QueueZoneReceptionEntity(zone: '', table: ''),
-        overwrite: true),
-    PatientInfoEntity(
-        name: 'Nguyễn Văn A',
-        birthdate: '1979',
-        gender: 'male',
-        medical: MedicalEntity(create: true, type: 'MRC.AMB'),
-        ethnic: '1796',
-        nationality: 'VNM',
-        ci: CiEntity(date: '', issuer: '', number: ''),
-        job: '481',
-        telecom: [
-          TelecomEntity(type: 'tax', value: ''),
-          TelecomEntity(type: 'sms', value: ''),
-          TelecomEntity(type: 'phone', value: ''),
-        ],
-        contact: [
-          ContactEnitity(name: 'Nguyen Van C', relation: 'S'),
-          ContactEnitity(name: 'Nguyen Van B', relation: 'N')
-        ],
-        address: AddressEntity(home: '', uses: 'home', ward: '826'),
-        services: ServicesEntity(
-            doctor: 16631,
-            type: 'fee',
-            isCard: 'off',
-            option: [],
-            request: '29664',
-            emergency: false),
-        lrCode: '',
-        queueZoneReception: QueueZoneReceptionEntity(zone: '', table: ''),
-        overwrite: true)
-  ];
+  Organization(
+      {required this.code, required this.value, required this.display});
+}
+
+class LocationEntity {
+  int seq;
+  String code;
+  int value;
+  String display;
+  String feeObject;
+
+  LocationEntity({
+    required this.seq,
+    required this.code,
+    required this.value,
+    required this.display,
+    required this.feeObject,
+  });
 }
 
 class MedicalEntity {

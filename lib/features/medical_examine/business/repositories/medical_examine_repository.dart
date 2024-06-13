@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/params/category_params.dart';
 import 'package:medical_examination_app/core/params/medical_examine_params.dart';
+import 'package:medical_examination_app/features/category/business/entities/subclinic_service_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
@@ -44,5 +46,12 @@ abstract class MedicalExamineRepository {
 // Ban hành
   Future<Either<Failure, ResponseModel<String?>>> publishMedicalSheet({
     required PublishMedicalSheetParams publishMedicalSheetParams,
+  });
+
+  // Dịch vụ cận lâm sàng
+  Future<Either<Failure, ResponseModel<List<SubclinicServiceEntity>>>>
+      getEnteredSubclinicService({
+    required GetEnteredSubclinicServicePrarams
+        getEnteredSubclinicServicePrarams,
   });
 }

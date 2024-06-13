@@ -6,6 +6,8 @@ import 'package:medical_examination_app/core/params/patient_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
+import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
+import 'package:medical_examination_app/features/patient/business/usecases/get_patient_info_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -26,6 +28,8 @@ class PatientProvider extends ChangeNotifier {
 
   List<InRoomPatientEntity> listPatientInRoom;
   List<InRoomPatientEntity> listRenderPatientInRoom = [];
+
+  PatientEntity? patientInfo;
 
   Failure? failure;
 
@@ -86,6 +90,50 @@ class PatientProvider extends ChangeNotifier {
         _isLoading = false;
         listPatientInRoom = response.data;
         listRenderPatientInRoom = response.data;
+        code = response.code;
+        type = response.type;
+        status = response.status;
+        message = response.message;
+        failure = null;
+        notifyListeners();
+      },
+    );
+  }
+
+  void eitherFailureOrGetPatientInfo(String type, int encounter) async {
+    patientInfo = null;
+    _isLoading = true;
+    PatientRepositoryImpl repository = PatientRepositoryImpl(
+      remoteDataSource: PatientRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: PatientLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrPatient =
+        await GetPatientInfoUsecase(patientRepository: repository).call(
+      getPatientInfoParams: GetPatientInfoParams(
+        type: type,
+        encounter: encounter,
+        token: await secureStorage.read(key: 'token') ?? '',
+      ),
+    );
+
+    failureOrPatient.fold(
+      (Failure newFailure) {
+        _isLoading = false;
+        patientInfo = null;
+        failure = newFailure;
+        notifyListeners();
+      },
+      (ResponseModel<PatientEntity> response) {
+        _isLoading = false;
+        patientInfo = response.data;
         code = response.code;
         type = response.type;
         status = response.status;

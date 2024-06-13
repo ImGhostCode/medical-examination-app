@@ -65,15 +65,35 @@ String kTypeDisplay = 'type_display';
 // Patient
 // String kCode = 'code';
 String kName = 'name';
-String kStart = 'start';
-String kGender = 'gender';
-String kSubject = 'subject';
 String kBirthdate = 'birthdate';
+String kGender = 'gender';
+String kEthnic = 'ethnic';
+String kStart = 'start';
+String kSubject = 'subject';
 String kEncounter = 'encounter';
 String kFeeObject = 'fee_object';
 String kClassifyCode = 'classify_code';
 String kClassifyName = 'classify_name';
 String kProcessingStatus = 'processing_status';
+String kOpen = 'open';
+String kPictures = 'pictures';
+String kBirthYear = 'birth_year';
+String kDateStart = 'date_start';
+String kDiagnostic = 'diagnostic';
+String kNationality = 'nationality';
+String kJob = 'job';
+String kAddress = 'address';
+String kGenderName = 'gender_name';
+String kMedicalClass = 'medical_class';
+String kMedicalObject = 'medical_object';
+String kTreatmentStart = 'treatment_start';
+String kTemplateClassify = 'template_classify';
+String kCi = 'ci';
+String kHealthInsuranceCard = 'card';
+String kDateEnd = 'date_end';
+String kLiteracy = 'literacy';
+String kReligion = 'religion';
+String kRelativeInfo = 'relative_info';
 
 // Signal
 String kSeq = 'seq';
@@ -102,8 +122,27 @@ String kObsResult = 'obs_result';
 String kEditQuantity = 'edit_quantity';
 String kPriceRequired = 'price_required';
 String kPriceInsurance = 'price_insurance';
+String kResult = 'result';
+String kCreators = 'creators';
 
 // Streatment Sheet
 String kDoctor = 'doctor';
 String kRequest = 'request';
 String kCreated = 'created';
+
+// CI
+String kNumber = 'number';
+String kDate = 'date';
+String kIssuer = 'issuer';
+
+// Health Insurance Card
+String kRate = 'rate';
+String kPeriod = 'period';
+String kDelegate = 'delegate';
+String kExpensed = 'expensed';
+String kCardObject = 'card_object';
+
+// ICD
+String kReason = 'reason';
+String kAccident = 'accident';
+String kIsLeftRight = 'is_left_right';
