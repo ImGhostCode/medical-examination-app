@@ -181,3 +181,124 @@ class PublishMedicalSheetParams {
     required this.doctor,
   });
 }
+
+class SubclinicServDesignationParams {
+  String status;
+  int doctor;
+  List<ServiceParams> services;
+  int encounter;
+  int subject;
+  ReasonParams reason;
+  int request;
+  String note;
+  int rate;
+  bool isPublish;
+
+  String token;
+  String ip;
+  String code;
+
+  SubclinicServDesignationParams({
+    required this.status,
+    required this.doctor,
+    required this.services,
+    required this.encounter,
+    required this.subject,
+    required this.reason,
+    required this.request,
+    required this.note,
+    required this.rate,
+    required this.isPublish,
+    required this.token,
+    required this.ip,
+    required this.code,
+  });
+}
+
+class ServiceParams {
+  String code;
+  int quantity;
+  String type;
+  String isCard;
+  bool emergency;
+  List<String> option;
+  String start;
+
+  ServiceParams({
+    required this.code,
+    required this.quantity,
+    required this.type,
+    required this.isCard,
+    required this.emergency,
+    required this.option,
+    required this.start,
+  });
+}
+
+class ReasonParams {
+  Reason reason;
+  List<NewIcds> newIcds;
+
+  ReasonParams({
+    required this.reason,
+    required this.newIcds,
+  });
+}
+
+class Reason {
+  String text;
+  List<String> value;
+
+  Reason({
+    required this.text,
+    required this.value,
+  });
+}
+
+class NewIcds {
+  String code;
+  String type;
+
+  NewIcds({
+    required this.code,
+    required this.type,
+  });
+}
+
+/* SubclinicServDesignationParams
+{
+        "status": "new",
+        "doctor": 16631,
+        "services": [
+            {
+                "code": "1116352",
+                "quantity": 1,
+                "type": "fee",
+                "is_card": "on",
+                "emergency": false,
+                "option": [],
+                "start": ""
+            }
+        ],
+        "encounter": 23088696,
+        "subject": 23046872,
+        "reason": {
+            "reason": {
+                "text": "Bệnh thương hàn và phó thương hàn",
+                "value": [
+                    "A01"
+                ]
+            },
+            "new_icds": [
+                {
+                    "code": "A01",
+                    "type": "SU"
+                }
+            ]
+        },
+        "request": 29664,
+        "note": "Mô tả",
+        "rate": 80,
+        "is_publish": true
+    },
+*/

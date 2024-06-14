@@ -67,10 +67,6 @@ String workToRole(String work) {
   }
 }
 
-
-
-
-
 /*
 - Mạch: "code":"SIG_02", "unit":"lần/phút"
 
@@ -88,3 +84,9 @@ String workToRole(String work) {
 
 - Nhóm máu: "code":"SIG_10", "value_string":"O/Rh-" 
 */
+
+// Format currency function
+String formatCurrency(int value) {
+  return value.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+}

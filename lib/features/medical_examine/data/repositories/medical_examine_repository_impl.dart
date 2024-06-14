@@ -7,6 +7,7 @@ import 'package:medical_examination_app/features/medical_examine/business/entiti
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/care_sheet_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/streatment_sheet_model.dart';
+import 'package:medical_examination_app/features/medical_examine/data/models/subclinic_designation_model.dart';
 
 import '../../../../../core/connection/network_info.dart';
 import '../../../../../core/errors/exceptions.dart';
@@ -329,6 +330,37 @@ class MedicalExamineRepositoryImpl implements MedicalExamineRepository {
             await remoteDataSource.getEnteredSubclinicService(
                 getEnteredSubclinicServicePrarams:
                     getEnteredSubclinicServicePrarams);
+
+        // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
+
+        return Right(remoteMedicalExamine);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<List<SubclinicDesignationModel>>>>
+      designSubclinicService(
+          {required SubclinicServDesignationParams
+              subclinicServDesignationParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<List<SubclinicDesignationModel>> remoteMedicalExamine =
+            await remoteDataSource.designSubclinicService(
+                subclinicServDesignationParams: subclinicServDesignationParams);
 
         // localDataSource.cachePatient(templateToCache: remoteMedicalExamine);
 

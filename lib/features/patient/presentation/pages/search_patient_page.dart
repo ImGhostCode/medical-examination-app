@@ -185,7 +185,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                       Row(
                                         children: [
                                           Text(
-                                            'STT: ${listRenderPatient[index].encounter}',
+                                            'Số HSBA: ${listRenderPatient[index].encounter}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!
@@ -212,7 +212,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                         FontWeight.bold),
                                           ),
                                           Text(
-                                            "Mã số: ${listRenderPatient[index].subject}",
+                                            "MSBN: ${listRenderPatient[index].subject}",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,

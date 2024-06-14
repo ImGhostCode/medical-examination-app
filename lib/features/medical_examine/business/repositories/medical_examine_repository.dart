@@ -6,6 +6,7 @@ import 'package:medical_examination_app/features/category/business/entities/subc
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/subclinic_designation_entity.dart';
 import '../../../../../core/errors/failure.dart';
 
 abstract class MedicalExamineRepository {
@@ -53,5 +54,10 @@ abstract class MedicalExamineRepository {
       getEnteredSubclinicService({
     required GetEnteredSubclinicServicePrarams
         getEnteredSubclinicServicePrarams,
+  });
+
+  Future<Either<Failure, ResponseModel<List<SubclinicDesignationEntity>>>>
+      designSubclinicService({
+    required SubclinicServDesignationParams subclinicServDesignationParams,
   });
 }

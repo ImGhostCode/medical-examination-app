@@ -9,6 +9,7 @@ import 'package:medical_examination_app/features/category/data/models/subclinic_
 import 'package:medical_examination_app/features/medical_examine/data/models/care_sheet_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/signal_model.dart';
 import 'package:medical_examination_app/features/medical_examine/data/models/streatment_sheet_model.dart';
+import 'package:medical_examination_app/features/medical_examine/data/models/subclinic_designation_model.dart';
 import '../../../../../core/errors/exceptions.dart';
 
 abstract class MedicalExamineRemoteDataSource {
@@ -39,6 +40,8 @@ abstract class MedicalExamineRemoteDataSource {
   Future<ResponseModel<List<SubclinicServiceModel>>> getEnteredSubclinicService(
       {required GetEnteredSubclinicServicePrarams
           getEnteredSubclinicServicePrarams});
+  Future<ResponseModel<List<SubclinicDesignationModel>>> designSubclinicService(
+      {required SubclinicServDesignationParams subclinicServDesignationParams});
 }
 
 class MedicalExamineRemoteDataSourceImpl
@@ -467,6 +470,75 @@ class MedicalExamineRemoteDataSourceImpl
           fromJsonD: (json) => json
               .map<SubclinicServiceModel>(
                   (e) => SubclinicServiceModel.fromJson(json: e))
+              .toList());
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<List<SubclinicDesignationModel>>> designSubclinicService(
+      {required SubclinicServDesignationParams
+          subclinicServDesignationParams}) async {
+    try {
+      final response = await dio.put('/medical/service',
+          queryParameters: {},
+          data: {
+            "data": {
+              "status": subclinicServDesignationParams.status,
+              "doctor": subclinicServDesignationParams.doctor,
+              "services": subclinicServDesignationParams.services.map((e) {
+                return {
+                  "code": e.code,
+                  "quantity": e.quantity,
+                  "type": e.type,
+                  "is_card": e.isCard,
+                  "emergency": e.emergency,
+                  "option": e.option,
+                  "start": e.start,
+                };
+              }).toList(),
+              "encounter": subclinicServDesignationParams.encounter,
+              "subject": subclinicServDesignationParams.subject,
+              "reason": {
+                "reason": {
+                  "text": subclinicServDesignationParams.reason.reason.text,
+                  "value": subclinicServDesignationParams.reason.reason.value,
+                },
+                "new_icds":
+                    subclinicServDesignationParams.reason.newIcds.map((e) {
+                  return {
+                    "code": e.code,
+                    "value": e.type,
+                  };
+                }).toList(),
+              },
+              "request": subclinicServDesignationParams.request,
+              "note": subclinicServDesignationParams.note,
+              "rate": subclinicServDesignationParams.rate,
+              "is_publish": subclinicServDesignationParams.isPublish,
+            },
+            "token": subclinicServDesignationParams.token,
+            "ip": subclinicServDesignationParams.ip,
+            "code": subclinicServDesignationParams.code
+          },
+          options: Options(headers: {}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<List<SubclinicDesignationModel>>.fromJson(
+          json: response.data,
+          fromJsonD: (json) => json
+              .map<SubclinicDesignationModel>(
+                  (e) => SubclinicDesignationModel.fromJson(json: e))
               .toList());
     } on DioException catch (e) {
       throw ServerException(

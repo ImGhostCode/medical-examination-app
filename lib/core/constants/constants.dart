@@ -69,6 +69,7 @@ String kBirthdate = 'birthdate';
 String kGender = 'gender';
 String kEthnic = 'ethnic';
 String kStart = 'start';
+String kEnd = 'end';
 String kSubject = 'subject';
 String kEncounter = 'encounter';
 String kFeeObject = 'fee_object';
@@ -124,6 +125,13 @@ String kPriceRequired = 'price_required';
 String kPriceInsurance = 'price_insurance';
 String kResult = 'result';
 String kCreators = 'creators';
+String kIsCard = 'is_card';
+String kEmergency = 'emergency';
+String kOption = 'option';
+String kRef = 'ref';
+String kPara = 'para';
+String kFileName = 'file_name';
+String kPageSize = 'page_size';
 
 // Streatment Sheet
 String kDoctor = 'doctor';
@@ -141,6 +149,9 @@ String kPeriod = 'period';
 String kDelegate = 'delegate';
 String kExpensed = 'expensed';
 String kCardObject = 'card_object';
+String kCrdAd = 'crd_ad';
+String kCrdCt = 'crd_ct';
+String kCrdLa = 'crd_la';
 
 // ICD
 String kReason = 'reason';

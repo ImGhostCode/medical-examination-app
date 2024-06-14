@@ -10,8 +10,10 @@ import 'package:medical_examination_app/features/category/business/entities/subc
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
+import 'package:medical_examination_app/features/medical_examine/business/entities/subclinic_designation_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/cre_care_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/cre_streatment_sheet_usecase.dart';
+import 'package:medical_examination_app/features/medical_examine/business/usecases/design_subcli_serv_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/edit_care_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/edit_streatment_sheet_usecase.dart';
 import 'package:medical_examination_app/features/medical_examine/business/usecases/get_entered_care_sheet_usecase.dart';
@@ -42,6 +44,7 @@ class MedicalExamineProvider extends ChangeNotifier {
   List<StreatmentSheetEntity> listEnteredStreatmentSheets;
   List<CareSheetEntity> listEnteredCareSheets;
   List<SubclinicServiceEntity> listEnteredSubclinicServices;
+  List<SubclinicDesignationEntity> listSubclinicDesignations;
   Failure? failure;
   Failure? failureSignal;
   Failure? failureStreatmentSheet;
@@ -64,6 +67,7 @@ class MedicalExamineProvider extends ChangeNotifier {
     this.listEnteredSubclinicServices = const [],
     this.listEnteredStreatmentSheets = const [],
     this.listEnteredCareSheets = const [],
+    this.listSubclinicDesignations = const [],
     this.failure,
   });
 
@@ -594,5 +598,72 @@ class MedicalExamineProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  dynamic eitherFailureOrDesignSubcliService(
+      String status,
+      int doctor,
+      List<ServiceParams> services,
+      int encounter,
+      int subject,
+      ReasonParams reason,
+      int request,
+      String note,
+      int rate,
+      bool isPublish) async {
+    listSubclinicDesignations = [];
+    isLoading = true;
+    MedicalExamineRepositoryImpl repository = MedicalExamineRepositoryImpl(
+      remoteDataSource: MedicalExamineRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: MedicalExamineLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrDesignSubclinicService =
+        await DesignSubcliServUsecase(medicalExamineRepository: repository)
+            .call(
+                subclinicServDesignationParams: SubclinicServDesignationParams(
+      status: status,
+      doctor: doctor,
+      services: services,
+      encounter: encounter,
+      subject: subject,
+      reason: reason,
+      request: request,
+      note: note,
+      rate: rate,
+      isPublish: isPublish,
+      token: await secureStorage.read(key: 'token') ?? '',
+      ip: '192:168:1:18',
+      code: 'ad568891-dbc4-4241-a122-abb127901972',
+    ));
+
+    var result = failureOrDesignSubclinicService.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        // modifyResult = '';
+        // failure = newFailure;
+        notifyListeners();
+        return newFailure; // return false in case of failure
+      },
+      (ResponseModel<List<SubclinicDesignationEntity>> response) {
+        isLoading = false;
+        // modifyResult = response.data;
+        // code = response.code;
+        // type = response.type;
+        // status = response.status;
+        // message = response.message;
+        // failure = null;
+        notifyListeners();
+        return response; // return true in case of success
+      },
+    );
+    return result;
   }
 }

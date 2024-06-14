@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
 import 'package:medical_examination_app/features/patient/data/models/health_insurance_card_model.dart';
@@ -48,7 +49,7 @@ class PatientModel extends PatientEntity {
       location: json[kLocation]
           .map<LocationModel>((e) => LocationModel.fromJson(json: e))
           .toList(),
-      pictures: json[kPictures],
+      pictures: json[kPictures].map<String>((e) => e.toString()).toList(),
       encounter: json[kEncounter],
       birthYear: json[kBirthYear],
       dateStart: json[kDateStart],
@@ -60,9 +61,9 @@ class PatientModel extends PatientEntity {
       treatmentStart: json[kTreatmentStart],
       templateClassify: json[kTemplateClassify],
       ci: json[kCi] != null ? CiModel.fromJson(json: json[kCi]) : null,
-      healthInsuranceCard: json[kHealthInsuranceCard] != null
-          ? HealthInsuranceCardModel.fromJson(json: json[kHealthInsuranceCard])
-          : null,
+      healthInsuranceCard: mapEquals(json[kHealthInsuranceCard], {})
+          ? null
+          : HealthInsuranceCardModel.fromJson(json: json[kHealthInsuranceCard]),
       dateEnd: json[kDateEnd],
       literacy: json[kLiteracy],
       religion: json[kReligion],

@@ -121,11 +121,15 @@ class CategoryRepositoryImpl implements CategoryRepository {
       {required GetICDPrarams getICDPrarams}) async {
     if (await networkInfo.isConnected!) {
       try {
-        ResponseModel<List<ICDModel>> listICDCached =
-            await localDataSource.getLastICD();
+        try {
+          ResponseModel<List<ICDModel>> listICDCached =
+              await localDataSource.getLastICD();
 
-        if (listICDCached.data.isNotEmpty) {
-          return Right(listICDCached);
+          if (listICDCached.data.isNotEmpty) {
+            return Right(listICDCached);
+          }
+        } catch (e) {
+          print(e);
         }
 
         ResponseModel<List<ICDModel>> remoteICD =
