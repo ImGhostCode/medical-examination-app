@@ -3,22 +3,28 @@ import 'package:medical_examination_app/features/medical_examine/business/entiti
 
 class SubclinicDesignationModel extends SubclinicDesignationEntity {
   SubclinicDesignationModel(
-      {required super.id,
-      required super.ref,
-      required super.para,
-      required super.encounter,
-      required super.fileName,
-      required super.pageSize});
+      {super.id,
+      super.ref,
+      super.para,
+      super.encounter,
+      super.fileName,
+      super.pageSize,
+      super.code});
 
   factory SubclinicDesignationModel.fromJson(
       {required Map<String, dynamic> json}) {
     return SubclinicDesignationModel(
       id: json[kId],
       ref: json[kRef],
-      para: json[kPara].map((e) => ParaModel.fromJson(json: e)),
+      para: json[kPara] != null
+          ? json[kPara]
+              .map<ParaModel>((e) => ParaModel.fromJson(json: e))
+              .toList()
+          : [],
       encounter: json[kEncounter],
       fileName: json[kFileName],
       pageSize: json[kPageSize],
+      code: json[kCode],
     );
   }
 
@@ -30,6 +36,7 @@ class SubclinicDesignationModel extends SubclinicDesignationEntity {
       kEncounter: encounter,
       kFileName: fileName,
       kPageSize: pageSize,
+      kCode: code,
     };
   }
 }

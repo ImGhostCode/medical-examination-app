@@ -5,6 +5,7 @@ import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/patient_params.dart';
 import 'package:medical_examination_app/features/patient/data/models/in_room_patient_model.dart';
 import 'package:medical_examination_app/features/patient/data/models/patient_model.dart';
+import 'package:medical_examination_app/features/patient/data/models/patient_service_model.dart';
 import '../../../../../core/errors/exceptions.dart';
 
 abstract class PatientRemoteDataSource {
@@ -12,6 +13,8 @@ abstract class PatientRemoteDataSource {
       {required GetPatientInRoomParams getPatientInRoomParams});
   Future<ResponseModel<PatientModel>> getPatientInfo(
       {required GetPatientInfoParams getPatientInfoParams});
+  Future<ResponseModel<List<PatientServiceModel>>> getPatientServices(
+      {required GetPatientServiceParams getPatientServiceParams});
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
@@ -72,6 +75,38 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
       return ResponseModel<PatientModel>.fromJson(
           json: response.data,
           fromJsonD: (json) => PatientModel.fromJson(json: json));
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<List<PatientServiceModel>>> getPatientServices(
+      {required GetPatientServiceParams getPatientServiceParams}) async {
+    try {
+      final response = await dio.get(
+          '/medical/service/${paramToBase64(getPatientServiceParams.toMap())}',
+          queryParameters: {},
+          options: Options(headers: {
+            "token": getPatientServiceParams.token,
+          }));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<List<PatientServiceModel>>.fromJson(
+          json: response.data,
+          fromJsonD: (json) => json
+              .map<PatientServiceModel>(
+                  (e) => PatientServiceModel.fromJson(json: e))
+              .toList());
     } on DioException catch (e) {
       throw ServerException(
           message: e.response!.data[kMessage],

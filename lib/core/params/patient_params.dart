@@ -50,3 +50,22 @@ class GetPatientInfoParams {
     };
   }
 }
+
+class GetPatientServiceParams {
+  String type;
+  int encounter;
+  String token;
+
+  GetPatientServiceParams({
+    required this.type,
+    required this.encounter,
+    required this.token,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type,
+      'encounter': encounter,
+    };
+  }
+}

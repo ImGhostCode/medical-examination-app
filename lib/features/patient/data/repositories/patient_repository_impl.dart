@@ -3,6 +3,7 @@ import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/patient_params.dart';
 import 'package:medical_examination_app/features/patient/data/models/in_room_patient_model.dart';
 import 'package:medical_examination_app/features/patient/data/models/patient_model.dart';
+import 'package:medical_examination_app/features/patient/data/models/patient_service_model.dart';
 
 import '../../../../../core/connection/network_info.dart';
 import '../../../../../core/errors/exceptions.dart';
@@ -59,6 +60,36 @@ class PatientRepositoryImpl implements PatientRepository {
       try {
         ResponseModel<PatientModel> remotePatient = await remoteDataSource
             .getPatientInfo(getPatientInfoParams: getPatientInfoParams);
+
+        // localDataSource.cachePatient(templateToCache: remotePatient);
+
+        return Right(remotePatient);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<List<PatientServiceModel>>>>
+      getPatientServices(
+          {required GetPatientServiceParams getPatientServiceParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<List<PatientServiceModel>> remotePatient =
+            await remoteDataSource.getPatientServices(
+                getPatientServiceParams: getPatientServiceParams);
 
         // localDataSource.cachePatient(templateToCache: remotePatient);
 

@@ -60,7 +60,6 @@ class Unit {
   static const String KG = 'Kg';
 }
 
-
 /*
 - Mạch: "code":"SIG_02", "unit":"lần/phút"
 
@@ -78,3 +77,30 @@ class Unit {
 
 - Nhóm máu: "code":"SIG_10", "value_string":"O/Rh-" 
 */
+
+class ServiceType {
+  static const String BHYT = 'health_insurance';
+  static const String fee = 'fee';
+  static const String free = 'free';
+  static const String other = 'other';
+  static const String GOV_TT36 = 'GOV-TT36';
+
+  static String convert(String type) {
+    switch (type) {
+      case BHYT:
+        return 'BHYT';
+      case fee:
+        return 'Có phí';
+      case free:
+        return 'Miễn phí';
+      case other:
+        return 'Khác';
+      case GOV_TT36:
+        return 'GOV-TT36';
+      default:
+        return '';
+    }
+  }
+}
+
+enum ServiceStatus { plan, publish, cancel, done }

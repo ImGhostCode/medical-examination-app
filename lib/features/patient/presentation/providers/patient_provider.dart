@@ -7,7 +7,9 @@ import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
+import 'package:medical_examination_app/features/patient/business/entities/patient_service_entity.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_info_usecase.dart';
+import 'package:medical_examination_app/features/patient/business/usecases/get_patient_serv_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -28,12 +30,14 @@ class PatientProvider extends ChangeNotifier {
 
   List<InRoomPatientEntity> listPatientInRoom;
   List<InRoomPatientEntity> listRenderPatientInRoom = [];
+  List<PatientServiceEntity> listPatientServices = [];
 
   PatientEntity? patientInfo;
 
   Failure? failure;
 
   bool _isLoading = false;
+  bool isLoadingServices = false;
   bool get isLoading => _isLoading;
   set isLoading(bool value) {
     _isLoading = value;
@@ -134,6 +138,50 @@ class PatientProvider extends ChangeNotifier {
       (ResponseModel<PatientEntity> response) {
         _isLoading = false;
         patientInfo = response.data;
+        code = response.code;
+        type = response.type;
+        status = response.status;
+        message = response.message;
+        failure = null;
+        notifyListeners();
+      },
+    );
+  }
+
+  void eitherFailureOrGetPatientServices(String type, int encounter) async {
+    listPatientServices = [];
+    isLoadingServices = true;
+    PatientRepositoryImpl repository = PatientRepositoryImpl(
+      remoteDataSource: PatientRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: PatientLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrPatient =
+        await GetPatientServiceUsecase(patientRepository: repository).call(
+      getPatientServiceParams: GetPatientServiceParams(
+        type: type,
+        encounter: encounter,
+        token: await secureStorage.read(key: 'token') ?? '',
+      ),
+    );
+
+    failureOrPatient.fold(
+      (Failure newFailure) {
+        isLoadingServices = false;
+        listPatientServices = [];
+        failure = newFailure;
+        notifyListeners();
+      },
+      (ResponseModel<List<PatientServiceEntity>> response) {
+        isLoadingServices = false;
+        listPatientServices = response.data;
         code = response.code;
         type = response.type;
         status = response.status;

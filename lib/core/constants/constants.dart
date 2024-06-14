@@ -132,6 +132,8 @@ String kRef = 'ref';
 String kPara = 'para';
 String kFileName = 'file_name';
 String kPageSize = 'page_size';
+String kOwner = 'owner';
+String kService = 'service';
 
 // Streatment Sheet
 String kDoctor = 'doctor';

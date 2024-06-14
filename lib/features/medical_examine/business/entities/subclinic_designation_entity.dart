@@ -1,23 +1,25 @@
 class SubclinicDesignationEntity {
-  String id;
-  String ref;
-  List<Para> para;
-  int encounter;
-  String fileName;
-  String pageSize;
+  String? id;
+  String? ref;
+  List<Para>? para;
+  int? encounter;
+  String? fileName;
+  String? pageSize;
+  String? code;
 
   SubclinicDesignationEntity(
-      {required this.id,
-      required this.ref,
-      required this.para,
-      required this.encounter,
-      required this.fileName,
-      required this.pageSize});
+      {this.id,
+      this.ref,
+      this.para,
+      this.encounter,
+      this.fileName,
+      this.pageSize,
+      this.code});
 }
 
 class Para {
   String code;
-  String value;
+  dynamic value;
 
   Para({required this.code, required this.value});
 }

@@ -43,6 +43,7 @@ class _ClinicalServiceRequestPageState
 
   List<SubclinicServiceEntity> selectedSubclinicServices = [];
   List<ICDEntity> selectedICDs = [];
+  bool isNotSelectedService = false;
 
   @override
   void initState() {
@@ -56,10 +57,19 @@ class _ClinicalServiceRequestPageState
   }
 
   void saveData(bool isPublish, VoidCallback callback) async {
-    if (_formKey.currentState!.validate()) {
+    if (selectedSubclinicServices.isEmpty) {
+      setState(() {
+        isNotSelectedService = true;
+      });
+      return;
+    }
+    if (selectedSubclinicServices.isNotEmpty) {
+      setState(() {
+        isNotSelectedService = false;
+      });
       List<ServiceParams> services = selectedSubclinicServices
           .map((e) => ServiceParams(
-              code: e.id.toString(),
+              code: e.value.toString(),
               quantity: e.quantity!,
               type: 'fee',
               isCard:
@@ -93,7 +103,8 @@ class _ClinicalServiceRequestPageState
               rate,
               isPublish);
 
-      if (result.runtimeType == Failure) {
+      if (result.runtimeType == Failure ||
+          result.runtimeType == ServerFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text((result as Failure).errorMessage),
@@ -286,7 +297,7 @@ class _ClinicalServiceRequestPageState
                         RichText(
                           text: TextSpan(
                             text: 'Giá: ',
-                            style: DefaultTextStyle.of(context).style,
+                            style: Theme.of(context).textTheme.bodyLarge,
                             children: <TextSpan>[
                               TextSpan(
                                   text:
@@ -403,6 +414,19 @@ class _ClinicalServiceRequestPageState
             ],
           ),
         ),
+        if (isNotSelectedService)
+          Column(
+            children: [
+              const SizedBox(height: 8),
+              Text(
+                'Vui lòng chọn ít nhất một dịch vụ',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(color: Colors.red),
+              )
+            ],
+          )
       ],
     );
   }
@@ -488,6 +512,11 @@ class _ClinicalServiceRequestPageState
                         ? null
                         : () async {
                             saveData(false, () {
+                              Provider.of<MedicalExamineProvider>(context,
+                                      listen: false)
+                                  .eitherFailureOrGetEnteredSubclinicSerivce(
+                                      'subclinic',
+                                      args.patientInfo.encounter.toString());
                               Navigator.of(context).pop();
                             });
                           },
@@ -503,6 +532,11 @@ class _ClinicalServiceRequestPageState
                         ? null
                         : () async {
                             saveData(true, () {
+                              Provider.of<MedicalExamineProvider>(context,
+                                      listen: false)
+                                  .eitherFailureOrGetEnteredSubclinicSerivce(
+                                      'subclinic',
+                                      args.patientInfo.encounter.toString());
                               Navigator.of(context).pop();
                             });
                           },

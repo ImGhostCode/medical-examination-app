@@ -536,10 +536,19 @@ class MedicalExamineRemoteDataSourceImpl
 
       return ResponseModel<List<SubclinicDesignationModel>>.fromJson(
           json: response.data,
-          fromJsonD: (json) => json
-              .map<SubclinicDesignationModel>(
-                  (e) => SubclinicDesignationModel.fromJson(json: e))
-              .toList());
+          fromJsonD: (json) {
+            if (subclinicServDesignationParams.isPublish) {
+              return json
+                  .map<SubclinicDesignationModel>(
+                      (e) => SubclinicDesignationModel.fromJson(json: e))
+                  .toList();
+            } else {
+              return json['items']
+                  .map<SubclinicDesignationModel>(
+                      (e) => SubclinicDesignationModel.fromJson(json: e))
+                  .toList();
+            }
+          });
     } on DioException catch (e) {
       throw ServerException(
           message: e.response!.data[kMessage],
