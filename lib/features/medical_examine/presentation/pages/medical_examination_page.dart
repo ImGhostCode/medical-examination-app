@@ -38,6 +38,9 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   List<SignalEntity> listWeightSignals = [];
   List<SignalEntity> listHeightSignals = [];
   List<SignalEntity> listBloodGroupSignals = [];
+  bool isExpandedPubSer = false;
+  Map<String, List<PatientServiceEntity>>? groupByReportCode;
+  List<Item>? data;
 
   @override
   void initState() {
@@ -1084,123 +1087,252 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                 List<PatientServiceEntity> listPatientServices =
                     value.listPatientServices;
 
-                return ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              listPatientServices[index].status ==
-                                      ServiceStatus.plan.name
-                                  ? const Tooltip(
-                                      triggerMode: TooltipTriggerMode.tap,
-                                      message: "Kế hoạch",
-                                      child: Icon(FontAwesomeIcons.file,
-                                          color: Colors.amber),
-                                    )
-                                  : const Tooltip(
-                                      triggerMode: TooltipTriggerMode.tap,
-                                      message: "Đã ban hành",
-                                      child: Icon(Icons.verified_outlined,
-                                          color: Colors.green),
-                                    ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  '${index + 1}. ${listPatientServices[index].service}',
-                                ),
-                              ),
-                              if (listPatientServices[index].status ==
-                                  ServiceStatus.plan.name)
-                                const SizedBox(width: 4),
-                              if (listPatientServices[index].status ==
-                                  ServiceStatus.plan.name)
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.all(8),
-                                        backgroundColor: Colors.green),
-                                    onPressed: () {},
-                                    child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.verified_outlined),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Text('Ban hành')
-                                        ])),
-                            ],
+                // Group services by Report code
+                if (groupByReportCode == null) {
+                  groupByReportCode = {};
+                  listPatientServices.forEach((element) {
+                    if (groupByReportCode!.containsKey(element.reportCode)) {
+                      groupByReportCode![element.reportCode]!
+                          .add(element); // Add to existing list
+                    } else {
+                      groupByReportCode![element.reportCode] = [
+                        element
+                      ]; // Create a new list
+                    }
+                  });
+
+                  data = groupByReportCode!.keys
+                      .map((e) => Item(
+                          headerValue: codeToReport(e),
+                          expandedValue: groupByReportCode![e]!,
+                          isExpanded: false))
+                      .toList();
+                }
+                if (data == null || data!.isEmpty) {
+                  return const Center(
+                    child: Text('Không có dữ liệu'),
+                  );
+                }
+                return ExpansionPanelList(
+                  expandedHeaderPadding: EdgeInsets.zero,
+                  dividerColor: Colors.white,
+                  elevation: 0,
+                  materialGapSize: 0,
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      data![index].isExpanded = isExpanded;
+                    });
+                  },
+                  children: data!.map<ExpansionPanel>((Item item) {
+                    return ExpansionPanel(
+                      backgroundColor: Colors.white,
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 0),
+                          title: Text(
+                            item.headerValue,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(top: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: Colors.grey.shade300, width: 1.5)),
-                            child: Column(
-                              // mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        );
+                      },
+                      body: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Table(
+                              border: TableBorder.all(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Colors.grey,
+                                  width: 1.5),
+                              defaultVerticalAlignment:
+                                  TableCellVerticalAlignment.middle,
+                              columnWidths: const {
+                                0: FixedColumnWidth(50),
+                                1: FixedColumnWidth(200),
+                                2: FixedColumnWidth(100),
+                                3: FixedColumnWidth(100),
+                                4: FixedColumnWidth(100),
+                                5: FixedColumnWidth(200),
+                                6: FixedColumnWidth(150),
+                              },
                               children: [
-                                RichText(
-                                  text: TextSpan(
-                                    text: 'Loại: ',
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge!,
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: ServiceType.convert(
-                                              listPatientServices[index].type),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.bold)),
-                                    ],
+                                TableRow(children: [
+                                  TableCell(
+                                    child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade200),
+                                        child: const Text('TT')),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                RichText(
-                                  text: TextSpan(
-                                    text: 'Giá: ',
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge!,
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text:
-                                              '${formatCurrency(listPatientServices[index].price)}đ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.bold)),
-                                    ],
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text(
+                                        'Dịch vụ',
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  listPatientServices[index].creators ?? '',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const SizedBox(height: 12);
-                    },
-                    itemCount: listPatientServices.length);
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text('Số lượng'),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text('Đơn vị'),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text('Giá'),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text('Kết quả'),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade200),
+                                      child: const Text('Hành động'),
+                                    ),
+                                  ),
+                                ]),
+                                // ...groupByReportCode[item.headerValue]!
+                                //     .asMap()
+                                //     .entries
+                                //     .map((e) {
+                                //   return
+
+                                ...item.expandedValue.map((e) {
+                                  return TableRow(children: [
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child:
+                                            e.status == ServiceStatus.plan.name
+                                                ? const Tooltip(
+                                                    triggerMode:
+                                                        TooltipTriggerMode.tap,
+                                                    message: "Bản nháp",
+                                                    child: Icon(
+                                                        FontAwesomeIcons.file,
+                                                        color: Colors.amber),
+                                                  )
+                                                : const Tooltip(
+                                                    triggerMode:
+                                                        TooltipTriggerMode.tap,
+                                                    message: "Đã ban hành",
+                                                    child: Icon(
+                                                        Icons.verified_outlined,
+                                                        color: Colors.green),
+                                                  ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          e.service,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          e.quantity.toString(),
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          e.unit,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          '${formatCurrency(e.price)}đ',
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          e.result ?? '',
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(8),
+                                        child: e.status ==
+                                                ServiceStatus.plan.name
+                                            ? ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    backgroundColor:
+                                                        Colors.green),
+                                                onPressed: () {},
+                                                child: const Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(Icons
+                                                          .verified_outlined),
+                                                      SizedBox(
+                                                        width: 4,
+                                                      ),
+                                                      Text('Ban hành')
+                                                    ]),
+                                              )
+                                            : const SizedBox.shrink(),
+                                      ),
+                                    ),
+                                  ]);
+                                })
+                              ])),
+                      isExpanded: item.isExpanded,
+                    );
+                  }).toList(),
+                );
               }),
               TextButton(
                 onPressed: Provider.of<PatientProvider>(context, listen: true)
@@ -1250,3 +1382,24 @@ class SubclinicSerDesignationArguments {
   SubclinicSerDesignationArguments(
       {required this.patientInfo, required this.division});
 }
+
+class Item {
+  Item({
+    required this.expandedValue,
+    required this.headerValue,
+    this.isExpanded = true,
+  });
+
+  List<PatientServiceEntity> expandedValue;
+  String headerValue;
+  bool isExpanded;
+}
+
+// List<Item> generateItems(int numberOfItems) {
+//   return List<Item>.generate(numberOfItems, (int index) {
+//     return Item(
+//       headerValue: 'Panel $index',
+//       expandedValue: 'This is item number $index',
+//     );
+//   });
+// }

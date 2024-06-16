@@ -6,14 +6,21 @@ class PatientServiceEntity {
   String status;
   String? creators;
   String service;
+  String reportCode;
+  int quantity;
+  String unit;
+  String? result;
 
-  PatientServiceEntity({
-    required this.id,
-    required this.type,
-    this.owner,
-    required this.price,
-    required this.status,
-    this.creators,
-    required this.service,
-  });
+  PatientServiceEntity(
+      {required this.id,
+      required this.type,
+      this.owner,
+      required this.price,
+      required this.status,
+      this.creators,
+      required this.service,
+      required this.reportCode,
+      required this.quantity,
+      required this.unit,
+      this.result});
 }

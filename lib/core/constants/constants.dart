@@ -134,6 +134,7 @@ String kFileName = 'file_name';
 String kPageSize = 'page_size';
 String kOwner = 'owner';
 String kService = 'service';
+String kReportCode = 'report_code';
 
 // Streatment Sheet
 String kDoctor = 'doctor';

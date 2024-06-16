@@ -18,7 +18,6 @@ import 'package:medical_examination_app/features/medical_examine/presentation/wi
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/option_checkbox.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:alphabet_list_view/alphabet_list_view.dart';
 import 'package:tiengviet/tiengviet.dart';
 
 class ClinicalServiceRequestPage extends StatefulWidget {
@@ -552,37 +551,9 @@ class _ClinicalServiceRequestPageState
   Future<dynamic> showAddDiagnosticModal(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
 
-    final AlphabetListViewOptions options = AlphabetListViewOptions(
-      listOptions: ListOptions(
-        listHeaderBuilder: (context, symbol) => Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            // borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            symbol,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-      scrollbarOptions: ScrollbarOptions(
-          // forcePosition: AlphabetScrollbarPosition.left,
-          decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(4),
-      )),
-      overlayOptions: const OverlayOptions(
-        showOverlay: false,
-      ),
-    );
-
     return showModalBottomSheet(
         context: context,
-        isScrollControlled: true,
+        // isScrollControlled: true,
         // isDismissible: false,
         enableDrag: false,
         builder: (context) {
@@ -594,7 +565,7 @@ class _ClinicalServiceRequestPageState
               ),
               padding: const EdgeInsets.all(16),
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.8,
+              // height: MediaQuery.of(context).size.height * 0.8,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -633,82 +604,63 @@ class _ClinicalServiceRequestPageState
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Consumer<CategoryProvider>(builder: (context, value, child) {
-                    if (value.isLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (value.listICD.isEmpty) {
-                      return const Center(
-                        child: Text('Chưa có dữ liệu'),
-                      );
-                    }
-                    if (value.failure != null) {
-                      return Center(
-                        child: Text(value.failure!.errorMessage),
-                      );
-                    }
-
-                    List<ICDEntity> listICD = value.listICD;
-
-                    Map<String, List<ICDEntity>> mapICD = {};
-
-                    listICD.forEach((entity) {
-                      String startLetter = entity.code[0];
-
-                      if (!selectedICDs.contains(entity) &&
-                          (TiengViet.parse(entity.display)
-                                  .toLowerCase()
-                                  .contains(
-                                      TiengViet.parse(searchController.text)
-                                          .toLowerCase()) ||
-                              entity.code.contains(searchController.text))) {
-                        mapICD.putIfAbsent(startLetter, () => []).add(entity);
+                  Consumer<CategoryProvider>(
+                    builder: (context, value, child) {
+                      if (value.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
                       }
-                    });
+                      if (value.listICD.isEmpty) {
+                        return const Center(
+                          child: Text('Chưa có dữ liệu'),
+                        );
+                      }
+                      if (value.failure != null) {
+                        return Center(
+                          child: Text(value.failure!.errorMessage),
+                        );
+                      }
+                      List<ICDEntity> fileterICD = [];
+                      if (searchController.text.isNotEmpty) {
+                        fileterICD = value.listICD
+                            .where((e) =>
+                                !selectedICDs.contains(e) &&
+                                (TiengViet.parse(e.display)
+                                        .toLowerCase()
+                                        .contains(TiengViet.parse(
+                                                searchController.text)
+                                            .toLowerCase()) ||
+                                    e.code.contains(searchController.text)))
+                            .toList();
+                      }
 
-                    List<AlphabetListViewItemGroup> groups =
-                        mapICD.entries.map((entry) {
-                      return AlphabetListViewItemGroup(
-                        tag: entry.key,
-                        children: entry.value
-                            .map(
-                              (e) => Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                      child: Text('${e.code} - ${e.display}')),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                    ),
-                                    onPressed: () {
-                                      selectedICDs.add(e);
-                                      setState(() {});
-                                    },
-                                    child: const Text('Thêm'),
+                      return Expanded(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                  '${fileterICD[index].code} - ${fileterICD[index].display}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                trailing: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
                                   ),
-                                ],
-                              ),
-                            )
-                            .toList(),
+                                  onPressed: () {
+                                    selectedICDs.add(fileterICD[index]);
+                                    setState(() {});
+                                  },
+                                  child: const Text('Thêm'),
+                                ),
+                              );
+                            },
+                            itemCount: fileterICD.length),
                       );
-                    }).toList();
-
-                    print('object');
-
-                    return Expanded(
-                      child: AlphabetListView(
-                        items: groups,
-                        options: options,
-                      ),
-                    );
-                  })
+                    },
+                  )
                 ],
               ),
             );

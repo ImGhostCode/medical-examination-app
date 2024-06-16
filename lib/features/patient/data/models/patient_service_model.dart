@@ -9,7 +9,11 @@ class PatientServiceModel extends PatientServiceEntity {
       required super.price,
       required super.status,
       super.creators,
-      required super.service});
+      required super.service,
+      required super.reportCode,
+      required super.quantity,
+      required super.unit,
+      super.result});
 
   factory PatientServiceModel.fromJson({required Map<String, dynamic> json}) {
     return PatientServiceModel(
@@ -20,6 +24,10 @@ class PatientServiceModel extends PatientServiceEntity {
       status: json[kStatus],
       creators: json[kCreators],
       service: json[kService],
+      reportCode: json[kReportCode],
+      quantity: json[kQuantity].toInt(),
+      unit: json[kUnit],
+      result: json[kResult],
     );
   }
 
@@ -32,6 +40,10 @@ class PatientServiceModel extends PatientServiceEntity {
       kStatus: super.status,
       kCreators: super.creators,
       kService: super.service,
+      kReportCode: super.reportCode,
+      kQuantity: super.quantity,
+      kUnit: super.unit,
+      kResult: super.result,
     };
   }
 }
