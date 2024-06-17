@@ -3,7 +3,8 @@ import 'package:medical_examination_app/features/category/business/entities/subc
 
 class SubclinicServiceModel extends SubclinicServiceEntity {
   SubclinicServiceModel(
-      {super.cc,
+      {super.refIdx,
+      super.cc,
       super.dv,
       super.tt,
       super.code,
@@ -29,6 +30,7 @@ class SubclinicServiceModel extends SubclinicServiceEntity {
 
   factory SubclinicServiceModel.fromJson({required Map<String, dynamic> json}) {
     return SubclinicServiceModel(
+      refIdx: json[kRefIdx],
       cc: json[kCc],
       dv: json[kDv],
       tt: json[kTt],
@@ -57,6 +59,7 @@ class SubclinicServiceModel extends SubclinicServiceEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      kRefIdx: refIdx,
       kCc: cc,
       kDv: dv,
       kTt: tt,

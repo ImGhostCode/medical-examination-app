@@ -272,7 +272,8 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       : const Tooltip(
                                           triggerMode: TooltipTriggerMode.tap,
                                           message: "Đã ban hành",
-                                          child: Icon(Icons.verified_outlined,
+                                          child: Icon(
+                                              Icons.check_circle_rounded,
                                               color: Colors.green),
                                         ),
                                   const SizedBox(width: 4),
@@ -366,7 +367,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                         child: const Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(Icons.verified_outlined),
+                                              Icon(Icons.check_circle_outline),
                                               SizedBox(
                                                 width: 4,
                                               ),
@@ -559,7 +560,8 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       : const Tooltip(
                                           triggerMode: TooltipTriggerMode.tap,
                                           message: "Đã ban hành",
-                                          child: Icon(Icons.verified_outlined,
+                                          child: Icon(
+                                              Icons.check_circle_rounded,
                                               color: Colors.green),
                                         ),
                                   const SizedBox(width: 4),
@@ -658,7 +660,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                         child: const Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(Icons.verified_outlined),
+                                              Icon(Icons.check_circle_outline),
                                               SizedBox(
                                                 width: 4,
                                               ),
@@ -1040,6 +1042,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                         Text(
                           'Loại bệnh án: ${args.patient.classifyName}',
                         ),
+                      const SizedBox(height: 8),
+                      if (value.patientInfo!.medicalClass == MedicalClass.IMP &&
+                          value.patientInfo!.location.isNotEmpty)
+                        Text(
+                          'Vị trí: ${value.patientInfo!.location[0].display}',
+                        ),
 
                       const SizedBox(height: 8),
                       Text(
@@ -1114,7 +1122,10 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                   );
                 }
                 return ExpansionPanelList(
-                  expandedHeaderPadding: EdgeInsets.zero,
+                  expandedHeaderPadding: const EdgeInsets.only(
+                    top: 8,
+                    bottom: 8,
+                  ),
                   dividerColor: Colors.white,
                   elevation: 0,
                   materialGapSize: 0,
@@ -1134,6 +1145,25 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                             item.headerValue,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
+                          trailing: item.expandedValue
+                                  .where((e) => e.isSelected == true)
+                                  .isNotEmpty
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.all(8),
+                                      backgroundColor: Colors.green),
+                                  onPressed: () {},
+                                  child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.check_circle_outline),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text('Ban hành')
+                                      ]),
+                                )
+                              : const SizedBox.shrink(),
                         );
                       },
                       body: SingleChildScrollView(
@@ -1141,7 +1171,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                           child: Table(
                               border: TableBorder.all(
                                   borderRadius: BorderRadius.circular(5),
-                                  color: Colors.grey,
+                                  color: Colors.blueGrey.shade100,
                                   width: 1.5),
                               defaultVerticalAlignment:
                                   TableCellVerticalAlignment.middle,
@@ -1152,7 +1182,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                 3: FixedColumnWidth(100),
                                 4: FixedColumnWidth(100),
                                 5: FixedColumnWidth(200),
-                                6: FixedColumnWidth(150),
+                                6: FixedColumnWidth(50),
                               },
                               children: [
                                 TableRow(children: [
@@ -1217,7 +1247,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
                                           color: Colors.grey.shade200),
-                                      child: const Text('Hành động'),
+                                      child: const Text(''),
                                     ),
                                   ),
                                 ]),
@@ -1231,27 +1261,19 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                   return TableRow(children: [
                                     TableCell(
                                       child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child:
-                                            e.status == ServiceStatus.plan.name
-                                                ? const Tooltip(
-                                                    triggerMode:
-                                                        TooltipTriggerMode.tap,
-                                                    message: "Bản nháp",
-                                                    child: Icon(
-                                                        FontAwesomeIcons.file,
-                                                        color: Colors.amber),
-                                                  )
-                                                : const Tooltip(
-                                                    triggerMode:
-                                                        TooltipTriggerMode.tap,
-                                                    message: "Đã ban hành",
-                                                    child: Icon(
-                                                        Icons.verified_outlined,
-                                                        color: Colors.green),
-                                                  ),
-                                      ),
+                                          alignment: Alignment.center,
+                                          padding: const EdgeInsets.all(8),
+                                          child: Tooltip(
+                                            triggerMode: TooltipTriggerMode.tap,
+                                            message: ServiceStatus
+                                                .statusToVietnamese(e.status),
+                                            child: Icon(
+                                                ServiceStatus.statusIcon(
+                                                    e.status),
+                                                color:
+                                                    ServiceStatus.statusColor(
+                                                        e.status)),
+                                          )),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -1295,6 +1317,10 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                         padding: const EdgeInsets.all(8),
                                         child: Text(
                                           e.result ?? '',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(color: Colors.green),
                                         ),
                                       ),
                                     ),
@@ -1302,26 +1328,31 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                       child: Container(
                                         alignment: Alignment.center,
                                         padding: const EdgeInsets.all(8),
-                                        child: e.status ==
-                                                ServiceStatus.plan.name
-                                            ? ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    backgroundColor:
-                                                        Colors.green),
-                                                onPressed: () {},
-                                                child: const Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(Icons
-                                                          .verified_outlined),
-                                                      SizedBox(
-                                                        width: 4,
-                                                      ),
-                                                      Text('Ban hành')
-                                                    ]),
+                                        child: e.status == ServiceStatus.planned
+                                            ? Transform.scale(
+                                                scale: 1.4,
+                                                child: Checkbox(
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              3)),
+                                                  side: BorderSide(
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      width: 1.5),
+                                                  checkColor: Colors.white,
+                                                  fillColor: e.isSelected
+                                                      ? const WidgetStatePropertyAll(
+                                                          Colors.blue)
+                                                      : const WidgetStatePropertyAll(
+                                                          Colors.white),
+                                                  value: e.isSelected,
+                                                  onChanged: (bool? value) {
+                                                    setState(() {
+                                                      e.isSelected = value!;
+                                                    });
+                                                  },
+                                                ),
                                               )
                                             : const SizedBox.shrink(),
                                       ),
@@ -1394,12 +1425,3 @@ class Item {
   String headerValue;
   bool isExpanded;
 }
-
-// List<Item> generateItems(int numberOfItems) {
-//   return List<Item>.generate(numberOfItems, (int index) {
-//     return Item(
-//       headerValue: 'Panel $index',
-//       expandedValue: 'This is item number $index',
-//     );
-//   });
-// }

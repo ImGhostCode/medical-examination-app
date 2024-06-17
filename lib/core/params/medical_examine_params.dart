@@ -183,13 +183,15 @@ class PublishMedicalSheetParams {
 }
 
 class SubclinicServDesignationParams {
+  String medicalClass;
   String status;
   int doctor;
   List<ServiceParams> services;
   int encounter;
   int subject;
   ReasonParams reason;
-  int request;
+  int? requrest;
+  int? division;
   String note;
   int rate;
   bool isPublish;
@@ -199,13 +201,15 @@ class SubclinicServDesignationParams {
   String code;
 
   SubclinicServDesignationParams({
+    required this.medicalClass,
     required this.status,
     required this.doctor,
     required this.services,
     required this.encounter,
     required this.subject,
     required this.reason,
-    required this.request,
+    this.requrest,
+    this.division,
     required this.note,
     required this.rate,
     required this.isPublish,

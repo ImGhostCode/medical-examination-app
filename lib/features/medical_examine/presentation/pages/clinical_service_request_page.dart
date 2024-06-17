@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
@@ -16,6 +17,7 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pa
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/dialog_record.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/option_checkbox.dart';
+import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:tiengviet/tiengviet.dart';
@@ -70,10 +72,16 @@ class _ClinicalServiceRequestPageState
           .map((e) => ServiceParams(
               code: e.value.toString(),
               quantity: e.quantity!,
-              type: 'fee',
-              isCard:
-                  args.patientInfo.healthInsuranceCard != null ? 'on' : 'off',
-              emergency: false,
+              type: e.type ??
+                  (args.patientInfo.healthInsuranceCard == null
+                      ? FeeOject.fee.name
+                      : FeeOject.insurance.name),
+              isCard: e.tt == true
+                  ? ISCard.off.name
+                  : (args.patientInfo.healthInsuranceCard != null
+                      ? ISCard.on.name
+                      : ISCard.none.name),
+              emergency: e.emergency,
               option: [],
               start: ''))
           .toList();
@@ -91,12 +99,17 @@ class _ClinicalServiceRequestPageState
       final result = await Provider.of<MedicalExamineProvider>(context,
               listen: false)
           .eitherFailureOrDesignSubcliService(
-              'new',
+              args.patientInfo.medicalClass,
+              ServiceStatus.New,
               Provider.of<AuthProvider>(context, listen: false).userEntity!.id,
               services,
               args.patientInfo.encounter,
               args.patientInfo.subject,
               reason,
+              (args.patientInfo.medicalClass == MedicalClass.IMP &&
+                      args.patientInfo.location.isNotEmpty)
+                  ? args.patientInfo.location[0].value
+                  : null,
               args.division,
               _textEditingController.text,
               rate,
@@ -269,6 +282,18 @@ class _ClinicalServiceRequestPageState
                             onPressed: (value) {
                               setState(() {
                                 selectedSubclinicServices[index].dv = value!;
+
+                                if (value) {
+                                  selectedSubclinicServices[index].type =
+                                      FeeOject.required.name;
+                                  selectedSubclinicServices[index].tt = false;
+                                } else {
+                                  selectedSubclinicServices[index].type =
+                                      args.patientInfo.healthInsuranceCard !=
+                                              null
+                                          ? FeeOject.fee.name
+                                          : FeeOject.insurance.name;
+                                }
                               });
                             }),
                         OptionCheckbox(
@@ -277,6 +302,17 @@ class _ClinicalServiceRequestPageState
                             onPressed: (value) {
                               setState(() {
                                 selectedSubclinicServices[index].tt = value!;
+                                if (value) {
+                                  selectedSubclinicServices[index].dv = false;
+                                  selectedSubclinicServices[index].type =
+                                      FeeOject.fee.name;
+                                } else {
+                                  selectedSubclinicServices[index].type =
+                                      args.patientInfo.healthInsuranceCard !=
+                                              null
+                                          ? FeeOject.fee.name
+                                          : FeeOject.insurance.name;
+                                }
                               });
                             }),
                         OptionCheckbox(
@@ -285,6 +321,8 @@ class _ClinicalServiceRequestPageState
                             onPressed: (value) {
                               setState(() {
                                 selectedSubclinicServices[index].cc = value!;
+                                selectedSubclinicServices[index].emergency =
+                                    value;
                               });
                             }),
                       ],
@@ -511,12 +549,11 @@ class _ClinicalServiceRequestPageState
                         ? null
                         : () async {
                             saveData(false, () {
-                              Provider.of<MedicalExamineProvider>(context,
-                                      listen: false)
-                                  .eitherFailureOrGetEnteredSubclinicSerivce(
-                                      'subclinic',
-                                      args.patientInfo.encounter.toString());
                               Navigator.of(context).pop();
+                              Provider.of<PatientProvider>(context,
+                                      listen: false)
+                                  .eitherFailureOrGetPatientServices(
+                                      'all', args.patientInfo.encounter);
                             });
                           },
                     child: const Text('Lưu'),
@@ -531,12 +568,11 @@ class _ClinicalServiceRequestPageState
                         ? null
                         : () async {
                             saveData(true, () {
-                              Provider.of<MedicalExamineProvider>(context,
-                                      listen: false)
-                                  .eitherFailureOrGetEnteredSubclinicSerivce(
-                                      'subclinic',
-                                      args.patientInfo.encounter.toString());
                               Navigator.of(context).pop();
+                              Provider.of<PatientProvider>(context,
+                                      listen: false)
+                                  .eitherFailureOrGetPatientServices(
+                                      'all', args.patientInfo.encounter);
                             });
                           },
                     child: const Text('Ban hành'),

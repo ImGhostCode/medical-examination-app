@@ -601,13 +601,15 @@ class MedicalExamineProvider extends ChangeNotifier {
   }
 
   dynamic eitherFailureOrDesignSubcliService(
+      String medicalClass,
       String status,
       int doctor,
       List<ServiceParams> services,
       int encounter,
       int subject,
       ReasonParams reason,
-      int request,
+      int? request,
+      int? division,
       String note,
       int rate,
       bool isPublish) async {
@@ -629,13 +631,15 @@ class MedicalExamineProvider extends ChangeNotifier {
         await DesignSubcliServUsecase(medicalExamineRepository: repository)
             .call(
                 subclinicServDesignationParams: SubclinicServDesignationParams(
+      medicalClass: medicalClass,
       status: status,
       doctor: doctor,
       services: services,
       encounter: encounter,
       subject: subject,
       reason: reason,
-      request: request,
+      requrest: request,
+      division: division,
       note: note,
       rate: rate,
       isPublish: isPublish,

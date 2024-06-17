@@ -22,32 +22,39 @@ class SubclinicServiceEntity {
   int? id;
   String? creators;
   String? location;
+  String? type;
+  bool emergency = false;
+  String? isCard;
+  int? refIdx;
 
-  SubclinicServiceEntity({
-    this.cc,
-    this.dv,
-    this.tt,
-    this.code,
-    this.unit,
-    this.price,
-    this.value,
-    this.report,
-    this.choosed,
-    this.display,
-    this.groupId,
-    this.quantity,
-    this.isPublic,
-    this.obsGroup,
-    this.createUid,
-    this.obsResult,
-    this.editQuantity,
-    this.priceRequired,
-    this.priceInsurance,
-    this.result,
-    this.id,
-    this.creators,
-    this.location,
-  });
+  SubclinicServiceEntity(
+      {this.refIdx,
+      this.cc,
+      this.dv,
+      this.tt,
+      this.code,
+      this.unit,
+      this.price,
+      this.value,
+      this.report,
+      this.choosed,
+      this.display,
+      this.groupId,
+      this.quantity,
+      this.isPublic,
+      this.obsGroup,
+      this.createUid,
+      this.obsResult,
+      this.editQuantity,
+      this.priceRequired,
+      this.priceInsurance,
+      this.result,
+      this.id,
+      this.creators,
+      this.location,
+      this.type,
+      this.emergency = false,
+      this.isCard = 'on'});
 }
 
 

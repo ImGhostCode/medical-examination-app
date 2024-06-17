@@ -10,6 +10,7 @@ class PatientServiceEntity {
   int quantity;
   String unit;
   String? result;
+  bool isSelected;
 
   PatientServiceEntity(
       {required this.id,
@@ -22,5 +23,6 @@ class PatientServiceEntity {
       required this.reportCode,
       required this.quantity,
       required this.unit,
+      this.isSelected = false,
       this.result});
 }

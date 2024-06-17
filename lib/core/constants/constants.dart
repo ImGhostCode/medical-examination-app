@@ -108,6 +108,7 @@ String kUnitRoot = 'unit_root';
 String kNote = 'note';
 
 // Subclinic Service
+String kRefIdx = 'ref_idx';
 String kCc = 'cc';
 String kDv = 'dv';
 String kTt = 'tt';

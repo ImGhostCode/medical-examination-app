@@ -516,7 +516,10 @@ class MedicalExamineRemoteDataSourceImpl
                   };
                 }).toList(),
               },
-              "request": subclinicServDesignationParams.request,
+              if (subclinicServDesignationParams.requrest != null)
+                'request': subclinicServDesignationParams.requrest,
+              if (subclinicServDesignationParams.requrest == null)
+                'division': subclinicServDesignationParams.division,
               "note": subclinicServDesignationParams.note,
               "rate": subclinicServDesignationParams.rate,
               "is_publish": subclinicServDesignationParams.isPublish,
