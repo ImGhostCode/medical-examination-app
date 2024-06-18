@@ -69,3 +69,43 @@ class GetPatientServiceParams {
     };
   }
 }
+
+class PublishPatientServiceParams {
+  String type;
+  int encounter;
+  int doctor;
+  List<PublishPatientServiceItem> items;
+  String note;
+  String token;
+
+  PublishPatientServiceParams({
+    required this.type,
+    required this.encounter,
+    required this.token,
+    required this.doctor,
+    required this.note,
+    required this.items,
+  });
+}
+
+class PublishPatientServiceItem {
+  int refIdx;
+  String code;
+  int seq;
+  int ordinal;
+  int? encounter;
+  String? unit;
+  String? valueString;
+  String? classify;
+
+  PublishPatientServiceItem({
+    required this.refIdx,
+    required this.code,
+    required this.seq,
+    required this.ordinal,
+    this.encounter,
+    this.unit,
+    this.valueString,
+    this.classify,
+  });
+}

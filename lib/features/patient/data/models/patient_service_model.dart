@@ -13,6 +13,8 @@ class PatientServiceModel extends PatientServiceEntity {
       required super.reportCode,
       required super.quantity,
       required super.unit,
+      super.refIdx,
+      required super.seq,
       super.result});
 
   factory PatientServiceModel.fromJson({required Map<String, dynamic> json}) {
@@ -28,22 +30,26 @@ class PatientServiceModel extends PatientServiceEntity {
       quantity: json[kQuantity].toInt(),
       unit: json[kUnit],
       result: json[kResult],
+      refIdx: json[kRefIdx],
+      seq: json[kSeq],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      kId: super.id,
-      kType: super.type,
-      kOwner: super.owner,
-      kPrice: super.price,
-      kStatus: super.status,
-      kCreators: super.creators,
-      kService: super.service,
-      kReportCode: super.reportCode,
-      kQuantity: super.quantity,
-      kUnit: super.unit,
-      kResult: super.result,
+      kId: id,
+      kType: type,
+      kOwner: owner,
+      kPrice: price,
+      kStatus: status,
+      kCreators: creators,
+      kService: service,
+      kReportCode: reportCode,
+      kQuantity: quantity,
+      kUnit: unit,
+      kResult: result,
+      kRefIdx: refIdx,
+      kSeq: seq,
     };
   }
 }

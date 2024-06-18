@@ -11,6 +11,8 @@ class PatientServiceEntity {
   String unit;
   String? result;
   bool isSelected;
+  int? refIdx;
+  int seq;
 
   PatientServiceEntity(
       {required this.id,
@@ -24,5 +26,7 @@ class PatientServiceEntity {
       required this.quantity,
       required this.unit,
       this.isSelected = false,
+      this.refIdx,
+      required this.seq,
       this.result});
 }

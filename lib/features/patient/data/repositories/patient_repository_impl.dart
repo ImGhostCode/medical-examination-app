@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/patient_params.dart';
+import 'package:medical_examination_app/features/patient/business/entities/patient_ser_pub_res_entity.dart';
 import 'package:medical_examination_app/features/patient/data/models/in_room_patient_model.dart';
 import 'package:medical_examination_app/features/patient/data/models/patient_model.dart';
+import 'package:medical_examination_app/features/patient/data/models/patient_ser_pub_res_model.dart';
 import 'package:medical_examination_app/features/patient/data/models/patient_service_model.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -90,6 +92,37 @@ class PatientRepositoryImpl implements PatientRepository {
         ResponseModel<List<PatientServiceModel>> remotePatient =
             await remoteDataSource.getPatientServices(
                 getPatientServiceParams: getPatientServiceParams);
+
+        // localDataSource.cachePatient(templateToCache: remotePatient);
+
+        return Right(remotePatient);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<List<PatientSerPubResEntity>>>>
+      publishPatientServices(
+          {required PublishPatientServiceParams
+              publishPatientServiceParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<List<PatientSerPubResModel>> remotePatient =
+            await remoteDataSource.publishPatientServices(
+                publishPatientServiceParams: publishPatientServiceParams);
 
         // localDataSource.cachePatient(templateToCache: remotePatient);
 

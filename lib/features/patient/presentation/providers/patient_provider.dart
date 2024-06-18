@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/patient_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
+import 'package:medical_examination_app/features/patient/business/entities/patient_ser_pub_res_entity.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_service_entity.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_info_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_serv_usecase.dart';
+import 'package:medical_examination_app/features/patient/business/usecases/publish_patient_ser_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -31,6 +35,8 @@ class PatientProvider extends ChangeNotifier {
   List<InRoomPatientEntity> listPatientInRoom;
   List<InRoomPatientEntity> listRenderPatientInRoom = [];
   List<PatientServiceEntity> listPatientServices = [];
+  Map<String, List<PatientServiceEntity>> groupByReportCode;
+  List<PatientSerExpandedItem> patientSerExpandedItems = [];
 
   PatientEntity? patientInfo;
 
@@ -50,6 +56,9 @@ class PatientProvider extends ChangeNotifier {
     this.status = '',
     this.message = '',
     this.listPatientInRoom = const [],
+    this.listRenderPatientInRoom = const [],
+    this.listPatientServices = const [],
+    this.groupByReportCode = const {},
     this.failure,
   });
 
@@ -182,6 +191,8 @@ class PatientProvider extends ChangeNotifier {
       (ResponseModel<List<PatientServiceEntity>> response) {
         isLoadingServices = false;
         listPatientServices = response.data;
+        groupByReportCode = groupByReportCodeFunc();
+        patientSerExpandedItems = patientSerExpandedItemsFunc();
         code = response.code;
         type = response.type;
         status = response.status;
@@ -192,6 +203,28 @@ class PatientProvider extends ChangeNotifier {
     );
   }
 
+  Map<String, List<PatientServiceEntity>> groupByReportCodeFunc() {
+    groupByReportCode = {};
+    listPatientServices.forEach((element) {
+      if (groupByReportCode.containsKey(element.reportCode)) {
+        groupByReportCode[element.reportCode]!
+            .add(element); // Add to existing list
+      } else {
+        groupByReportCode[element.reportCode] = [element]; // Create a new list
+      }
+    });
+    return groupByReportCode;
+  }
+
+  List<PatientSerExpandedItem> patientSerExpandedItemsFunc() {
+    return groupByReportCode.keys
+        .map((e) => PatientSerExpandedItem(
+            headerValue: codeToReport(e),
+            expandedValue: groupByReportCode[e]!,
+            isExpanded: false))
+        .toList();
+  }
+
   void searchPatientInRoom(String key) async {
     key = TiengViet.parse(key);
     listRenderPatientInRoom = listPatientInRoom
@@ -200,5 +233,62 @@ class PatientProvider extends ChangeNotifier {
             element.subject.toString().contains(key)))
         .toList();
     notifyListeners();
+  }
+
+  dynamic eitherFailureOrPublishPatientService(
+      String type,
+      int encounter,
+      int doctor,
+      List<PatientServiceEntity> selectedServices,
+      String note) async {
+    isLoading = true;
+    PatientRepositoryImpl repository = PatientRepositoryImpl(
+      remoteDataSource: PatientRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: PatientLocalDataSourceImpl(
+        sharedPreferences: await SharedPreferences.getInstance(),
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrPublishPatientService =
+        await PublishPatientServiceUsecase(patientRepository: repository).call(
+      publishPatientServiceParams: PublishPatientServiceParams(
+        type: type,
+        encounter: encounter,
+        doctor: doctor,
+        items: selectedServices.map((e) {
+          return PublishPatientServiceItem(
+            refIdx: e.refIdx!,
+            code: e.id,
+            seq: e.seq,
+            ordinal: 0,
+            encounter: null,
+            unit: null,
+            valueString: null,
+            classify: null,
+          );
+        }).toList(),
+        note: note,
+        token: await secureStorage.read(key: 'token') ?? '',
+      ),
+    );
+
+    var result = failureOrPublishPatientService.fold(
+      (Failure newFailure) {
+        isLoading = false;
+        notifyListeners();
+        return failure;
+      },
+      (ResponseModel<List<PatientSerPubResEntity>> response) {
+        isLoading = false;
+        notifyListeners();
+        return response;
+      },
+    );
+    return result;
   }
 }

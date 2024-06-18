@@ -53,15 +53,34 @@ class SearchInputField extends StatelessWidget {
   }
 }
 
-Future<void> showConfirmDialog(
-    BuildContext context, String message, Function callback) async {
+Future<void> showConfirmDialog(BuildContext context, String message,
+    Function callback, bool hasTextField, String hinText) async {
+  final TextEditingController controller = TextEditingController();
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext contextInner) {
       return AlertDialog(
         title: const Text('Xác nhận'),
-        content: Text(message),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(message),
+            if (hasTextField)
+              const SizedBox(
+                height: 8,
+              ),
+            if (hasTextField)
+              TextField(
+                controller: controller,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: hinText,
+                ),
+              ),
+          ],
+        ),
         actions: <Widget>[
           Row(
             children: [
@@ -84,7 +103,7 @@ Future<void> showConfirmDialog(
                   ),
                   child: const Text('Xác nhận'),
                   onPressed: () async {
-                    await callback(contextInner);
+                    await callback(contextInner, controller.text);
                     Navigator.of(contextInner).pop();
                   },
                 ),

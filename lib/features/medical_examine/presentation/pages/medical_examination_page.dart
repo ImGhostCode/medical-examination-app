@@ -6,6 +6,7 @@ import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/errors/failure.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
@@ -39,8 +40,6 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   List<SignalEntity> listHeightSignals = [];
   List<SignalEntity> listBloodGroupSignals = [];
   bool isExpandedPubSer = false;
-  Map<String, List<PatientServiceEntity>>? groupByReportCode;
-  List<Item>? data;
 
   @override
   void initState() {
@@ -362,6 +361,8 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                                             .toString());
                                               }
                                             },
+                                            false,
+                                            '',
                                           );
                                         },
                                         child: const Row(
@@ -607,55 +608,49 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                             padding: const EdgeInsets.all(8),
                                             backgroundColor: Colors.green),
                                         onPressed: () async {
-                                          await showConfirmDialog(
-                                            context,
-                                            'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
-                                            (BuildContext contextInner) async {
-                                              final result = await Provider.of<
-                                                          MedicalExamineProvider>(
-                                                      context,
-                                                      listen: false)
-                                                  .eitherFailureOrPublishSheet(
-                                                      streatmentSheet
-                                                          .encounter!,
-                                                      streatmentSheet.id!,
-                                                      OETTYPE.publish.name,
-                                                      args.patient.encounter);
+                                          await showConfirmDialog(context,
+                                              'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
+                                              (BuildContext
+                                                  contextInner) async {
+                                            final result = await Provider.of<
+                                                        MedicalExamineProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .eitherFailureOrPublishSheet(
+                                                    streatmentSheet.encounter!,
+                                                    streatmentSheet.id!,
+                                                    OETTYPE.publish.name,
+                                                    args.patient.encounter);
 
-                                              if (result.runtimeType ==
-                                                  Failure) {
-                                                ScaffoldMessenger.of(
-                                                        contextInner)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                        (result as Failure)
-                                                            .errorMessage),
-                                                    backgroundColor: Colors.red,
-                                                  ),
-                                                );
-                                              } else {
-                                                ScaffoldMessenger.of(
-                                                        contextInner)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text((result
-                                                            as ResponseModel)
-                                                        .message),
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                  ),
-                                                );
-                                                Provider.of<MedicalExamineProvider>(
-                                                        contextInner,
-                                                        listen: false)
-                                                    .eitherFailureOrGetEnteredStreatSheets(
-                                                        OET.OET_001.name,
-                                                        args.patient.encounter
-                                                            .toString());
-                                              }
-                                            },
-                                          );
+                                            if (result.runtimeType == Failure) {
+                                              ScaffoldMessenger.of(contextInner)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      (result as Failure)
+                                                          .errorMessage),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(contextInner)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      (result as ResponseModel)
+                                                          .message),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                              Provider.of<MedicalExamineProvider>(
+                                                      contextInner,
+                                                      listen: false)
+                                                  .eitherFailureOrGetEnteredStreatSheets(
+                                                      OET.OET_001.name,
+                                                      args.patient.encounter
+                                                          .toString());
+                                            }
+                                          }, false, '');
                                         },
                                         child: const Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -1077,8 +1072,10 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
             children: [
               Consumer<PatientProvider>(builder: (context, value, child) {
                 if (value.isLoadingServices) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16),
+                    child: const CircularProgressIndicator(),
                   );
                 }
                 if (value.listPatientServices.isEmpty) {
@@ -1092,35 +1089,6 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                   );
                 }
 
-                List<PatientServiceEntity> listPatientServices =
-                    value.listPatientServices;
-
-                // Group services by Report code
-                if (groupByReportCode == null) {
-                  groupByReportCode = {};
-                  listPatientServices.forEach((element) {
-                    if (groupByReportCode!.containsKey(element.reportCode)) {
-                      groupByReportCode![element.reportCode]!
-                          .add(element); // Add to existing list
-                    } else {
-                      groupByReportCode![element.reportCode] = [
-                        element
-                      ]; // Create a new list
-                    }
-                  });
-
-                  data = groupByReportCode!.keys
-                      .map((e) => Item(
-                          headerValue: codeToReport(e),
-                          expandedValue: groupByReportCode![e]!,
-                          isExpanded: false))
-                      .toList();
-                }
-                if (data == null || data!.isEmpty) {
-                  return const Center(
-                    child: Text('Không có dữ liệu'),
-                  );
-                }
                 return ExpansionPanelList(
                   expandedHeaderPadding: const EdgeInsets.only(
                     top: 8,
@@ -1131,10 +1099,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                   materialGapSize: 0,
                   expansionCallback: (int index, bool isExpanded) {
                     setState(() {
-                      data![index].isExpanded = isExpanded;
+                      value.patientSerExpandedItems[index].isExpanded =
+                          isExpanded;
                     });
                   },
-                  children: data!.map<ExpansionPanel>((Item item) {
+                  children: value.patientSerExpandedItems
+                      .map<ExpansionPanel>((PatientSerExpandedItem item) {
                     return ExpansionPanel(
                       backgroundColor: Colors.white,
                       headerBuilder: (BuildContext context, bool isExpanded) {
@@ -1152,7 +1122,57 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                                   style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.all(8),
                                       backgroundColor: Colors.green),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await showConfirmDialog(context,
+                                        'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
+                                        (BuildContext contextInner,
+                                            String text) async {
+                                      if (Provider.of<PatientProvider>(context,
+                                              listen: false)
+                                          .isLoading) return;
+                                      List<PatientServiceEntity>
+                                          selectedServices = item.expandedValue
+                                              .where(
+                                                  (e) => e.isSelected == true)
+                                              .toList();
+                                      final result = await Provider.of<
+                                                  PatientProvider>(context,
+                                              listen: false)
+                                          .eitherFailureOrPublishPatientService(
+                                              ServiceStatus.publish,
+                                              args.patient.encounter,
+                                              Provider.of<AuthProvider>(context,
+                                                      listen: false)
+                                                  .userEntity!
+                                                  .id,
+                                              selectedServices,
+                                              text);
+
+                                      if (result.runtimeType == Failure) {
+                                        ScaffoldMessenger.of(contextInner)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text((result as Failure)
+                                                .errorMessage),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(contextInner)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content:
+                                                Text('Ban hành thành công!'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        Provider.of<PatientProvider>(context,
+                                                listen: false)
+                                            .eitherFailureOrGetPatientServices(
+                                                'all', args.patient.encounter);
+                                      }
+                                    }, true, 'Ghi chú');
+                                  },
                                   child: const Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -1414,8 +1434,8 @@ class SubclinicSerDesignationArguments {
       {required this.patientInfo, required this.division});
 }
 
-class Item {
-  Item({
+class PatientSerExpandedItem {
+  PatientSerExpandedItem({
     required this.expandedValue,
     required this.headerValue,
     this.isExpanded = true,

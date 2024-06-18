@@ -8,10 +8,10 @@ class ResponseModel<D> {
   final String message;
 
   ResponseModel({
-    required this.code,
-    required this.type,
-    required this.status,
-    required this.message,
+    this.code = '',
+    this.type = '',
+    this.status = '',
+    this.message = '',
     required this.data,
   });
 
@@ -20,10 +20,10 @@ class ResponseModel<D> {
     required D Function(dynamic) fromJsonD,
   }) {
     return ResponseModel(
-      code: json[kCode],
-      type: json[kType],
-      status: json[kStatus],
-      message: json[kMessage],
+      code: json?[kCode] ?? '',
+      type: json?[kType] ?? '',
+      status: json?[kStatus] ?? '',
+      message: json?[kMessage] ?? '',
       data: fromJsonD(json[kData]),
     );
   }
