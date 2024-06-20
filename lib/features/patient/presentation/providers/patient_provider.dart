@@ -37,6 +37,7 @@ class PatientProvider extends ChangeNotifier {
   List<PatientServiceEntity> listPatientServices = [];
   Map<String, List<PatientServiceEntity>> groupByReportCode;
   List<PatientSerExpandedItem> patientSerExpandedItems = [];
+  InRoomPatientEntity? selectedPatientInRoom;
 
   PatientEntity? patientInfo;
 
@@ -65,6 +66,7 @@ class PatientProvider extends ChangeNotifier {
   void eitherFailureOrGetPatientInRoom(String location, String status,
       String from, String to, bool activeNewIp, String? kind) async {
     listPatientInRoom = [];
+    listRenderPatientInRoom = [];
     _isLoading = true;
     PatientRepositoryImpl repository = PatientRepositoryImpl(
       remoteDataSource: PatientRemoteDataSourceImpl(

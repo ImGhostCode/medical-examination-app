@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medical_examination_app/core/constants/constants.dart';
+// import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/category/business/entities/department_entity.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
@@ -17,16 +17,18 @@ class SearchPatientPage extends StatefulWidget {
 class _SearchPatientPageState extends State<SearchPatientPage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _searchLocationController =
-      TextEditingController();
 
   DepartmentEntity? _selectedDepartment;
   List<InRoomPatientEntity> listRenderPatient = [];
 
   @override
   void initState() {
-    Provider.of<CategoryProvider>(context, listen: false)
-        .eitherFailureOrGetDepartments('all', 'treatment_role');
+    if (Provider.of<CategoryProvider>(context, listen: false)
+            .selectedDepartment ==
+        null) {
+      Provider.of<CategoryProvider>(context, listen: false)
+          .eitherFailureOrGetDepartments('all', 'treatment_role');
+    }
     super.initState();
   }
 
@@ -76,9 +78,12 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
               child: Text(value.failure!.errorMessage),
             );
           }
-
-          _selectedDepartment = value.listDepartment.first;
-          _locationController.text = _selectedDepartment!.display;
+          if (value.selectedDepartment != null) {
+            _selectedDepartment = value.selectedDepartment;
+          } else {
+            _selectedDepartment ??= value.listDepartment.first;
+          }
+          _locationController.text = _selectedDepartment?.display ?? '';
 
           if (_selectedDepartment != null) {
             _featchPatients();
@@ -102,18 +107,44 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                         Icons.keyboard_arrow_down_rounded,
                       ),
                       onPressed: () {
-                        _showLocationModal(
+                        showLocationModal(
                           context,
                           value.listDepartment,
+                          _selectedDepartment,
+                          (department) {
+                            value.selectedDepartment = department;
+                            _locationController.text =
+                                _selectedDepartment!.display;
+                            // if (_selectedDepartment != null) {
+                            //   Provider.of<PatientProvider>(context,
+                            //           listen: false)
+                            //       .isLoading = true;
+                            //   // _featchPatients();
+                            // }
+                            setState(() {});
+                          },
                         );
                       },
                     ),
                   ),
                   readOnly: true,
                   onTap: () {
-                    _showLocationModal(
+                    showLocationModal(
                       context,
                       value.listDepartment,
+                      _selectedDepartment,
+                      (department) {
+                        setState(() {
+                          value.selectedDepartment = department;
+                          _locationController.text =
+                              _selectedDepartment!.display;
+                        });
+                        // if (_selectedDepartment != null) {
+                        //   Provider.of<PatientProvider>(context, listen: false)
+                        //       .isLoading = true;
+                        //   _featchPatients();
+                        // }
+                      },
                     );
                   },
                 ),
@@ -265,16 +296,21 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                         children: [
                                           ElevatedButton(
                                               onPressed: () {
-                                                Navigator.of(context).pushNamed(
-                                                  RouteNames.medialExamine,
-                                                  arguments: PatientInfoArguments(
-                                                      patient:
-                                                          listRenderPatient[
-                                                              index],
-                                                      division:
-                                                          _selectedDepartment!
-                                                              .value),
-                                                );
+                                                patientProvider
+                                                        .selectedPatientInRoom =
+                                                    listRenderPatient[index];
+                                                // Navigator.of(context).pushNamed(
+                                                //   RouteNames.medialExamine,
+                                                //   arguments: PatientInfoArguments(
+                                                //       patient:
+                                                //           listRenderPatient[
+                                                //               index],
+                                                //       division:
+                                                //           _selectedDepartment!
+                                                //               .value),
+                                                // );
+
+                                                Navigator.pop(context);
                                               },
                                               child: const Text('Thăm khám')),
                                         ],
@@ -294,112 +330,111 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
       ),
     );
   }
+}
 
-  Future<dynamic> _showLocationModal(
-    BuildContext context,
-    List<DepartmentEntity> listDepartment,
-  ) {
-    List<DepartmentEntity> renderDepartment = listDepartment;
-    return showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    'Chọn phòng khám',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _searchLocationController,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    onChanged: (value) => setState(() {
-                      value = TiengViet.parse(value);
-                      renderDepartment = listDepartment
-                          .where((element) =>
-                              TiengViet.parse(element.display.toLowerCase())
-                                  .contains(value.toLowerCase()))
-                          .toList();
-                    }),
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      focusColor: Colors.white,
-                      hoverColor: Colors.white,
-                      hintText: 'Nhập tên phòng khám',
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        size: 30,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchLocationController.clear();
-                        },
-                      ),
+Future<dynamic> showLocationModal(
+  BuildContext context,
+  List<DepartmentEntity> listDepartment,
+  DepartmentEntity? selectedDepartment,
+  Function callback,
+) {
+  List<DepartmentEntity> renderDepartment = listDepartment;
+  final TextEditingController _searchLocationController =
+      TextEditingController();
+  return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text(
+                  'Chọn phòng khám',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _searchLocationController,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  onChanged: (value) => setState(() {
+                    value = TiengViet.parse(value);
+                    renderDepartment = listDepartment
+                        .where((element) =>
+                            TiengViet.parse(element.display.toLowerCase())
+                                .contains(value.toLowerCase()))
+                        .toList();
+                  }),
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    focusColor: Colors.white,
+                    hoverColor: Colors.white,
+                    hintText: 'Nhập tên phòng khám',
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 30,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchLocationController.clear();
+                      },
                     ),
                   ),
-                  Expanded(
-                    child: ListView.separated(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            titleTextStyle:
-                                Theme.of(context).textTheme.bodyMedium,
-                            title: Text(renderDepartment[index].display),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: _selectedDepartment ==
-                                              renderDepartment[index]
-                                          ? Colors.grey.shade400
-                                          : Colors.blue,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedDepartment =
-                                            renderDepartment[index];
-                                        _locationController.text =
-                                            _selectedDepartment!.display;
-                                        if (_selectedDepartment != null) {
-                                          Provider.of<PatientProvider>(context,
-                                                  listen: false)
-                                              .isLoading = true;
-                                          _featchPatients();
-                                        }
-                                      });
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(_selectedDepartment ==
-                                            renderDepartment[index]
-                                        ? 'Đã chọn'
-                                        : 'Chọn')),
-                              ],
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(height: 4);
-                        },
-                        itemCount: renderDepartment.length),
-                  )
-                ],
-              ),
-            );
-          });
+                ),
+                Expanded(
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          titleTextStyle:
+                              Theme.of(context).textTheme.bodyMedium,
+                          title: Text(renderDepartment[index].display),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: selectedDepartment!.code ==
+                                            renderDepartment[index].code
+                                        ? Colors.grey.shade400
+                                        : Colors.blue,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                  ),
+                                  onPressed: () {
+                                    // setState(() {
+                                    // selectedDepartment =
+                                    //     renderDepartment[index];
+                                    // locationController!.text =
+                                    //     selectedDepartment!.display;
+                                    callback(renderDepartment[index]);
+                                    // });
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(selectedDepartment ==
+                                          renderDepartment[index]
+                                      ? 'Đã chọn'
+                                      : 'Chọn')),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 4);
+                      },
+                      itemCount: renderDepartment.length),
+                )
+              ],
+            ),
+          );
         });
-  }
+      });
 }
 
 class PatientInfoArguments {

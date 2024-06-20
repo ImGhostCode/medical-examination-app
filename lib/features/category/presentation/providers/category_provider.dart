@@ -33,13 +33,19 @@ class CategoryProvider extends ChangeNotifier {
   List<SubclinicServiceEntity> listSubclinicServices = [];
   List<SublicServGroupEntity> listSubclinicServiceGroups = [];
   List<ICDEntity> listICD = [];
-  DepartmentEntity? selectedDepartment;
+  DepartmentEntity? _selectedDepartment;
   Failure? failure;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   set isLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  DepartmentEntity? get selectedDepartment => _selectedDepartment;
+  set selectedDepartment(DepartmentEntity? value) {
+    _selectedDepartment = value;
     notifyListeners();
   }
 
@@ -85,6 +91,7 @@ class CategoryProvider extends ChangeNotifier {
       (ResponseModel<List<DepartmentEntity>> response) {
         isLoading = false;
         listDepartment = response.data;
+        _selectedDepartment ??= listDepartment.first;
         code = response.code;
         type = response.type;
         status = response.status;
