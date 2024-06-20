@@ -6,16 +6,15 @@ import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/errors/failure.dart';
-import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/care_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/signal_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/business/entities/streatment_sheet_entity.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/entered_signal_table.dart';
-import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
-import 'package:medical_examination_app/features/patient/business/entities/patient_service_entity.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
+import 'package:medical_examination_app/features/patient/presentation/widgets/patient_info_container.dart';
 import 'package:provider/provider.dart';
 
 class MedicalExaminationPage extends StatefulWidget {
@@ -27,7 +26,6 @@ class MedicalExaminationPage extends StatefulWidget {
 
 class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   int _index = 0;
-  bool _userInfoExpanded = false;
   late PatientInfoArguments args;
 
   List<SignalEntity> listHeartSignals = [];
@@ -44,18 +42,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<PatientProvider>(context, listen: false)
-          .eitherFailureOrGetPatientInfo('all', args.patient.encounter);
       Provider.of<MedicalExamineProvider>(context, listen: false)
           .eitherFailureOrGetEnteredSignals(
               'all', args.patient.encounter.toString());
       Provider.of<MedicalExamineProvider>(context, listen: false)
           .eitherFailureOrGetEnteredStreatSheets(
               OET.OET_001.name, args.patient.encounter.toString());
-      ;
-      Provider.of<PatientProvider>(context, listen: false)
-          .eitherFailureOrGetPatientServices('all', args.patient.encounter);
-
       Provider.of<MedicalExamineProvider>(context, listen: false)
           .eitherFailureOrGetEnteredCareSheets(
               OET.OET_002.name, args.patient.encounter.toString());
@@ -91,7 +83,27 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
             children: [
               const SizedBox(height: 8),
               // Patient info
-              _buildPatientInfo(context),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: PatientInfoContainer(
+                  patient: args.patient,
+                  onPatientChange: () {
+                    final provider =
+                        Provider.of<PatientProvider>(context, listen: false);
+                    Navigator.of(context).pushNamed(
+                      RouteNames.medialExamine,
+                      arguments: PatientInfoArguments(
+                        patient: provider.selectedPatientInRoom!,
+                        division: Provider.of<CategoryProvider>(context,
+                                listen: false)
+                            .selectedDepartment!
+                            .value,
+                      ),
+                    );
+                  },
+                ),
+              ),
               Stepper(
                 physics: const NeverScrollableScrollPhysics(),
                 currentStep: _index,
@@ -129,7 +141,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                             child: const Text('Quay lại'),
                           ),
                         const SizedBox(width: 8),
-                        if (_index < 3)
+                        if (_index < 2)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.all(12)),
@@ -151,7 +163,7 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                 steps: <Step>[
                   _buildInputSignalStep(context),
                   _buildInputStreatmentSheetStep(context),
-                  _buildSubclinicSerDesignationStep(context),
+                  // _buildSubclinicSerDesignationStep(context),
                   _buildInputCareSheetStep(context),
                 ],
               ),
@@ -935,487 +947,6 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
       }),
     );
   }
-
-  Padding _buildPatientInfo(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ExpansionTile(
-          onExpansionChanged: (bool expanded) {
-            setState(() {
-              _userInfoExpanded = expanded;
-            });
-          },
-          collapsedShape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-              borderRadius: BorderRadius.circular(8)),
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-              borderRadius: BorderRadius.circular(8)),
-          title: Text(
-            _userInfoExpanded ? 'Thông tin bệnh nhân' : args.patient.name,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          childrenPadding:
-              const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Consumer<PatientProvider>(
-              builder: (context, value, child) {
-                if (value.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (value.patientInfo == null) {
-                  return const Center(
-                    child: Text('Không có dữ liệu'),
-                  );
-                }
-                if (value.failure != null) {
-                  return Center(
-                    child: Text(value.failure!.errorMessage),
-                  );
-                }
-                return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Số HSBA: ${value.patientInfo!.encounter}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            value.patientInfo!.name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "MSBN: ${value.patientInfo!.subject}",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Giới tính: ${args.patient.gender}',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            "Ngày sinh: ${value.patientInfo!.birthdate}",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          )
-                        ],
-                      ),
-                      // const SizedBox(height: 8),
-                      // Text('Địa chỉ: ${value.patientInfo!.address}',
-                      //     style: Theme.of(context).textTheme.bodyMedium),
-                      if (args.patient.classifyName != '')
-                        const SizedBox(height: 8),
-                      if (args.patient.classifyName != '')
-                        Text(
-                          'Loại bệnh án: ${args.patient.classifyName}',
-                        ),
-                      const SizedBox(height: 8),
-                      if (value.patientInfo!.medicalClass == MedicalClass.IMP &&
-                          value.patientInfo!.location.isNotEmpty)
-                        Text(
-                          'Vị trí: ${value.patientInfo!.location[0].display}',
-                        ),
-
-                      const SizedBox(height: 8),
-                      Text(
-                        'BHYT: ${value.patientInfo!.healthInsuranceCard != null ? "Có sử dụng" : "Không sử dụng"}',
-                      ),
-                    ]);
-              },
-            )
-          ]),
-    );
-  }
-
-  Step _buildSubclinicSerDesignationStep(BuildContext context) {
-    return Step(
-        stepStyle: StepStyle(
-          color: _index == 2 ? Colors.blue : Colors.grey.shade400,
-        ),
-        title: Text(
-          'Chỉ định dịch vụ',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: _index == 2 ? Colors.blue : Colors.black,
-              fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Consumer<PatientProvider>(builder: (context, value, child) {
-                if (value.isLoadingServices) {
-                  return Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(16),
-                    child: const CircularProgressIndicator(),
-                  );
-                }
-                if (value.listPatientServices.isEmpty) {
-                  return const Center(
-                    child: Text('Không có dữ liệu'),
-                  );
-                }
-                if (value.failure != null) {
-                  return Center(
-                    child: Text(value.failure!.errorMessage),
-                  );
-                }
-
-                return ExpansionPanelList(
-                  expandedHeaderPadding: const EdgeInsets.only(
-                    top: 8,
-                    bottom: 8,
-                  ),
-                  dividerColor: Colors.white,
-                  elevation: 0,
-                  materialGapSize: 0,
-                  expansionCallback: (int index, bool isExpanded) {
-                    setState(() {
-                      value.patientSerExpandedItems[index].isExpanded =
-                          isExpanded;
-                    });
-                  },
-                  children: value.patientSerExpandedItems
-                      .map<ExpansionPanel>((PatientSerExpandedItem item) {
-                    return ExpansionPanel(
-                      backgroundColor: Colors.white,
-                      headerBuilder: (BuildContext context, bool isExpanded) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 0),
-                          title: Text(
-                            item.headerValue,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          trailing: item.expandedValue
-                                  .where((e) => e.isSelected == true)
-                                  .isNotEmpty
-                              ? ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.all(8),
-                                      backgroundColor: Colors.green),
-                                  onPressed: () async {
-                                    await showConfirmDialog(context,
-                                        'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
-                                        (BuildContext contextInner,
-                                            String text) async {
-                                      if (Provider.of<PatientProvider>(context,
-                                              listen: false)
-                                          .isLoading) return;
-                                      List<PatientServiceEntity>
-                                          selectedServices = item.expandedValue
-                                              .where(
-                                                  (e) => e.isSelected == true)
-                                              .toList();
-                                      final result = await Provider.of<
-                                                  PatientProvider>(context,
-                                              listen: false)
-                                          .eitherFailureOrPublishPatientService(
-                                              ServiceStatus.publish,
-                                              args.patient.encounter,
-                                              Provider.of<AuthProvider>(context,
-                                                      listen: false)
-                                                  .userEntity!
-                                                  .id,
-                                              selectedServices,
-                                              text);
-
-                                      if (result.runtimeType == Failure) {
-                                        ScaffoldMessenger.of(contextInner)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text((result as Failure)
-                                                .errorMessage),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(contextInner)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content:
-                                                Text('Ban hành thành công!'),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                        Provider.of<PatientProvider>(context,
-                                                listen: false)
-                                            .eitherFailureOrGetPatientServices(
-                                                'all', args.patient.encounter);
-                                      }
-                                    }, true, 'Ghi chú');
-                                  },
-                                  child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.check_circle_outline),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
-                                        Text('Ban hành')
-                                      ]),
-                                )
-                              : const SizedBox.shrink(),
-                        );
-                      },
-                      body: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Table(
-                              border: TableBorder.all(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Colors.blueGrey.shade100,
-                                  width: 1.5),
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              columnWidths: const {
-                                0: FixedColumnWidth(50),
-                                1: FixedColumnWidth(200),
-                                2: FixedColumnWidth(100),
-                                3: FixedColumnWidth(100),
-                                4: FixedColumnWidth(100),
-                                5: FixedColumnWidth(200),
-                                6: FixedColumnWidth(50),
-                              },
-                              children: [
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey.shade200),
-                                        child: const Text('TT')),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text(
-                                        'Dịch vụ',
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text('Số lượng'),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text('Đơn vị'),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text('Giá'),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text('Kết quả'),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade200),
-                                      child: const Text(''),
-                                    ),
-                                  ),
-                                ]),
-                                // ...groupByReportCode[item.headerValue]!
-                                //     .asMap()
-                                //     .entries
-                                //     .map((e) {
-                                //   return
-
-                                ...item.expandedValue.map((e) {
-                                  return TableRow(children: [
-                                    TableCell(
-                                      child: Container(
-                                          alignment: Alignment.center,
-                                          padding: const EdgeInsets.all(8),
-                                          child: Tooltip(
-                                            triggerMode: TooltipTriggerMode.tap,
-                                            message: ServiceStatus
-                                                .statusToVietnamese(e.status),
-                                            child: Icon(
-                                                ServiceStatus.statusIcon(
-                                                    e.status),
-                                                color:
-                                                    ServiceStatus.statusColor(
-                                                        e.status)),
-                                          )),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          e.service,
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          e.quantity.toString(),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          e.unit,
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          '${formatCurrency(e.price)}đ',
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          e.result ?? '',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(color: Colors.green),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(8),
-                                        child: e.status == ServiceStatus.planned
-                                            ? Transform.scale(
-                                                scale: 1.4,
-                                                child: Checkbox(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              3)),
-                                                  side: BorderSide(
-                                                      color:
-                                                          Colors.grey.shade600,
-                                                      width: 1.5),
-                                                  checkColor: Colors.white,
-                                                  fillColor: e.isSelected
-                                                      ? const WidgetStatePropertyAll(
-                                                          Colors.blue)
-                                                      : const WidgetStatePropertyAll(
-                                                          Colors.white),
-                                                  value: e.isSelected,
-                                                  onChanged: (bool? value) {
-                                                    setState(() {
-                                                      e.isSelected = value!;
-                                                    });
-                                                  },
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ),
-                                    ),
-                                  ]);
-                                })
-                              ])),
-                      isExpanded: item.isExpanded,
-                    );
-                  }).toList(),
-                );
-              }),
-              TextButton(
-                onPressed: Provider.of<PatientProvider>(context, listen: true)
-                            .patientInfo ==
-                        null
-                    ? null
-                    : () {
-                        PatientEntity patientInfo =
-                            Provider.of<PatientProvider>(context, listen: false)
-                                .patientInfo!;
-
-                        Navigator.of(context).pushNamed(
-                            RouteNames.requestClinicalService,
-                            arguments: SubclinicSerDesignationArguments(
-                                patientInfo: patientInfo,
-                                division: args.division));
-                      },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.add_rounded, color: Colors.blue),
-                    Text('Chỉ định dịch vụ',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(color: Colors.blue)),
-                  ],
-                ),
-              ),
-            ]));
-  }
 }
 
 class ModifyMedicalSheetArguments<T> {
@@ -1424,24 +955,4 @@ class ModifyMedicalSheetArguments<T> {
 
   ModifyMedicalSheetArguments(
       {required this.patientInfo, required this.medicalSheet});
-}
-
-class SubclinicSerDesignationArguments {
-  final PatientEntity patientInfo;
-  final int division;
-
-  SubclinicSerDesignationArguments(
-      {required this.patientInfo, required this.division});
-}
-
-class PatientSerExpandedItem {
-  PatientSerExpandedItem({
-    required this.expandedValue,
-    required this.headerValue,
-    this.isExpanded = true,
-  });
-
-  List<PatientServiceEntity> expandedValue;
-  String headerValue;
-  bool isExpanded;
 }

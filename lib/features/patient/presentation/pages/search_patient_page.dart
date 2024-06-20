@@ -53,7 +53,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
     return Scaffold(
       // backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Tìm kiếm bệnh nhân'),
+        title: const Text('Chọn bệnh nhân'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
@@ -96,57 +96,57 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                 TextField(
                   style: Theme.of(context).textTheme.bodyMedium,
                   controller: _locationController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Chọn phòng khám',
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.location_on_outlined,
                       size: 30,
                     ),
-                    suffixIcon: IconButton(
-                      icon: const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                      ),
-                      onPressed: () {
-                        showLocationModal(
-                          context,
-                          value.listDepartment,
-                          _selectedDepartment,
-                          (department) {
-                            value.selectedDepartment = department;
-                            _locationController.text =
-                                _selectedDepartment!.display;
-                            // if (_selectedDepartment != null) {
-                            //   Provider.of<PatientProvider>(context,
-                            //           listen: false)
-                            //       .isLoading = true;
-                            //   // _featchPatients();
-                            // }
-                            setState(() {});
-                          },
-                        );
-                      },
-                    ),
+                    // suffixIcon: IconButton(
+                    //   icon: const Icon(
+                    //     Icons.keyboard_arrow_down_rounded,
+                    //   ),
+                    //   onPressed: () {
+                    //     showLocationModal(
+                    //       context,
+                    //       value.listDepartment,
+                    //       _selectedDepartment,
+                    //       (department) {
+                    //         value.selectedDepartment = department;
+                    //         _locationController.text =
+                    //             _selectedDepartment!.display;
+                    //         // if (_selectedDepartment != null) {
+                    //         //   Provider.of<PatientProvider>(context,
+                    //         //           listen: false)
+                    //         //       .isLoading = true;
+                    //         //   // _featchPatients();
+                    //         // }
+                    //         setState(() {});
+                    //       },
+                    //     );
+                    //   },
+                    // ),
                   ),
                   readOnly: true,
-                  onTap: () {
-                    showLocationModal(
-                      context,
-                      value.listDepartment,
-                      _selectedDepartment,
-                      (department) {
-                        setState(() {
-                          value.selectedDepartment = department;
-                          _locationController.text =
-                              _selectedDepartment!.display;
-                        });
-                        // if (_selectedDepartment != null) {
-                        //   Provider.of<PatientProvider>(context, listen: false)
-                        //       .isLoading = true;
-                        //   _featchPatients();
-                        // }
-                      },
-                    );
-                  },
+                  // onTap: () {
+                  //   showLocationModal(
+                  //     context,
+                  //     value.listDepartment,
+                  //     _selectedDepartment,
+                  //     (department) {
+                  //       setState(() {
+                  //         value.selectedDepartment = department;
+                  //         _locationController.text =
+                  //             _selectedDepartment!.display;
+                  //       });
+                  //       // if (_selectedDepartment != null) {
+                  //       //   Provider.of<PatientProvider>(context, listen: false)
+                  //       //       .isLoading = true;
+                  //       //   _featchPatients();
+                  //       // }
+                  //     },
+                  //   );
+                  // },
                 ),
                 Container(
                   margin: const EdgeInsets.only(bottom: 16, top: 8),
@@ -310,7 +310,8 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
                                                 //               .value),
                                                 // );
 
-                                                Navigator.pop(context);
+                                                Navigator.pop(context,
+                                                    listRenderPatient[index]);
                                               },
                                               child: const Text('Thăm khám')),
                                         ],
@@ -339,7 +340,7 @@ Future<dynamic> showLocationModal(
   Function callback,
 ) {
   List<DepartmentEntity> renderDepartment = listDepartment;
-  final TextEditingController _searchLocationController =
+  final TextEditingController searchLocationController =
       TextEditingController();
   return showModalBottomSheet(
       context: context,
@@ -356,7 +357,7 @@ Future<dynamic> showLocationModal(
                 ),
                 const SizedBox(height: 8),
                 TextField(
-                  controller: _searchLocationController,
+                  controller: searchLocationController,
                   style: Theme.of(context).textTheme.bodyMedium,
                   onChanged: (value) => setState(() {
                     value = TiengViet.parse(value);
@@ -378,7 +379,7 @@ Future<dynamic> showLocationModal(
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
-                        _searchLocationController.clear();
+                        searchLocationController.clear();
                       },
                     ),
                   ),

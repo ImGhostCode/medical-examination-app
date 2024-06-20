@@ -60,6 +60,22 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+      Feature(
+        title: 'Chỉ định dịch vụ',
+        icon: 'assets/images/cute-set-medical-service-cartoon-vector.jpg',
+        onTap: () async {
+          final provider = Provider.of<PatientProvider>(context, listen: false);
+          if (provider.selectedPatientInRoom == null) {
+            await Navigator.of(context).pushNamed(RouteNames.searchPatients);
+          }
+
+          if (provider.selectedPatientInRoom != null) {
+            Navigator.of(context).pushNamed(
+              RouteNames.assignService,
+            );
+          }
+        },
+      ),
     ];
 
     UserEntity? user = Provider.of<AuthProvider>(context).userEntity;
@@ -174,6 +190,9 @@ class _HomePageState extends State<HomePage> {
                               value.selectedDepartment, (department) {
                             setState(() {
                               value.selectedDepartment = department;
+                              Provider.of<PatientProvider>(context,
+                                      listen: false)
+                                  .selectedPatientInRoom = null;
                             });
                           });
                         },

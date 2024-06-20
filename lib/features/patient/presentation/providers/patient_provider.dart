@@ -6,7 +6,6 @@ import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/patient_params.dart';
 import 'package:medical_examination_app/core/services/api_service.dart';
 import 'package:medical_examination_app/core/services/secure_storage_service.dart';
-import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_entity.dart';
 import 'package:medical_examination_app/features/patient/business/entities/patient_ser_pub_res_entity.dart';
@@ -14,6 +13,7 @@ import 'package:medical_examination_app/features/patient/business/entities/patie
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_info_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_serv_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/publish_patient_ser_usecase.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';

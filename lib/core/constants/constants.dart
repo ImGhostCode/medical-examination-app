@@ -22,6 +22,8 @@ class RouteNames {
   static const String editStreatmentSheet = '/edit-streatment-sheet';
 
   static const String requestClinicalService = '/request-clinical-service';
+  static const String patientServices = '/patient-services';
+  static const String assignService = '/assign-service';
 
   static const String addCareSheet = '/add-care-sheet';
   static const String editCareSheet = '/edit-care-sheet';

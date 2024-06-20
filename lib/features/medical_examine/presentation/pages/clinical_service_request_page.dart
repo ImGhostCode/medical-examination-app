@@ -13,10 +13,10 @@ import 'package:medical_examination_app/features/category/business/entities/icd_
 import 'package:medical_examination_app/features/category/business/entities/subclinic_service_entity.dart';
 import 'package:medical_examination_app/features/category/business/entities/sublin_serv_group_entity.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
-import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/dialog_record.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/option_checkbox.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -286,13 +286,19 @@ class _ClinicalServiceRequestPageState
                                 if (value) {
                                   selectedSubclinicServices[index].type =
                                       FeeOject.required.name;
-                                  selectedSubclinicServices[index].tt = false;
+                                  // selectedSubclinicServices[index].tt = false;
                                 } else {
-                                  selectedSubclinicServices[index].type =
-                                      args.patientInfo.healthInsuranceCard !=
-                                              null
-                                          ? FeeOject.fee.name
-                                          : FeeOject.insurance.name;
+                                  if (selectedSubclinicServices[index].tt ==
+                                      true) {
+                                    selectedSubclinicServices[index].type =
+                                        FeeOject.fee.name;
+                                  } else {
+                                    selectedSubclinicServices[index].type =
+                                        args.patientInfo.healthInsuranceCard !=
+                                                null
+                                            ? FeeOject.fee.name
+                                            : FeeOject.insurance.name;
+                                  }
                                 }
                               });
                             }),
@@ -303,7 +309,7 @@ class _ClinicalServiceRequestPageState
                               setState(() {
                                 selectedSubclinicServices[index].tt = value!;
                                 if (value) {
-                                  selectedSubclinicServices[index].dv = false;
+                                  // selectedSubclinicServices[index].dv = false;
                                   selectedSubclinicServices[index].type =
                                       FeeOject.fee.name;
                                 } else {
