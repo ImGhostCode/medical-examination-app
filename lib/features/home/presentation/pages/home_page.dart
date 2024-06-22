@@ -76,6 +76,15 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+      Feature(
+        title: 'Chỉ định dinh dưỡng',
+        icon: 'assets/icons/calories_food_nutrition_icon_224841.png',
+        onTap: () async {
+          Navigator.of(context).pushNamed(
+            RouteNames.assignNutrition,
+          );
+        },
+      ),
     ];
 
     UserEntity? user = Provider.of<AuthProvider>(context).userEntity;

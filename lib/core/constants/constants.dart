@@ -27,6 +27,9 @@ class RouteNames {
 
   static const String addCareSheet = '/add-care-sheet';
   static const String editCareSheet = '/edit-care-sheet';
+
+  static const String assignNutrition = '/assign-nutrition';
+  static const String addNutritionAssignation = '/add-nutrition-assignation';
 }
 
 String kTemplate = 'template';

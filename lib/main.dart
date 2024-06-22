@@ -18,6 +18,8 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pa
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
+import 'package:medical_examination_app/features/nutrition/presentation/pages/add_nutrition_assgination_page.dart';
+import 'package:medical_examination_app/features/nutrition/presentation/pages/assign_nutrition_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
@@ -144,6 +146,9 @@ class MainApp extends StatelessWidget {
           RouteNames.requestClinicalService: (context) =>
               const ClinicalServiceRequestPage(),
           RouteNames.assignService: (context) => const AssignServicePage(),
+          RouteNames.assignNutrition: (context) => const AssignNutritionPage(),
+          RouteNames.addNutritionAssignation: (context) =>
+              const AddNutritionAssginationPage(),
         },
       ),
     );
