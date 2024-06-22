@@ -134,6 +134,7 @@ class ServiceStatus {
   static const String received = 'received';
   static const String publish = 'publish';
   static const String complete = 'complete';
+  static const String all = 'all';
 
   static String statusToVietnamese(String status) {
     switch (status) {

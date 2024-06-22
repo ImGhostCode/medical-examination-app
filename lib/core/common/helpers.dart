@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 
+import 'package:tiengviet/tiengviet.dart';
+
 String paramToBase64(dynamic params) {
   if (params.runtimeType == String) {
     return base64Encode(utf8.encode(params));
@@ -227,3 +229,12 @@ FEE_039	Chăm sóc bệnh nhân
 FEE_040	Covid
 FEE_041	Dịch truyền
 */
+
+// Convert DateTime to "2024-03-23 00:00:00"
+String formatDateParam(DateTime date) {
+  return date.toString().substring(0, 19);
+}
+
+String normalizeText(String text) {
+  return TiengViet.parse(text.toLowerCase());
+}

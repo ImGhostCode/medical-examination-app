@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
+import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_entity.dart';
+import 'package:medical_examination_app/features/nutrition/presentation/providers/nutrition_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class AssignNutritionPage extends StatefulWidget {
@@ -21,9 +25,9 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
   int selectedYear = DateTime.now().year;
   PickerDateRange selectedRange = PickerDateRange(
       DateTime.now(), DateTime.now().add(const Duration(days: 30)));
-  DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
-
+  late DateTime startDate;
+  late DateTime endDate;
+  late final int selectedDepartment;
   // Update state when view or selection changes
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     print(args.value);
@@ -38,6 +42,26 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
       //   selectedRange = args.value;
       // }
     });
+  }
+
+  @override
+  void initState() {
+    DateTime today = DateTime.now();
+    startDate = DateTime(today.year, today.month, today.day, 0, 0, 0);
+    endDate = DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+    selectedDepartment = Provider.of<CategoryProvider>(context, listen: false)
+        .selectedDepartment!
+        .value;
+    Provider.of<NutritionProvider>(context, listen: false)
+        .eitherFailureOrGetNutritionOrders(
+            ServiceStatus.all,
+            selectedDepartment,
+            formatDateParam(startDate),
+            formatDateParam(endDate));
+    Provider.of<NutritionProvider>(context, listen: false)
+        .eitherFailureOrGetNutritions();
+    super.initState();
   }
 
   @override
@@ -113,170 +137,186 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                       .bodyMedium!
                       .copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Table(
-                      border: TableBorder.all(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.blueGrey.shade100,
-                          width: 1.5),
-                      defaultVerticalAlignment:
-                          TableCellVerticalAlignment.middle,
-                      columnWidths: const {
-                        0: FixedColumnWidth(50), // TT
-                        1: FixedColumnWidth(200), // Dịch vụ
-                        2: FixedColumnWidth(100), // Số lượng
-                        3: FixedColumnWidth(100), // Đơn vị
-                        4: FixedColumnWidth(100), // Giá
-                        5: FixedColumnWidth(200), // Bệnh nhân
-                        6: FixedColumnWidth(50), // Hành động
-                      },
-                      children: [
-                        TableRow(children: [
-                          TableCell(
-                            child: Container(
+              Consumer<NutritionProvider>(builder: (context, value, child) {
+                if (value.isLoading) {
+                  return Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16),
+                    child: const CircularProgressIndicator(),
+                  );
+                }
+                if (value.nutritionOrders.isEmpty) {
+                  return const Center(
+                    child: Text('Không có dữ liệu'),
+                  );
+                }
+                if (value.failure != null) {
+                  return Center(
+                    child: Text(value.failure!.errorMessage),
+                  );
+                }
+
+                return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Table(
+                        border: TableBorder.all(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.blueGrey.shade100,
+                            width: 1.5),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        columnWidths: const {
+                          0: FixedColumnWidth(50), // TT
+                          1: FixedColumnWidth(200), // Dịch vụ
+                          2: FixedColumnWidth(100), // Số lượng
+                          3: FixedColumnWidth(100), // Đơn vị
+                          // 4: FixedColumnWidth(100), // Giá
+                          4: FixedColumnWidth(200), // Bệnh nhân
+                          5: FixedColumnWidth(100), // Hành động
+                        },
+                        children: [
+                          TableRow(children: [
+                            TableCell(
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200),
+                                  child: const Text('TT')),
+                            ),
+                            TableCell(
+                              child: Container(
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.all(8),
                                 decoration:
                                     BoxDecoration(color: Colors.grey.shade200),
-                                child: const Text('TT')),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text(
-                                'Dịch vụ',
+                                child: const Text(
+                                  'Dịch vụ',
+                                ),
                               ),
                             ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text('Số lượng'),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text('Đơn vị'),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text('Giá'),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text('Bênh nhân'),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              decoration:
-                                  BoxDecoration(color: Colors.grey.shade200),
-                              child: const Text(''),
-                            ),
-                          ),
-                        ]),
-                        // ...groupByReportCode[item.headerValue]!
-                        //     .asMap()
-                        //     .entries
-                        //     .map((e) {
-                        //   return
-
-                        // ...item.expandedValue.map((e) {
-                        //   return
-                        TableRow(children: [
-                          TableCell(
-                            child: Container(
+                            TableCell(
+                              child: Container(
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.all(8),
-                                child: Tooltip(
-                                  triggerMode: TooltipTriggerMode.tap,
-                                  message: ServiceStatus.statusToVietnamese(
-                                      ServiceStatus.approved),
-                                  child: Icon(
-                                      ServiceStatus.statusIcon(
-                                          ServiceStatus.approved),
-                                      color: ServiceStatus.statusColor(
-                                          ServiceStatus.approved)),
-                                )),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                'Cơm trắng',
+                                decoration:
+                                    BoxDecoration(color: Colors.grey.shade200),
+                                child: const Text('Số lượng'),
                               ),
                             ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                2.toString(),
+                            TableCell(
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(8),
+                                decoration:
+                                    BoxDecoration(color: Colors.grey.shade200),
+                                child: const Text('Đơn vị'),
                               ),
                             ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                'ngày',
+                            // TableCell(
+                            //   child: Container(
+                            //     alignment: Alignment.center,
+                            //     padding: const EdgeInsets.all(8),
+                            //     decoration:
+                            //         BoxDecoration(color: Colors.grey.shade200),
+                            //     child: const Text('Giá'),
+                            //   ),
+                            // ),
+                            TableCell(
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(8),
+                                decoration:
+                                    BoxDecoration(color: Colors.grey.shade200),
+                                child: const Text('Bênh nhân'),
                               ),
                             ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                '${formatCurrency(125343)}đ',
+                            TableCell(
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(8),
+                                decoration:
+                                    BoxDecoration(color: Colors.grey.shade200),
+                                child: const Text(''),
                               ),
                             ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                'Nguyễn Văn A',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(color: Colors.green),
+                          ]),
+                          // ...groupByReportCode[item.headerValue]!
+                          //     .asMap()
+                          //     .entries
+                          //     .map((e) {
+                          //   return
+
+                          // ...item.expandedValue.map((e) {
+                          //   return
+                          ...value.nutritionOrders.map((e) {
+                            return TableRow(children: [
+                              TableCell(
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(8),
+                                    child: Tooltip(
+                                      triggerMode: TooltipTriggerMode.tap,
+                                      message: ServiceStatus.statusToVietnamese(
+                                          e.status),
+                                      child: Icon(
+                                          ServiceStatus.statusIcon(e.status),
+                                          color: ServiceStatus.statusColor(
+                                              e.status)),
+                                    )),
                               ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              child:
-                                  ServiceStatus.planned == ServiceStatus.planned
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    e.service,
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    e.quantity.toString(),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    e.unit,
+                                  ),
+                                ),
+                              ),
+                              // TableCell(
+                              //   child: Container(
+                              //     alignment: Alignment.center,
+                              //     padding: const EdgeInsets.all(8),
+                              //     child: Text(
+                              //       '${formatCurrency(e.)}đ',
+                              //     ),
+                              //   ),
+                              // ),
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    e.name,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: e.status == ServiceStatus.planned
                                       ? Transform.scale(
                                           scale: 1.4,
                                           child: Checkbox(
@@ -287,10 +327,8 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                                 color: Colors.grey.shade600,
                                                 width: 1.5),
                                             checkColor: Colors.white,
-                                            fillColor: true
-                                                ? const WidgetStatePropertyAll(
-                                                    Colors.blue)
-                                                : const WidgetStatePropertyAll(
+                                            fillColor:
+                                                const WidgetStatePropertyAll(
                                                     Colors.white),
                                             value: true,
                                             onChanged: (bool? value) {
@@ -301,12 +339,14 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                           ),
                                         )
                                       : const SizedBox.shrink(),
-                            ),
-                          ),
-                        ])
-                        // }
-                        // )
-                      ])),
+                                ),
+                              ),
+                            ]);
+                          })
+                          // }
+                          // )
+                        ]));
+              }),
               const SizedBox(height: 8),
               TextButton(
                 onPressed: () {
@@ -368,8 +408,10 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
               initialSelectedRange:
                   calendarView == Calendar.custom ? selectedRange : null,
               onSelectionChanged: _onSelectionChanged,
-              allowViewNavigation:
-                  calendarView == Calendar.custom ? true : false,
+              allowViewNavigation: calendarView == Calendar.custom ||
+                      calendarView == Calendar.day
+                  ? true
+                  : false,
               // initialSelectedDates: [DateTime.now()],
             ),
           ),
@@ -410,6 +452,12 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                     endDate = DateTime(selectedYear, 12, 31); // End of the year
                   }
                 });
+                Provider.of<NutritionProvider>(context, listen: false)
+                    .eitherFailureOrGetNutritionOrders(
+                        ServiceStatus.all,
+                        selectedDepartment,
+                        formatDateParam(startDate),
+                        formatDateParam(endDate));
                 Navigator.of(context).pop();
               },
             ),
@@ -445,15 +493,9 @@ Future<dynamic> showChooseNutritionModal(
                 TextField(
                   controller: searchNutritionController,
                   style: Theme.of(context).textTheme.bodyMedium,
-                  onChanged: (value) {},
-                  // => setState(() {
-                  // value = TiengViet.parse(value);
-                  // renderDepartment = listDepartment
-                  //     .where((element) =>
-                  //         TiengViet.parse(element.display.toLowerCase())
-                  //             .contains(value.toLowerCase()))
-                  //     .toList();
-                  // }),
+                  onChanged: (value) {
+                    setState(() => {});
+                  },
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                     focusColor: Colors.white,
@@ -467,47 +509,82 @@ Future<dynamic> showChooseNutritionModal(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         searchNutritionController.clear();
+                        setState(() => {});
                       },
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          titleTextStyle:
-                              Theme.of(context).textTheme.bodyMedium,
-                          title: Text('Cơm trắng'),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pushNamed(
-                                        RouteNames.addNutritionAssignation);
-                                  },
-                                  child: const Text('Chọn')),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 4);
-                      },
-                      itemCount: 15),
-                )
+                Consumer<NutritionProvider>(builder: (context, value, child) {
+                  if (value.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (value.nutritions.isEmpty) {
+                    return const Center(
+                      child: Text('Chưa có dữ liệu'),
+                    );
+                  }
+                  if (value.failure != null) {
+                    return Center(
+                      child: Text(value.failure!.errorMessage),
+                    );
+                  }
+
+                  // Method to normalize text for comparison
+
+                  List<NutritionEntity> renderNutritions = value.nutritions
+                      .where((element) => normalizeText(element.display)
+                          .contains(
+                              normalizeText(searchNutritionController.text)))
+                      .toList();
+
+                  return Expanded(
+                    child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            titleTextStyle:
+                                Theme.of(context).textTheme.bodyMedium,
+                            title: Text(renderNutritions[index].display),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pushNamed(
+                                  RouteNames.addNutritionAssignation,
+                                  arguments: AddNutriAssignationArguments(
+                                      nutrition: renderNutritions[index]));
+                            },
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pushNamed(
+                                          RouteNames.addNutritionAssignation,
+                                          arguments:
+                                              AddNutriAssignationArguments(
+                                                  nutrition:
+                                                      renderNutritions[index]));
+                                    },
+                                    child: const Text('Chọn')),
+                              ],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(height: 4);
+                        },
+                        itemCount: renderNutritions.length),
+                  );
+                })
               ],
             ),
           );
@@ -526,4 +603,9 @@ DateRangePickerView getSelectionMode(Calendar selectedView) {
     default:
       return DateRangePickerView.month;
   }
+}
+
+class AddNutriAssignationArguments {
+  NutritionEntity nutrition;
+  AddNutriAssignationArguments({required this.nutrition});
 }

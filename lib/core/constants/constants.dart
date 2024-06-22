@@ -166,3 +166,7 @@ String kCrdLa = 'crd_la';
 String kReason = 'reason';
 String kAccident = 'accident';
 String kIsLeftRight = 'is_left_right';
+
+// Nutrition
+String kDivision = 'division';
+String kDivisionId = 'division_id';

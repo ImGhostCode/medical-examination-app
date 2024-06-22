@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
+import 'package:medical_examination_app/features/nutrition/presentation/pages/assign_nutrition_page.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class _AddNutritionAssginationPageState
     extends State<AddNutritionAssginationPage> {
   final TextEditingController _searchController = TextEditingController();
   List<InRoomPatientEntity> listRenderPatient = [];
+  late AddNutriAssignationArguments args;
 
   @override
   void initState() {
@@ -33,6 +35,13 @@ class _AddNutritionAssginationPageState
             false,
             null);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    args = ModalRoute.of(context)!.settings.arguments
+        as AddNutriAssignationArguments;
+    super.didChangeDependencies();
   }
 
   @override
@@ -67,7 +76,7 @@ class _AddNutritionAssginationPageState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Cơm chay',
+                  Text(args.nutrition.display,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium!
@@ -83,7 +92,8 @@ class _AddNutritionAssginationPageState
                           style: Theme.of(context).textTheme.bodyLarge,
                           children: <TextSpan>[
                             TextSpan(
-                                text: '${formatCurrency(123552)}đ',
+                                text:
+                                    '${formatCurrency(args.nutrition.price)}đ',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge!
@@ -107,62 +117,42 @@ class _AddNutritionAssginationPageState
                             child: Row(
                               children: [
                                 IconButton(
-                                    // onPressed: selectedSubclinicServices[index]
-                                    //         .editQuantity!
-                                    //     ? () {
-                                    //         if (selectedSubclinicServices[index]
-                                    //                 .quantity! >
-                                    //             1) {
-                                    //           selectedSubclinicServices[index]
-                                    //                   .quantity =
-                                    //               selectedSubclinicServices[
-                                    //                           index]
-                                    //                       .quantity! -
-                                    //                   1;
-                                    //           setState(() {});
-                                    //         }
-                                    //       }
-                                    //     : null,
-                                    onPressed: () {},
-                                    icon: Icon(Icons.remove_rounded,
-                                        color:
-                                            // selectedSubclinicServices[index]
-                                            //         .editQuantity!
-                                            //     ?
-                                            Colors.blue
-                                        // :
-                                        //  Colors.grey,
-                                        )),
-                                Text('${1}'),
+                                    onPressed: args.nutrition.editQuantity
+                                        ? () {
+                                            if (args.nutrition.quantity! > 1) {
+                                              args.nutrition.quantity =
+                                                  args.nutrition.quantity! - 1;
+                                              setState(() {});
+                                            }
+                                          }
+                                        : null,
+                                    icon: Icon(
+                                      Icons.remove_rounded,
+                                      color: args.nutrition.editQuantity
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                    )),
+                                Text(args.nutrition.quantity.toString()),
                                 IconButton(
-                                    // onPressed: selectedSubclinicServices[index]
-                                    //         .editQuantity!
-                                    //     ? () {
-                                    //         selectedSubclinicServices[index]
-                                    //                 .quantity =
-                                    //             selectedSubclinicServices[index]
-                                    //                     .quantity! +
-                                    //                 1;
-                                    //         setState(() {});
-                                    //       }
-                                    //     : null,
-
-                                    onPressed: () {},
-                                    icon: Icon(Icons.add_rounded,
-                                        color:
-                                            // selectedSubclinicServices[index]
-                                            //         .editQuantity!
-                                            //     ?
-                                            Colors.blue
-                                        // :
-                                        //  Colors.grey,
-                                        )),
+                                    onPressed: args.nutrition.editQuantity
+                                        ? () {
+                                            args.nutrition.quantity =
+                                                args.nutrition.quantity! + 1;
+                                            setState(() {});
+                                          }
+                                        : null,
+                                    icon: Icon(
+                                      Icons.add_rounded,
+                                      color: args.nutrition.editQuantity
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                    )),
                               ],
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'lần',
+                            args.nutrition.unit,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -260,9 +250,11 @@ class _AddNutritionAssginationPageState
                               side: BorderSide(
                                   color: Colors.grey.shade600, width: 1.5),
                               checkColor: Colors.white,
-                              fillColor: true
-                                  ? const WidgetStatePropertyAll(Colors.blue)
-                                  : null,
+                              fillColor:
+                                  //  true
+                                  // ?
+                                  const WidgetStatePropertyAll(Colors.blue),
+                              // : null,
                               value: true,
                               onChanged: (value) {},
                             ),
@@ -277,83 +269,79 @@ class _AddNutritionAssginationPageState
       ),
     );
   }
-}
 
-Container _buildBottomNavbar(BuildContext context) {
-  // int total = selectedSubclinicServices.fold(
-  //     0,
-  //     (previousValue, element) =>
-  //         previousValue + element.price! * element.quantity!);
-  return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-          color: Colors.white, border: Border.all(color: Colors.grey.shade300)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text('Tổng cộng: '),
-              Text(
-                '${formatCurrency(123543)}đ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.bold, color: Colors.blue),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+  Container _buildBottomNavbar(BuildContext context) {
+    int total = args.nutrition.quantity! * args.nutrition.price;
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey.shade300)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text('Tổng cộng: '),
+                Text(
+                  '${formatCurrency(total)}đ',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                    ),
+                    onPressed:
+                        // Provider.of<MedicalExamineProvider>(context,
+                        //             listen: true)
+                        //         .isLoading
+                        //     ? null
+                        //     :
+                        () async {
+                      // saveData(false, () {
+                      //   Navigator.of(context).pop();
+                      //   Provider.of<PatientProvider>(context, listen: false)
+                      //       .eitherFailureOrGetPatientServices(
+                      //           'all', args.patientInfo.encounter);
+                      // });
+                    },
+                    child: const Text('Lưu'),
                   ),
-                  onPressed:
-                      // Provider.of<MedicalExamineProvider>(context,
-                      //             listen: true)
-                      //         .isLoading
-                      //     ? null
-                      //     :
-                      () async {
-                    // saveData(false, () {
-                    //   Navigator.of(context).pop();
-                    //   Provider.of<PatientProvider>(context, listen: false)
-                    //       .eitherFailureOrGetPatientServices(
-                    //           'all', args.patientInfo.encounter);
-                    // });
-                  },
-                  child: const Text('Lưu'),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed:
-                      // Provider.of<MedicalExamineProvider>(context,
-                      //             listen: true)
-                      //         .isLoading
-                      //     ? null
-                      //     :
-                      () async {
-                    // saveData(true, () {
-                    //   Navigator.of(context).pop();
-                    //   Provider.of<PatientProvider>(context, listen: false)
-                    //       .eitherFailureOrGetPatientServices(
-                    //           'all', args.patientInfo.encounter);
-                    // });
-                  },
-                  child: const Text('Ban hành'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed:
+                        // Provider.of<MedicalExamineProvider>(context,
+                        //             listen: true)
+                        //         .isLoading
+                        //     ? null
+                        //     :
+                        () async {
+                      // saveData(true, () {
+                      //   Navigator.of(context).pop();
+                      //   Provider.of<PatientProvider>(context, listen: false)
+                      //       .eitherFailureOrGetPatientServices(
+                      //           'all', args.patientInfo.encounter);
+                      // });
+                    },
+                    child: const Text('Ban hành'),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ));
+              ],
+            ),
+          ],
+        ));
+  }
 }
