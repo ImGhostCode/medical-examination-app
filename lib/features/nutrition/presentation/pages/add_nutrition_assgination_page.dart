@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
+import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/errors/failure.dart';
+import 'package:medical_examination_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/pages/assign_nutrition_page.dart';
+import 'package:medical_examination_app/features/nutrition/presentation/providers/nutrition_provider.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +22,7 @@ class _AddNutritionAssginationPageState
     extends State<AddNutritionAssginationPage> {
   final TextEditingController _searchController = TextEditingController();
   List<InRoomPatientEntity> listRenderPatient = [];
+  final List<InRoomPatientEntity> selectedPatients = [];
   late AddNutriAssignationArguments args;
 
   @override
@@ -42,6 +47,40 @@ class _AddNutritionAssginationPageState
     args = ModalRoute.of(context)!.settings.arguments
         as AddNutriAssignationArguments;
     super.didChangeDependencies();
+  }
+
+  void saveData(bool isPublish, VoidCallback callback) async {
+    if (selectedPatients.isNotEmpty) {
+      int doctor =
+          Provider.of<AuthProvider>(context, listen: false).userEntity!.id;
+      String planDate = DateTime.now().toString().substring(0, 10);
+      final result =
+          await Provider.of<NutritionProvider>(context, listen: false)
+              .eitherFailureOrAssignNutrition(
+                  doctor,
+                  args.nutrition.code,
+                  selectedPatients,
+                  isPublish,
+                  planDate,
+                  args.nutrition.quantity!);
+
+      if (result.runtimeType == Failure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text((result as Failure).errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text((result as ResponseModel).message),
+            backgroundColor: Colors.green,
+          ),
+        );
+        callback();
+      }
+    }
   }
 
   @override
@@ -250,13 +289,22 @@ class _AddNutritionAssginationPageState
                               side: BorderSide(
                                   color: Colors.grey.shade600, width: 1.5),
                               checkColor: Colors.white,
-                              fillColor:
-                                  //  true
-                                  // ?
-                                  const WidgetStatePropertyAll(Colors.blue),
-                              // : null,
-                              value: true,
-                              onChanged: (value) {},
+                              fillColor: listRenderPatient[index].isSelected
+                                  ? const WidgetStatePropertyAll(Colors.blue)
+                                  : null,
+                              value: listRenderPatient[index].isSelected,
+                              onChanged: (value) {
+                                setState(() {
+                                  listRenderPatient[index].isSelected = value!;
+                                  if (value) {
+                                    selectedPatients
+                                        .add(listRenderPatient[index]);
+                                  } else {
+                                    selectedPatients
+                                        .remove(listRenderPatient[index]);
+                                  }
+                                });
+                              },
                             ),
                           ),
                         );
@@ -302,40 +350,58 @@ class _AddNutritionAssginationPageState
                       foregroundColor: Colors.black,
                       side: BorderSide(color: Colors.grey.shade300, width: 1.5),
                     ),
-                    onPressed:
-                        // Provider.of<MedicalExamineProvider>(context,
-                        //             listen: true)
-                        //         .isLoading
-                        //     ? null
-                        //     :
-                        () async {
-                      // saveData(false, () {
-                      //   Navigator.of(context).pop();
-                      //   Provider.of<PatientProvider>(context, listen: false)
-                      //       .eitherFailureOrGetPatientServices(
-                      //           'all', args.patientInfo.encounter);
-                      // });
-                    },
+                    onPressed: Provider.of<NutritionProvider>(context,
+                                    listen: true)
+                                .isLoading ||
+                            selectedPatients.isEmpty
+                        ? null
+                        : () async {
+                            saveData(false, () {
+                              DateTime today = DateTime.now();
+                              DateTime startDate = DateTime(
+                                  today.year, today.month, today.day, 0, 0, 0);
+                              DateTime endDate = DateTime(today.year,
+                                  today.month, today.day, 23, 59, 59);
+
+                              int selectedDepartment =
+                                  Provider.of<CategoryProvider>(context,
+                                          listen: false)
+                                      .selectedDepartment!
+                                      .value;
+                              loadNutritionOrders(context, selectedDepartment,
+                                  startDate, endDate);
+                              Navigator.of(context).pop();
+                            });
+                          },
                     child: const Text('Lưu'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed:
-                        // Provider.of<MedicalExamineProvider>(context,
-                        //             listen: true)
-                        //         .isLoading
-                        //     ? null
-                        //     :
-                        () async {
-                      // saveData(true, () {
-                      //   Navigator.of(context).pop();
-                      //   Provider.of<PatientProvider>(context, listen: false)
-                      //       .eitherFailureOrGetPatientServices(
-                      //           'all', args.patientInfo.encounter);
-                      // });
-                    },
+                    onPressed: Provider.of<NutritionProvider>(context,
+                                    listen: true)
+                                .isLoading ||
+                            selectedPatients.isEmpty
+                        ? null
+                        : () async {
+                            saveData(true, () {
+                              DateTime today = DateTime.now();
+                              DateTime startDate = DateTime(
+                                  today.year, today.month, today.day, 0, 0, 0);
+                              DateTime endDate = DateTime(today.year,
+                                  today.month, today.day, 23, 59, 59);
+
+                              int selectedDepartment =
+                                  Provider.of<CategoryProvider>(context,
+                                          listen: false)
+                                      .selectedDepartment!
+                                      .value;
+                              loadNutritionOrders(context, selectedDepartment,
+                                  startDate, endDate);
+                              Navigator.of(context).pop();
+                            });
+                          },
                     child: const Text('Ban hành'),
                   ),
                 ),

@@ -10,6 +10,7 @@ class InRoomPatientEntity {
   String? classifyCode;
   String? classifyName;
   String processingStatus;
+  bool isSelected = false;
 
   InRoomPatientEntity({
     required this.code,
@@ -23,6 +24,7 @@ class InRoomPatientEntity {
     this.classifyCode,
     this.classifyName,
     required this.processingStatus,
+    this.isSelected = false,
   });
 }
 

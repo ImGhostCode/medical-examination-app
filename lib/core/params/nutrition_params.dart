@@ -1,3 +1,6 @@
+import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_order_entity.dart';
+import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
+
 class GetNutritionParams {
   String key;
   String token;
@@ -28,4 +31,42 @@ class GetNutritionOrderParams {
       'to': to,
     };
   }
+}
+
+class AssignNutritionParams {
+  int doctor;
+  int services;
+  List<InRoomPatientEntity> patients;
+  String isPublish;
+  String planDate;
+  int quantity;
+  String token;
+  String ip;
+  String code;
+
+  AssignNutritionParams(
+      {required this.doctor,
+      required this.services,
+      required this.patients,
+      required this.isPublish,
+      required this.planDate,
+      required this.quantity,
+      required this.token,
+      required this.ip,
+      required this.code});
+}
+
+class ModifyNutritionOrderParams {
+  String action;
+  List<NutritionOrderEntity> nutritionOrders;
+  String token;
+  String ip;
+  String code;
+
+  ModifyNutritionOrderParams(
+      {required this.action,
+      required this.nutritionOrders,
+      required this.token,
+      required this.ip,
+      required this.code});
 }

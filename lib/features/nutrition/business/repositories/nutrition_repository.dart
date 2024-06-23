@@ -13,4 +13,10 @@ abstract class NutritionRepository {
       getNutritionOrders({
     required GetNutritionOrderParams getNutritionOrderParams,
   });
+  Future<Either<Failure, ResponseModel<Null>>> assignNutrition({
+    required AssignNutritionParams assignNutritionParams,
+  });
+  Future<Either<Failure, ResponseModel<Null>>> modifyNutritionOrder({
+    required ModifyNutritionOrderParams modifyNutritionOrderParams,
+  });
 }

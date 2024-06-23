@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medical_examination_app/core/common/enums.dart';
 import 'package:medical_examination_app/core/common/helpers.dart';
+import 'package:medical_examination_app/core/common/widgets.dart';
 import 'package:medical_examination_app/core/constants/constants.dart';
+import 'package:medical_examination_app/core/constants/response.dart';
+import 'package:medical_examination_app/core/errors/failure.dart';
 import 'package:medical_examination_app/features/category/presentation/providers/category_provider.dart';
 import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_entity.dart';
+import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_order_entity.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/providers/nutrition_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -28,9 +32,9 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
   late DateTime startDate;
   late DateTime endDate;
   late final int selectedDepartment;
-  // Update state when view or selection changes
+  final List<NutritionOrderEntity> selectedNutritionOrders = [];
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    print(args.value);
     setState(() {
       selectedDay = args.value;
       // if (args.value is DateTime) {
@@ -46,22 +50,56 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
 
   @override
   void initState() {
-    DateTime today = DateTime.now();
-    startDate = DateTime(today.year, today.month, today.day, 0, 0, 0);
-    endDate = DateTime(today.year, today.month, today.day, 23, 59, 59);
+    // DateTime today = DateTime.now();
+    // startDate = DateTime(today.year, today.month, today.day, 0, 0, 0);
+    // endDate = DateTime(today.year, today.month, today.day, 23, 59, 59);
+    startDate = DateTime(2024, 5, 23, 0, 0, 0);
+    endDate = DateTime(2024, 7, 25, 23, 59, 59);
 
     selectedDepartment = Provider.of<CategoryProvider>(context, listen: false)
         .selectedDepartment!
         .value;
-    Provider.of<NutritionProvider>(context, listen: false)
-        .eitherFailureOrGetNutritionOrders(
-            ServiceStatus.all,
-            selectedDepartment,
-            formatDateParam(startDate),
-            formatDateParam(endDate));
+    loadNutritionOrders(context, selectedDepartment, startDate, endDate);
     Provider.of<NutritionProvider>(context, listen: false)
         .eitherFailureOrGetNutritions();
     super.initState();
+  }
+
+  Future<void> onSubmit(BuildContext context, String action) async {
+    final result = await Provider.of<NutritionProvider>(context, listen: false)
+        .eitherFailureOrModifyNutritionOrder(action, selectedNutritionOrders);
+
+    if (result.runtimeType == Failure || result.runtimeType == ServerFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('${(result as Failure).errorMessage} (${(result).hints})'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text((result as ResponseModel).message),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // update status of nutritionOrders
+      for (var item in Provider.of<NutritionProvider>(context, listen: false)
+          .nutritionOrders) {
+        if (item.isSelected) {
+          item.isSelected = false;
+          if (action == ServiceStatus.approved) {
+            item.status = ServiceStatus.approved;
+          } else if (action == ServiceStatus.cancel ||
+              action == ServiceStatus.revoke) {
+            item.status = ServiceStatus.cancel;
+          }
+        }
+      }
+      selectedNutritionOrders.clear();
+      setState(() {});
+    }
   }
 
   @override
@@ -137,6 +175,76 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                       .bodyMedium!
                       .copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  // if (e.status != ServiceStatus.approved)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.green),
+                    onPressed: () async {
+                      showConfirmDialog(context,
+                          'Bạn có chắc chắn muốn duyệt chỉ định này không?',
+                          (context, text) async {
+                        await onSubmit(context, ServiceStatus.approved);
+                      }, false, '');
+                    },
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.assignment_turned_in_outlined,
+                          color: Colors.white),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text('Duyệt')
+                    ]),
+                  ),
+                  // if (e.status != ServiceStatus.approved)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.red),
+                    onPressed: () async {
+                      showConfirmDialog(context,
+                          'Bạn có chắc chắn muốn huỷ chỉ định này không?',
+                          (context, text) async {
+                        await onSubmit(context, ServiceStatus.cancel);
+                      }, false, '');
+                    },
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.cancel_outlined, color: Colors.white),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text('Hủy')
+                    ]),
+                  ),
+
+                  // if (e.status == ServiceStatus.approved)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.red),
+                    onPressed: () async {
+                      showConfirmDialog(context,
+                          'Bạn có chắc chắn muốn huỷ duyệt chỉ định này không?',
+                          (context, text) async {
+                        await onSubmit(context, ServiceStatus.revoke);
+                      }, false, '');
+                    },
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.cancel_outlined, color: Colors.white),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text('Huỷ duyệt')
+                    ]),
+                  )
+                ],
+              ),
+              const SizedBox(height: 8),
               Consumer<NutritionProvider>(builder: (context, value, child) {
                 if (value.isLoading) {
                   return Container(
@@ -166,16 +274,25 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                         defaultVerticalAlignment:
                             TableCellVerticalAlignment.middle,
                         columnWidths: const {
-                          0: FixedColumnWidth(50), // TT
-                          1: FixedColumnWidth(200), // Dịch vụ
-                          2: FixedColumnWidth(100), // Số lượng
-                          3: FixedColumnWidth(100), // Đơn vị
+                          0: FixedColumnWidth(50), // Checkbox
+                          1: FixedColumnWidth(50), // TT
+                          2: FixedColumnWidth(200), // Dịch vụ
+                          // 2: FixedColumnWidth(100), // Số lượng
+                          // 3: FixedColumnWidth(100), // Đơn vị
                           // 4: FixedColumnWidth(100), // Giá
-                          4: FixedColumnWidth(200), // Bệnh nhân
-                          5: FixedColumnWidth(100), // Hành động
+                          3: FixedColumnWidth(200), // Bệnh nhân
+                          4: FixedColumnWidth(200), // Creators
                         },
                         children: [
                           TableRow(children: [
+                            TableCell(
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200),
+                                  child: const Text('')),
+                            ),
                             TableCell(
                               child: Container(
                                   alignment: Alignment.center,
@@ -195,24 +312,24 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                 ),
                               ),
                             ),
-                            TableCell(
-                              child: Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.all(8),
-                                decoration:
-                                    BoxDecoration(color: Colors.grey.shade200),
-                                child: const Text('Số lượng'),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.all(8),
-                                decoration:
-                                    BoxDecoration(color: Colors.grey.shade200),
-                                child: const Text('Đơn vị'),
-                              ),
-                            ),
+                            // TableCell(
+                            //   child: Container(
+                            //     alignment: Alignment.center,
+                            //     padding: const EdgeInsets.all(8),
+                            //     decoration:
+                            //         BoxDecoration(color: Colors.grey.shade200),
+                            //     child: const Text('Số lượng'),
+                            //   ),
+                            // ),
+                            // TableCell(
+                            //   child: Container(
+                            //     alignment: Alignment.center,
+                            //     padding: const EdgeInsets.all(8),
+                            //     decoration:
+                            //         BoxDecoration(color: Colors.grey.shade200),
+                            //     child: const Text('Đơn vị'),
+                            //   ),
+                            // ),
                             // TableCell(
                             //   child: Container(
                             //     alignment: Alignment.center,
@@ -237,7 +354,7 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                 padding: const EdgeInsets.all(8),
                                 decoration:
                                     BoxDecoration(color: Colors.grey.shade200),
-                                child: const Text(''),
+                                child: const Text('Creators'),
                               ),
                             ),
                           ]),
@@ -251,6 +368,44 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                           //   return
                           ...value.nutritionOrders.map((e) {
                             return TableRow(children: [
+                              TableCell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(8),
+                                  child: e.status != ServiceStatus.cancel
+                                      ? Transform.scale(
+                                          scale: 1.4,
+                                          child: Checkbox(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(3)),
+                                            side: BorderSide(
+                                                color: Colors.grey.shade600,
+                                                width: 1.5),
+                                            checkColor: Colors.white,
+                                            fillColor: e.isSelected
+                                                ? const WidgetStatePropertyAll(
+                                                    Colors.blue)
+                                                : const WidgetStatePropertyAll(
+                                                    Colors.white),
+                                            value: e.isSelected,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                e.isSelected = value!;
+                                                if (value) {
+                                                  selectedNutritionOrders
+                                                      .add(e);
+                                                } else {
+                                                  selectedNutritionOrders
+                                                      .remove(e);
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
+                              ),
                               TableCell(
                                 child: Container(
                                     alignment: Alignment.center,
@@ -270,28 +425,28 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                   alignment: Alignment.center,
                                   padding: const EdgeInsets.all(8),
                                   child: Text(
-                                    e.service,
+                                    '${e.service} - SL: ${e.quantity} - Đơn vị: ${e.unit}',
                                   ),
                                 ),
                               ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.quantity.toString(),
-                                  ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.unit,
-                                  ),
-                                ),
-                              ),
+                              // TableCell(
+                              //   child: Container(
+                              //     alignment: Alignment.center,
+                              //     padding: const EdgeInsets.all(8),
+                              //     child: Text(
+                              //       e.quantity.toString(),
+                              //     ),
+                              //   ),
+                              // ),
+                              // TableCell(
+                              //   child: Container(
+                              //     alignment: Alignment.center,
+                              //     padding: const EdgeInsets.all(8),
+                              //     child: Text(
+                              //       e.unit,
+                              //     ),
+                              //   ),
+                              // ),
                               // TableCell(
                               //   child: Container(
                               //     alignment: Alignment.center,
@@ -316,31 +471,13 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                 child: Container(
                                   alignment: Alignment.center,
                                   padding: const EdgeInsets.all(8),
-                                  child: e.status == ServiceStatus.planned
-                                      ? Transform.scale(
-                                          scale: 1.4,
-                                          child: Checkbox(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(3)),
-                                            side: BorderSide(
-                                                color: Colors.grey.shade600,
-                                                width: 1.5),
-                                            checkColor: Colors.white,
-                                            fillColor:
-                                                const WidgetStatePropertyAll(
-                                                    Colors.white),
-                                            value: true,
-                                            onChanged: (bool? value) {
-                                              setState(() {
-                                                // e.isSelected = value!;
-                                              });
-                                            },
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
+                                  child: Text(
+                                    e.creators,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
                                 ),
-                              ),
+                              )
                             ]);
                           })
                           // }
@@ -365,6 +502,7 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -466,6 +604,13 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
       },
     );
   }
+}
+
+void loadNutritionOrders(BuildContext context, int selectedDepartment,
+    DateTime startDate, DateTime endDate) {
+  Provider.of<NutritionProvider>(context, listen: false)
+      .eitherFailureOrGetNutritionOrders(ServiceStatus.all, 'all',
+          formatDateParam(startDate), formatDateParam(endDate));
 }
 
 Future<dynamic> showChooseNutritionModal(

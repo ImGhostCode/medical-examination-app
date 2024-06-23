@@ -7,11 +7,12 @@ class NutritionOrderEntity {
   String service;
   int subject;
   String creators;
-  String division;
+  String? division;
   int quantity;
   String birthdate;
   int encounter;
-  int divisionId;
+  int? divisionId;
+  bool isSelected = false;
 
   NutritionOrderEntity({
     required this.id,
@@ -22,11 +23,12 @@ class NutritionOrderEntity {
     required this.service,
     required this.subject,
     required this.creators,
-    required this.division,
+    this.division,
     required this.quantity,
     required this.birthdate,
     required this.encounter,
-    required this.divisionId,
+    this.divisionId,
+    this.isSelected = false,
   });
 }
 

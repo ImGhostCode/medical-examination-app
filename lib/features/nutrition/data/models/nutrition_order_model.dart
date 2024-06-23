@@ -11,11 +11,11 @@ class NutritionOrderModel extends NutritionOrderEntity {
       required super.service,
       required super.subject,
       required super.creators,
-      required super.division,
+      super.division,
       required super.quantity,
       required super.birthdate,
       required super.encounter,
-      required super.divisionId});
+      super.divisionId});
 
   factory NutritionOrderModel.fromJson({required Map<String, dynamic> json}) {
     return NutritionOrderModel(

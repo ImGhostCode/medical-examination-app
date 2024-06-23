@@ -40,6 +40,7 @@ String kMessage = 'message';
 String kStatus = 'status';
 String kType = 'type';
 String kData = 'value';
+String kHints = 'hints';
 
 // User
 String kId = 'id';

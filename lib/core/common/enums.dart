@@ -135,6 +135,7 @@ class ServiceStatus {
   static const String publish = 'publish';
   static const String complete = 'complete';
   static const String all = 'all';
+  static const String revoke = 'revoke';
 
   static String statusToVietnamese(String status) {
     switch (status) {
@@ -151,7 +152,7 @@ class ServiceStatus {
       case cancelRequest:
         return 'Yêu cầu hủy';
       case draft:
-        return 'Khởi tạo';
+        return 'Chỉ định';
       case approved:
         return 'Đã phê duyệt';
       case deliveried:

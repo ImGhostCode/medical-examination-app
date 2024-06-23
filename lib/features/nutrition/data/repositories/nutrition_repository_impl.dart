@@ -80,4 +80,61 @@ class NutritionRepositoryImpl implements NutritionRepository {
       // }
     }
   }
+
+  @override
+  Future<Either<Failure, ResponseModel<Null>>> assignNutrition(
+      {required AssignNutritionParams assignNutritionParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<Null> remoteNutrition = await remoteDataSource
+            .assignNutrition(assignNutritionParams: assignNutritionParams);
+
+        // localDataSource.cacheCategory(templateToCache: remoteNutrition);
+
+        return Right(remoteNutrition);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<Null>>> modifyNutritionOrder(
+      {required ModifyNutritionOrderParams modifyNutritionOrderParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<Null> remoteNutrition =
+            await remoteDataSource.modifyNutritionOrder(
+                modifyNutritionOrderParams: modifyNutritionOrderParams);
+
+        // localDataSource.cacheCategory(templateToCache: remoteNutrition);
+
+        return Right(remoteNutrition);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+            code: e.code.toString(),
+            errorMessage: e.message,
+            status: e.status,
+            hints: e.hints));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
 }
