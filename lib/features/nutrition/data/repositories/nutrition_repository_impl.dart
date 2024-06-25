@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:medical_examination_app/core/constants/response.dart';
 import 'package:medical_examination_app/core/params/nutrition_params.dart';
+import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_order_entity.dart';
 import 'package:medical_examination_app/features/nutrition/data/models/nutrition_model.dart';
 import 'package:medical_examination_app/features/nutrition/data/models/nutrition_order_model.dart';
 
@@ -127,6 +128,37 @@ class NutritionRepositoryImpl implements NutritionRepository {
             errorMessage: e.message,
             status: e.status,
             hints: e.hints));
+      }
+    } else {
+      // try {
+      // AuthModel localAuth = await localDataSource.getLastAuth();
+      // return Right(localAuth);
+      // } on CacheException {
+      return Left(CacheFailure(errorMessage: 'This is a cache exception'));
+      // }
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResponseModel<List<NutritionOrderEntity>>>>
+      getOrderedNutritions(
+          {required GetOrderedNutritionParams
+              getOrderedNutritionParams}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        ResponseModel<List<NutritionOrderModel>> remoteNutrition =
+            await remoteDataSource.getOrderedNutritions(
+                getOrderedNutritionParams: getOrderedNutritionParams);
+
+        // localDataSource.cacheCategory(templateToCache: remoteNutrition);
+
+        return Right(remoteNutrition);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(
+          code: e.code.toString(),
+          errorMessage: e.message,
+          status: e.status,
+        ));
       }
     } else {
       // try {

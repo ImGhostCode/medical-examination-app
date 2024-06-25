@@ -29,7 +29,8 @@ class RouteNames {
   static const String editCareSheet = '/edit-care-sheet';
 
   static const String assignNutrition = '/assign-nutrition';
-  static const String addNutritionAssignation = '/add-nutrition-assignation';
+  static const String nutritionAssignationHistory =
+      '/nutrition-assignation-history';
 }
 
 String kTemplate = 'template';
@@ -171,3 +172,6 @@ String kIsLeftRight = 'is_left_right';
 // Nutrition
 String kDivision = 'division';
 String kDivisionId = 'division_id';
+String kBirthDate = 'birthdate';
+String kNutrition = 'nutrition';
+String kNutritionOrderId = 'nutrition_order_id';

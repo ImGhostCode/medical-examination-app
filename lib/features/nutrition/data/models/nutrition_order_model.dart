@@ -1,21 +1,28 @@
 import 'package:medical_examination_app/core/constants/constants.dart';
 import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_order_entity.dart';
+import 'package:medical_examination_app/features/patient/data/models/patient_model.dart';
 
 class NutritionOrderModel extends NutritionOrderEntity {
-  NutritionOrderModel(
-      {required super.id,
-      required super.name,
-      required super.unit,
-      required super.gender,
-      required super.status,
-      required super.service,
-      required super.subject,
-      required super.creators,
-      super.division,
-      required super.quantity,
-      required super.birthdate,
-      required super.encounter,
-      super.divisionId});
+  NutritionOrderModel({
+    super.id,
+    super.name,
+    super.unit,
+    super.gender,
+    super.status,
+    super.service,
+    super.subject,
+    super.creators,
+    super.division,
+    super.quantity,
+    super.birthdate,
+    super.encounter,
+    super.divisionId,
+    super.location,
+    super.birthDate,
+    super.genderName,
+    super.nutrition,
+    super.nutritionOrderId,
+  });
 
   factory NutritionOrderModel.fromJson({required Map<String, dynamic> json}) {
     return NutritionOrderModel(
@@ -32,6 +39,13 @@ class NutritionOrderModel extends NutritionOrderEntity {
       birthdate: json[kBirthdate],
       encounter: json[kEncounter],
       divisionId: json[kDivisionId],
+      location: json[kLocation]
+          .map<LocationModel>((e) => LocationModel.fromJson(json: e))
+          .toList(),
+      birthDate: json[kBirthDate],
+      nutrition: json[kNutrition],
+      nutritionOrderId: json[kNutritionOrderId],
+      genderName: json[kGenderName],
     );
   }
 
@@ -50,6 +64,13 @@ class NutritionOrderModel extends NutritionOrderEntity {
       kBirthdate: super.birthdate,
       kEncounter: super.encounter,
       kDivisionId: super.divisionId,
+      kLocation: (super.location as List<LocationModel>)
+          .map((e) => e.toJson())
+          .toList(),
+      kBirthDate: super.birthDate,
+      kNutrition: super.nutrition,
+      kNutritionOrderId: super.nutritionOrderId,
+      kGenderName: super.genderName
     };
   }
 }

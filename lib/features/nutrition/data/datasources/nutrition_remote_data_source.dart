@@ -12,6 +12,8 @@ abstract class NutritionRemoteDataSource {
       {required GetNutritionParams getNutritionParams});
   Future<ResponseModel<List<NutritionOrderModel>>> getNutritionOrders(
       {required GetNutritionOrderParams getNutritionOrderParams});
+  Future<ResponseModel<List<NutritionOrderModel>>> getOrderedNutritions(
+      {required GetOrderedNutritionParams getOrderedNutritionParams});
   Future<ResponseModel<Null>> assignNutrition(
       {required AssignNutritionParams assignNutritionParams});
   Future<ResponseModel<Null>> modifyNutritionOrder(
@@ -86,24 +88,26 @@ class NutritionRemoteDataSourceImpl implements NutritionRemoteDataSource {
   Future<ResponseModel<Null>> assignNutrition(
       {required AssignNutritionParams assignNutritionParams}) async {
     try {
-      final response = await dio.post('/nutrition/order',
-          queryParameters: {},
-          data: {
-            "data": {
-              "doctor": assignNutritionParams.doctor,
-              "services": assignNutritionParams.services,
-              "patients": assignNutritionParams.patients
-                  .map((e) => {"encounter": e.encounter, "subject": e.subject})
-                  .toList(),
-              "is_publish": assignNutritionParams.isPublish,
-              "planDate": assignNutritionParams.planDate,
-              "quantity": assignNutritionParams.quantity
-            },
-            "token": assignNutritionParams.token,
-            "ip": assignNutritionParams.ip,
-            "code": assignNutritionParams.code
+      final response = await dio.post(
+        '/nutrition/order',
+        queryParameters: {},
+        data: {
+          "data": {
+            "doctor": assignNutritionParams.doctor,
+            "services": assignNutritionParams.services,
+            "patients": assignNutritionParams.patients
+                .map((e) => {"encounter": e.encounter, "subject": e.subject})
+                .toList(),
+            "is_publish": assignNutritionParams.isPublish,
+            "planDate": assignNutritionParams.planDate,
+            "quantity": assignNutritionParams.quantity
           },
-          options: Options(headers: {"token": assignNutritionParams.token}));
+          "token": assignNutritionParams.token,
+          "ip": assignNutritionParams.ip,
+          "code": assignNutritionParams.code
+        },
+        // options: Options(headers: {"token": assignNutritionParams.token})
+      );
 
       if (response.data[kStatus] == 'error') {
         throw ServerException(
@@ -133,7 +137,7 @@ class NutritionRemoteDataSourceImpl implements NutritionRemoteDataSource {
             "data": {
               "items": modifyNutritionOrderParams.nutritionOrders
                   .map((e) => {
-                        "id": e.id.toString(),
+                        "id": e.nutritionOrderId.toString(),
                       })
                   .toList()
             },
@@ -159,6 +163,37 @@ class NutritionRemoteDataSourceImpl implements NutritionRemoteDataSource {
           message: e.response!.data[kMessage],
           code: e.response!.statusCode!.toString(),
           hints: e.response!.data[kHints],
+          status: 'error');
+    }
+  }
+
+  @override
+  Future<ResponseModel<List<NutritionOrderModel>>> getOrderedNutritions(
+      {required GetOrderedNutritionParams getOrderedNutritionParams}) async {
+    try {
+      final response = await dio.get(
+          '/patient/list/${paramToBase64(getOrderedNutritionParams.toMap())}',
+          queryParameters: {},
+          options:
+              Options(headers: {"token": getOrderedNutritionParams.token}));
+
+      if (response.data[kStatus] == 'error') {
+        throw ServerException(
+            message: response.data[kMessage],
+            code: response.data[kCode],
+            status: response.data[kStatus]);
+      }
+
+      return ResponseModel<List<NutritionOrderModel>>.fromJson(
+          json: response.data,
+          fromJsonD: (json) => json
+              .map<NutritionOrderModel>(
+                  (e) => NutritionOrderModel.fromJson(json: e))
+              .toList());
+    } on DioException catch (e) {
+      throw ServerException(
+          message: e.response!.data[kMessage],
+          code: e.response!.statusCode!.toString(),
           status: 'error');
     }
   }

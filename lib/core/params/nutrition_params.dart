@@ -70,3 +70,25 @@ class ModifyNutritionOrderParams {
       required this.ip,
       required this.code});
 }
+
+// {"division":"29587","date": "2024-03-19","status":"nutrition_order_detail"}
+class GetOrderedNutritionParams {
+  String division;
+  String date;
+  String status;
+  String token;
+
+  GetOrderedNutritionParams(
+      {required this.division,
+      required this.date,
+      required this.status,
+      required this.token});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'division': division,
+      'date': date,
+      'status': status,
+    };
+  }
+}

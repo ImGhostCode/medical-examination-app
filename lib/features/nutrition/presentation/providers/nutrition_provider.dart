@@ -10,6 +10,7 @@ import 'package:medical_examination_app/features/nutrition/business/entities/nut
 import 'package:medical_examination_app/features/nutrition/business/entities/nutrition_order_entity.dart';
 import 'package:medical_examination_app/features/nutrition/business/usecases/assign_nutrition_usecase.dart';
 import 'package:medical_examination_app/features/nutrition/business/usecases/get_nutrition_order_usecase.dart';
+import 'package:medical_examination_app/features/nutrition/business/usecases/get_ordered_nutrition_usecase.dart';
 import 'package:medical_examination_app/features/nutrition/business/usecases/modify_nutrition_order_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/entities/in_room_patient_entity.dart';
 
@@ -29,6 +30,7 @@ class NutritionProvider extends ChangeNotifier {
   String message;
   List<NutritionEntity> nutritions = [];
   List<NutritionOrderEntity> nutritionOrders = [];
+  List<NutritionOrderEntity> orderedNutritions = [];
   bool _isLoadingModify = false;
 
   Failure? failure;
@@ -134,6 +136,52 @@ class NutritionProvider extends ChangeNotifier {
       (ResponseModel<List<NutritionOrderEntity>> response) {
         _isLoading = false;
         nutritionOrders = response.data;
+        failure = null;
+        code = response.code;
+        type = response.type;
+        status = response.status;
+        message = response.message;
+        failure = null;
+        notifyListeners();
+      },
+    );
+  }
+
+  void eitherFailureOrOrderedNutritions(
+      String division, String date, String status) async {
+    orderedNutritions = [];
+    _isLoading = true;
+    NutritionRepositoryImpl repository = NutritionRepositoryImpl(
+      remoteDataSource: NutritionRemoteDataSourceImpl(
+        dio: ApiService.dio,
+      ),
+      localDataSource: NutritionLocalDataSourceImpl(
+        sharedPreferences: SharedPrefService.prefs,
+      ),
+      networkInfo: NetworkInfoImpl(
+        InternetConnectionChecker(),
+      ),
+    );
+
+    final failureOrOrderedNutritions =
+        await GetOrderedNutritionUsecase(nutritionRepository: repository).call(
+      getOrderedNutritionParams: GetOrderedNutritionParams(
+          status: status,
+          division: division,
+          date: date,
+          token: await secureStorage.read(key: 'token') ?? ''),
+    );
+
+    failureOrOrderedNutritions.fold(
+      (Failure newFailure) {
+        _isLoading = false;
+        orderedNutritions = [];
+        failure = newFailure;
+        notifyListeners();
+      },
+      (ResponseModel<List<NutritionOrderEntity>> response) {
+        _isLoading = false;
+        orderedNutritions = response.data;
         failure = null;
         code = response.code;
         type = response.type;

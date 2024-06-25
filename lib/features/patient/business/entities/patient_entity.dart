@@ -82,18 +82,18 @@ class Organization {
 }
 
 class LocationEntity {
-  int seq;
-  String code;
-  int value;
-  String display;
-  String feeObject;
+  int? seq;
+  String? code;
+  int? value;
+  String? display;
+  String? feeObject;
 
   LocationEntity({
-    required this.seq,
-    required this.code,
-    required this.value,
-    required this.display,
-    required this.feeObject,
+    this.seq,
+    this.code,
+    this.value,
+    this.display,
+    this.feeObject,
   });
 }
 

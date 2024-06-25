@@ -139,7 +139,7 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                             backgroundColor: Colors.green),
                                         onPressed: () async {
                                           await showConfirmDialog(context,
-                                              'Bạn có chắc chắn muốn ban hành tờ điều trị này không?',
+                                              'Bạn có chắc chắn muốn ban hành dịch vụ này không?',
                                               (BuildContext contextInner,
                                                   String text) async {
                                             if (Provider.of<PatientProvider>(
@@ -220,15 +220,24 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                         TableCellVerticalAlignment.middle,
                                     columnWidths: const {
                                       0: FixedColumnWidth(50),
-                                      1: FixedColumnWidth(200),
-                                      2: FixedColumnWidth(100),
+                                      1: FixedColumnWidth(50),
+                                      2: FixedColumnWidth(200),
+                                      // 3: FixedColumnWidth(100),
+                                      // 4: FixedColumnWidth(100),
                                       3: FixedColumnWidth(100),
-                                      4: FixedColumnWidth(100),
-                                      5: FixedColumnWidth(200),
-                                      6: FixedColumnWidth(50),
+                                      4: FixedColumnWidth(200),
                                     },
                                     children: [
                                       TableRow(children: [
+                                        TableCell(
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey.shade200),
+                                            child: const Text(''),
+                                          ),
+                                        ),
                                         TableCell(
                                           child: Container(
                                               alignment: Alignment.center,
@@ -248,24 +257,24 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                             ),
                                           ),
                                         ),
-                                        TableCell(
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey.shade200),
-                                            child: const Text('Số lượng'),
-                                          ),
-                                        ),
-                                        TableCell(
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey.shade200),
-                                            child: const Text('Đơn vị'),
-                                          ),
-                                        ),
+                                        // TableCell(
+                                        //   child: Container(
+                                        //     alignment: Alignment.center,
+                                        //     padding: const EdgeInsets.all(8),
+                                        //     decoration: BoxDecoration(
+                                        //         color: Colors.grey.shade200),
+                                        //     child: const Text('Số lượng'),
+                                        //   ),
+                                        // ),
+                                        // TableCell(
+                                        //   child: Container(
+                                        //     alignment: Alignment.center,
+                                        //     padding: const EdgeInsets.all(8),
+                                        //     decoration: BoxDecoration(
+                                        //         color: Colors.grey.shade200),
+                                        //     child: const Text('Đơn vị'),
+                                        //   ),
+                                        // ),
                                         TableCell(
                                           child: Container(
                                             alignment: Alignment.center,
@@ -284,15 +293,6 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                             child: const Text('Kết quả'),
                                           ),
                                         ),
-                                        TableCell(
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey.shade200),
-                                            child: const Text(''),
-                                          ),
-                                        ),
                                       ]),
                                       // ...groupByReportCode[item.headerValue]!
                                       //     .asMap()
@@ -302,75 +302,6 @@ class _AssignServicePageState extends State<AssignServicePage> {
 
                                       ...item.expandedValue.map((e) {
                                         return TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.center,
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: Tooltip(
-                                                  triggerMode:
-                                                      TooltipTriggerMode.tap,
-                                                  message: ServiceStatus
-                                                      .statusToVietnamese(
-                                                          e.status),
-                                                  child: Icon(
-                                                      ServiceStatus.statusIcon(
-                                                          e.status),
-                                                      color: ServiceStatus
-                                                          .statusColor(
-                                                              e.status)),
-                                                )),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                e.service,
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                e.quantity.toString(),
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                e.unit,
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                '${formatCurrency(e.price)}đ',
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                e.result ?? '',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: Colors.green),
-                                              ),
-                                            ),
-                                          ),
                                           TableCell(
                                             child: Container(
                                               alignment: Alignment.center,
@@ -408,6 +339,75 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                                       ),
                                                     )
                                                   : const SizedBox.shrink(),
+                                            ),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                                alignment: Alignment.center,
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: Tooltip(
+                                                  triggerMode:
+                                                      TooltipTriggerMode.tap,
+                                                  message: ServiceStatus
+                                                      .statusToVietnamese(
+                                                          e.status),
+                                                  child: Icon(
+                                                      ServiceStatus.statusIcon(
+                                                          e.status),
+                                                      color: ServiceStatus
+                                                          .statusColor(
+                                                              e.status)),
+                                                )),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                '${e.service} - SL: ${e.quantity} - Đơn vị: ${e.unit}',
+                                              ),
+                                            ),
+                                          ),
+                                          // TableCell(
+                                          //   child: Container(
+                                          //     alignment: Alignment.center,
+                                          //     padding: const EdgeInsets.all(8),
+                                          //     child: Text(
+                                          //       e.quantity.toString(),
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          // TableCell(
+                                          //   child: Container(
+                                          //     alignment: Alignment.center,
+                                          //     padding: const EdgeInsets.all(8),
+                                          //     child: Text(
+                                          //       e.unit,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          TableCell(
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                '${formatCurrency(e.price)}đ',
+                                              ),
+                                            ),
+                                          ),
+                                          TableCell(
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                e.result ?? '',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                        color: Colors.green),
+                                              ),
                                             ),
                                           ),
                                         ]);
