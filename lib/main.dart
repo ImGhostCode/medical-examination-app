@@ -17,6 +17,7 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pa
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
+import 'package:medical_examination_app/features/medical_examine/presentation/pages/signal_statistics_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/pages/assign_nutrition_page.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/pages/nutrition_assignation_history_page.dart';
@@ -139,6 +140,8 @@ class MainApp extends StatelessWidget {
           RouteNames.searchPatients: (context) => const SearchPatientPage(),
           RouteNames.medialExamine: (context) => const MedicalExaminationPage(),
           RouteNames.addSignal: (context) => const AddSignalPage(),
+          RouteNames.signalStatistics: (context) =>
+              const SignalStatisticsPage(),
           RouteNames.addStreatmentSheet: (context) =>
               const AddStreatmentSheetPage(),
           RouteNames.editStreatmentSheet: (context) =>

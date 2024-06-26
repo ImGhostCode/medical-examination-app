@@ -18,6 +18,7 @@ class RouteNames {
 
   static const String medialExamine = '/medial-examine';
   static const String addSignal = '/add-signal';
+  static const String signalStatistics = '/signal-statistics';
   static const String addStreatmentSheet = '/add-streatment-sheet';
   static const String editStreatmentSheet = '/edit-streatment-sheet';
 

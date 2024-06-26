@@ -21,6 +21,7 @@ dependencies:
   rename: ^3.0.2
   shared_preferences: ^2.2.3
   speech_to_text: ^6.6.0
+  syncfusion_flutter_charts: ^26.1.39
   syncfusion_flutter_datepicker: ^26.1.38
   tiengviet: ^1.0.0
 
