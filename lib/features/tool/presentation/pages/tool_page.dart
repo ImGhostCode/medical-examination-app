@@ -52,8 +52,46 @@ class ToolPage extends StatelessWidget {
           const SizedBox(width: 10),
         ],
       ),
-      body: Center(
-        child: Text('Tool Page'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Công cụ tính nhanh',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    shape: RoundedRectangleBorder(
+                        side:
+                            BorderSide(width: 1.5, color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(8)),
+                    // tileColor: Colors.cyanAccent,
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    title: const Text('Tính chỉ số BMI'),
+                    leading:
+                        Image.asset('assets/icons/speedometer.png', width: 50),
+                    onTap: () {
+                      // Navigator.of(context).pushNamed(
+                      //     RouteNames.crePatientProfile);
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

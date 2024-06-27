@@ -249,6 +249,32 @@ class _HomePageState extends State<HomePage> {
                                     .titleMedium!
                                     .copyWith(fontWeight: FontWeight.bold),
                               ),
+                              ListView(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: [
+                                  ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            width: 1.5,
+                                            color: Colors.grey.shade200),
+                                        borderRadius: BorderRadius.circular(8)),
+                                    tileColor: Colors.cyanAccent,
+                                    trailing:
+                                        const Icon(Icons.arrow_forward_ios),
+                                    title: const Text('Tính chỉ số BMI'),
+                                    leading: Image.asset(
+                                        'assets/icons/speedometer.png',
+                                        width: 50),
+                                    onTap: () {
+                                      // Navigator.of(context).pushNamed(
+                                      //     RouteNames.crePatientProfile);
+                                    },
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         )

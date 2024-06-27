@@ -936,6 +936,34 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
                     ],
                   ),
                 // const SizedBox(height: 16),
+                // show BMI
+                if (listWeightSignals.isNotEmpty &&
+                    listHeightSignals.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 8),
+                      RichText(
+                          text: TextSpan(children: [
+                        TextSpan(
+                            text: '  BMI: ',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black)),
+                        TextSpan(
+                            text:
+                                '${(int.parse(listWeightSignals.first.valueString!) / (int.parse(listHeightSignals.first.valueString!) / 100 * int.parse(listHeightSignals.first.valueString!) / 100)).toStringAsFixed(2)} kg/m²',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(color: Colors.blue)),
+                      ])),
+                    ],
+                  ),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(

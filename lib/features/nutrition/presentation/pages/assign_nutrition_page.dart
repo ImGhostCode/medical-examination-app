@@ -437,105 +437,113 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                           // ...item.expandedValue.map((e) {
                           //   return
                           ...listRenderPatient.map((e) {
-                            return TableRow(children: [
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Transform.scale(
-                                    scale: 1.4,
-                                    child: Checkbox(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3)),
-                                      side: BorderSide(
-                                          color: Colors.grey.shade600,
-                                          width: 1.5),
-                                      checkColor: Colors.white,
-                                      fillColor: e.isSelected
-                                          ? const WidgetStatePropertyAll(
-                                              Colors.blue)
-                                          : null,
-                                      value: e.isSelected,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          e.isSelected = value!;
-                                          if (value) {
-                                            selectedPatients.add(e);
-                                          } else {
-                                            selectedPatients.remove(e);
-                                          }
-                                        });
-                                      },
+                            return TableRow(
+                                decoration: BoxDecoration(
+                                    color: e.isSelected
+                                        ? Colors.blue.shade50
+                                        : Colors.white),
+                                children: [
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      // padding: const EdgeInsets.all(4),
+                                      child: Transform.scale(
+                                        scale: 1.4,
+                                        child: Checkbox(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(3)),
+                                          side: BorderSide(
+                                              color: Colors.grey.shade600,
+                                              width: 1.5),
+                                          checkColor: Colors.white,
+                                          fillColor: e.isSelected
+                                              ? const WidgetStatePropertyAll(
+                                                  Colors.blue)
+                                              : null,
+                                          value: e.isSelected,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              e.isSelected = value!;
+                                              if (value) {
+                                                selectedPatients.add(e);
+                                              } else {
+                                                selectedPatients.remove(e);
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.encounter.toString(),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        e.encounter.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.subject.toString(),
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        e.subject.toString(),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.name,
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        e.name,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              TableCell(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    e.birthdate,
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                  TableCell(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        e.birthdate,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              // TableCell(
-                              //   child: Container(
-                              //     alignment: Alignment.center,
-                              //     padding: const EdgeInsets.all(8),
-                              //     child: Text(
-                              //       e.genderName!,
-                              //       style: Theme.of(context).textTheme.bodyMedium,
-                              //     ),
-                              //   ),
-                              // ),
-                              // TableCell(
-                              //   child: Container(
-                              //     alignment: Alignment.center,
-                              //     padding: const EdgeInsets.all(8),
-                              //     child: Text(
-                              //       e.location!.isNotEmpty
-                              //           ? e.location!.first.display!
-                              //           : '',
-                              //       style: Theme.of(context).textTheme.bodyMedium,
-                              //     ),
-                              //   ),
-                              // ),
-                            ]);
+                                  // TableCell(
+                                  //   child: Container(
+                                  //     alignment: Alignment.center,
+                                  //     padding: const EdgeInsets.all(8),
+                                  //     child: Text(
+                                  //       e.genderName!,
+                                  //       style: Theme.of(context).textTheme.bodyMedium,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // TableCell(
+                                  //   child: Container(
+                                  //     alignment: Alignment.center,
+                                  //     padding: const EdgeInsets.all(8),
+                                  //     child: Text(
+                                  //       e.location!.isNotEmpty
+                                  //           ? e.location!.first.display!
+                                  //           : '',
+                                  //       style: Theme.of(context).textTheme.bodyMedium,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ]);
                           })
                           // }
                           // )

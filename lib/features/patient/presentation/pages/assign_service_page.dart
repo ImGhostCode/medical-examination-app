@@ -301,116 +301,130 @@ class _AssignServicePageState extends State<AssignServicePage> {
                                       //   return
 
                                       ...item.expandedValue.map((e) {
-                                        return TableRow(children: [
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: e.status ==
-                                                      ServiceStatus.planned
-                                                  ? Transform.scale(
-                                                      scale: 1.4,
-                                                      child: Checkbox(
-                                                        shape:
-                                                            RoundedRectangleBorder(
+                                        return TableRow(
+                                            decoration: BoxDecoration(
+                                                color: e.isSelected
+                                                    ? Colors.blue.shade50
+                                                    : Colors.white),
+                                            children: [
+                                              TableCell(
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  // padding:
+                                                  //     const EdgeInsets.all(8),
+                                                  child: e.status ==
+                                                          ServiceStatus.planned
+                                                      ? Transform.scale(
+                                                          scale: 1.4,
+                                                          child: Checkbox(
+                                                            shape: RoundedRectangleBorder(
                                                                 borderRadius:
                                                                     BorderRadius
                                                                         .circular(
                                                                             3)),
-                                                        side: BorderSide(
-                                                            color: Colors
-                                                                .grey.shade600,
-                                                            width: 1.5),
-                                                        checkColor:
-                                                            Colors.white,
-                                                        fillColor: e.isSelected
-                                                            ? const WidgetStatePropertyAll(
-                                                                Colors.blue)
-                                                            : const WidgetStatePropertyAll(
-                                                                Colors.white),
-                                                        value: e.isSelected,
-                                                        onChanged:
-                                                            (bool? value) {
-                                                          setState(() {
-                                                            e.isSelected =
-                                                                value!;
-                                                          });
-                                                        },
-                                                      ),
-                                                    )
-                                                  : const SizedBox.shrink(),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                                alignment: Alignment.center,
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: Tooltip(
-                                                  triggerMode:
-                                                      TooltipTriggerMode.tap,
-                                                  message: ServiceStatus
-                                                      .statusToVietnamese(
-                                                          e.status),
-                                                  child: Icon(
-                                                      ServiceStatus.statusIcon(
-                                                          e.status),
-                                                      color: ServiceStatus
-                                                          .statusColor(
-                                                              e.status)),
-                                                )),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                '${e.service} - SL: ${e.quantity} - Đơn vị: ${e.unit}',
+                                                            side: BorderSide(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                                width: 1.5),
+                                                            checkColor:
+                                                                Colors.white,
+                                                            fillColor: e
+                                                                    .isSelected
+                                                                ? const WidgetStatePropertyAll(
+                                                                    Colors.blue)
+                                                                : const WidgetStatePropertyAll(
+                                                                    Colors
+                                                                        .white),
+                                                            value: e.isSelected,
+                                                            onChanged:
+                                                                (bool? value) {
+                                                              setState(() {
+                                                                e.isSelected =
+                                                                    value!;
+                                                              });
+                                                            },
+                                                          ),
+                                                        )
+                                                      : const SizedBox.shrink(),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          // TableCell(
-                                          //   child: Container(
-                                          //     alignment: Alignment.center,
-                                          //     padding: const EdgeInsets.all(8),
-                                          //     child: Text(
-                                          //       e.quantity.toString(),
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          // TableCell(
-                                          //   child: Container(
-                                          //     alignment: Alignment.center,
-                                          //     padding: const EdgeInsets.all(8),
-                                          //     child: Text(
-                                          //       e.unit,
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                '${formatCurrency(e.price)}đ',
+                                              TableCell(
+                                                child: Container(
+                                                    alignment: Alignment.center,
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Tooltip(
+                                                      triggerMode:
+                                                          TooltipTriggerMode
+                                                              .tap,
+                                                      message: ServiceStatus
+                                                          .statusToVietnamese(
+                                                              e.status),
+                                                      child: Icon(
+                                                          ServiceStatus
+                                                              .statusIcon(
+                                                                  e.status),
+                                                          color: ServiceStatus
+                                                              .statusColor(
+                                                                  e.status)),
+                                                    )),
                                               ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                e.result ?? '',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: Colors.green),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Text(
+                                                    '${e.service} - SL: ${e.quantity} - Đơn vị: ${e.unit}',
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ]);
+                                              // TableCell(
+                                              //   child: Container(
+                                              //     alignment: Alignment.center,
+                                              //     padding: const EdgeInsets.all(8),
+                                              //     child: Text(
+                                              //       e.quantity.toString(),
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // TableCell(
+                                              //   child: Container(
+                                              //     alignment: Alignment.center,
+                                              //     padding: const EdgeInsets.all(8),
+                                              //     child: Text(
+                                              //       e.unit,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Text(
+                                                    '${formatCurrency(e.price)}đ',
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Text(
+                                                    e.result ?? '',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium!
+                                                        .copyWith(
+                                                            color:
+                                                                Colors.green),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]);
                                       })
                                     ])),
                             isExpanded: item.isExpanded,
