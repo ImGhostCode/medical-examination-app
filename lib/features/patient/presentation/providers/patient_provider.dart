@@ -13,7 +13,7 @@ import 'package:medical_examination_app/features/patient/business/entities/patie
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_info_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/get_patient_serv_usecase.dart';
 import 'package:medical_examination_app/features/patient/business/usecases/publish_patient_ser_usecase.dart';
-import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/subclinic_service_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/connection/network_info.dart';
@@ -159,7 +159,7 @@ class PatientProvider extends ChangeNotifier {
     );
   }
 
-  void eitherFailureOrGetPatientServices(String type, int encounter) async {
+  dynamic eitherFailureOrGetPatientServices(String type, int encounter) async {
     listPatientServices = [];
     isLoadingServices = true;
     PatientRepositoryImpl repository = PatientRepositoryImpl(
@@ -183,12 +183,13 @@ class PatientProvider extends ChangeNotifier {
       ),
     );
 
-    failureOrPatient.fold(
+    var result = failureOrPatient.fold(
       (Failure newFailure) {
         isLoadingServices = false;
         listPatientServices = [];
         failure = newFailure;
         notifyListeners();
+        return failure;
       },
       (ResponseModel<List<PatientServiceEntity>> response) {
         isLoadingServices = false;
@@ -201,8 +202,10 @@ class PatientProvider extends ChangeNotifier {
         message = response.message;
         failure = null;
         notifyListeners();
+        return response;
       },
     );
+    return result;
   }
 
   Map<String, List<PatientServiceEntity>> groupByReportCodeFunc() {

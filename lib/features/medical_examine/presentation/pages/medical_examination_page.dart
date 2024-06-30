@@ -186,12 +186,12 @@ class _MedicalExaminationPageState extends State<MedicalExaminationPage> {
   Step _buildInputCareSheetStep(BuildContext context) {
     return Step(
       stepStyle: StepStyle(
-        color: _index == 3 ? Colors.blue : Colors.grey.shade400,
+        color: _index == 2 ? Colors.blue : Colors.grey.shade400,
       ),
       title: Text(
         'Tờ chăm sóc',
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            color: _index == 3 ? Colors.blue : Colors.black,
+            color: _index == 2 ? Colors.blue : Colors.black,
             fontWeight: FontWeight.bold),
       ),
       content:

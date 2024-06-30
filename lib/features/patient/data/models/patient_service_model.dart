@@ -22,7 +22,7 @@ class PatientServiceModel extends PatientServiceEntity {
       id: json[kId],
       type: json[kType],
       owner: json[kOwner],
-      price: json[kPrice].toInt(),
+      price: json[kAmount] != null ? json[kAmount].toInt() : 0,
       status: json[kStatus],
       creators: json[kCreators],
       service: json[kService],

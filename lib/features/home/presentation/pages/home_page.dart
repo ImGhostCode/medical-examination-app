@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       Feature(
-        title: 'Chỉ định dịch vụ',
+        title: 'Dịch vụ CLS',
         icon: 'assets/images/cute-set-medical-service-cartoon-vector.jpg',
         onTap: () async {
           final provider = Provider.of<PatientProvider>(context, listen: false);
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       Feature(
-        title: 'Chỉ định dinh dưỡng',
+        title: 'Dinh dưỡng',
         icon: 'assets/icons/calories_food_nutrition_icon_224841.png',
         onTap: () async {
           Navigator.of(context).pushNamed(
@@ -313,8 +313,8 @@ class _HomePageState extends State<HomePage> {
                                         const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 4,
                                       childAspectRatio: 0.7,
-                                      crossAxisSpacing: 8,
-                                      mainAxisSpacing: 8,
+                                      crossAxisSpacing: 4,
+                                      mainAxisSpacing: 4,
                                     ),
                                     itemCount: features.length,
                                     itemBuilder: (context, index) {
@@ -325,7 +325,7 @@ class _HomePageState extends State<HomePage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                              MainAxisAlignment.start,
                                           children: [
                                             Container(
                                               height: 60,

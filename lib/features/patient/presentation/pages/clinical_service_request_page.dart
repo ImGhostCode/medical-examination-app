@@ -16,7 +16,7 @@ import 'package:medical_examination_app/features/category/presentation/providers
 import 'package:medical_examination_app/features/medical_examine/presentation/providers/medical_examine_provider.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/dialog_record.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/widgets/option_checkbox.dart';
-import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/subclinic_service_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -622,7 +622,7 @@ class _ClinicalServiceRequestPageState
                     onChanged: (value) {
                       // Debounce search
                       _timer?.cancel();
-                      _timer = Timer(const Duration(milliseconds: 500), () {
+                      _timer = Timer(const Duration(milliseconds: 700), () {
                         setState(() => {});
                       });
                     },
@@ -653,28 +653,29 @@ class _ClinicalServiceRequestPageState
                           child: CircularProgressIndicator(),
                         );
                       }
-                      if (value.listICD.isEmpty) {
-                        return const Center(
-                          child: Text('Chưa có dữ liệu'),
-                        );
-                      }
                       if (value.failure != null) {
                         return Center(
                           child: Text(value.failure!.errorMessage),
                         );
                       }
+                      if (value.listICD.isEmpty) {
+                        return const Center(
+                          child: Text('Chưa có dữ liệu'),
+                        );
+                      }
                       List<ICDEntity> fileterICD = [];
                       if (searchController.text.isNotEmpty) {
-                        fileterICD = value.listICD
-                            .where((e) =>
-                                !selectedICDs.contains(e) &&
-                                (TiengViet.parse(e.display)
-                                        .toLowerCase()
-                                        .contains(TiengViet.parse(
-                                                searchController.text)
-                                            .toLowerCase()) ||
-                                    e.code.contains(searchController.text)))
-                            .toList();
+                        fileterICD = value.listICD.where((e) {
+                          String display =
+                              TiengViet.parse(e.display).toLowerCase();
+                          String searchText =
+                              TiengViet.parse(searchController.text)
+                                  .toLowerCase();
+                          String code = e.code.toLowerCase();
+                          return !selectedICDs.contains(e) &&
+                              (display.contains(searchText) ||
+                                  code.contains(searchText));
+                        }).toList();
                       }
 
                       return Expanded(

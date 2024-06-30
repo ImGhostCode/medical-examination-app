@@ -261,7 +261,6 @@ class ServiceStatus {
   }
 }
 
-
 /* ServiceStatus
 planned		Chỉ định
 finish		Hoàn thành
@@ -279,3 +278,101 @@ new		Mới
 payment		Đã thu/chi
 received		Đã tiếp nhận
 */
+
+/* List of subclinic service
+Code Name
+FEE_000	Chưa phân loại
+FEE_001	Thăm dò chức năng
+FEE_002	X- Quang
+FEE_003	Nội soi
+FEE_004	PTTT
+FEE_005	Siêu âm
+FEE_006	XN Vi Sinh
+FEE_007	XN Huyết học
+FEE_008	XN Sinh Hóa
+FEE_009	Giải phẫu bệnh
+FEE_010	Vật lý trị liệu
+FEE_011	khác
+FEE_012	MÁU
+FEE_013	Vật tư y tế
+FEE_014	Dinh Dưỡng
+FEE_015	Khám bệnh
+FEE_016	Giường
+FEE_017	Chụp CT
+FEE_018	XQ-MRI
+FEE_021	Thuốc
+FEE_019	Oxy
+FEE_022	Vận chuyển
+FEE_020	Chụp DSA
+FEE_023	Vật tư thanh toán theo tỉ lệ
+FEE_024	Chẩn đoán hình ảnh (XHH)
+FEE_025	Thuốc y học cổ truyền
+FEE_026	Chế phẩm đông y
+FEE_027	Dịch vụ kỹ thuật thanh toán theo tỉ lệ
+FEE_028	Thuốc thanh toán theo tỉ lệ
+FEE_029	Vật tư trong gói
+FEE_030	Dịch vụ khám đi kèm
+FEE_031	Điện tim
+FEE_032	Điện não
+FEE_033	Hóa chất
+FEE_034	Dịch vụ điều trị ban ngày
+FEE_035	Khám chuyên khoa
+FEE_036	Điều trị, tham vấn tâm lý
+FEE_037	Đo lưu huyết não
+FEE_038	Test tâm lý
+FEE_039	Chăm sóc bệnh nhân
+FEE_040	Covid
+FEE_041	Dịch truyền
+*/
+
+class EnumSubclinicService {
+  final String code;
+  final String display;
+
+  EnumSubclinicService({required this.code, required this.display});
+}
+
+final List<EnumSubclinicService> enumSubclinicServices = [
+  EnumSubclinicService(code: 'FEE_039', display: 'Chăm sóc bệnh nhân'),
+  EnumSubclinicService(code: 'FEE_024', display: 'Chẩn đoán hình ảnh (XHH)'),
+  EnumSubclinicService(code: 'FEE_001', display: 'Thăm dò chức năng'),
+  EnumSubclinicService(code: 'FEE_026', display: 'Chế phẩm đông y'),
+  EnumSubclinicService(code: 'FEE_017', display: 'Chụp CT'),
+  EnumSubclinicService(code: 'FEE_002', display: 'X- Quang'),
+  EnumSubclinicService(code: 'FEE_003', display: 'Nội soi'),
+  EnumSubclinicService(code: 'FEE_004', display: 'PTTT'),
+  EnumSubclinicService(code: 'FEE_005', display: 'Siêu âm'),
+  EnumSubclinicService(code: 'FEE_006', display: 'XN Vi Sinh'),
+  EnumSubclinicService(code: 'FEE_007', display: 'XN Huyết học'),
+  EnumSubclinicService(code: 'FEE_008', display: 'XN Sinh Hóa'),
+  EnumSubclinicService(code: 'FEE_009', display: 'Giải phẫu bệnh'),
+  EnumSubclinicService(code: 'FEE_010', display: 'Vật lý trị liệu'),
+  EnumSubclinicService(code: 'FEE_012', display: 'MÁU'),
+  EnumSubclinicService(code: 'FEE_013', display: 'Vật tư y tế'),
+  EnumSubclinicService(code: 'FEE_014', display: 'Dinh Dưỡng'),
+  EnumSubclinicService(code: 'FEE_015', display: 'Khám bệnh'),
+  EnumSubclinicService(code: 'FEE_016', display: 'Giường'),
+  EnumSubclinicService(code: 'FEE_018', display: 'XQ-MRI'),
+  EnumSubclinicService(code: 'FEE_021', display: 'Thuốc'),
+  EnumSubclinicService(code: 'FEE_019', display: 'Oxy'),
+  EnumSubclinicService(code: 'FEE_022', display: 'Vận chuyển'),
+  EnumSubclinicService(code: 'FEE_020', display: 'Chụp DSA'),
+  EnumSubclinicService(
+      code: 'FEE_023', display: 'Vật tư thanh toán theo tỉ lệ'),
+  EnumSubclinicService(code: 'FEE_025', display: 'Thuốc y học cổ truyền'),
+  EnumSubclinicService(
+      code: 'FEE_027', display: 'Dịch vụ kỹ thuật thanh toán theo tỉ lệ'),
+  EnumSubclinicService(code: 'FEE_028', display: 'Thuốc thanh toán theo tỉ lệ'),
+  EnumSubclinicService(code: 'FEE_029', display: 'Vật tư trong gói'),
+  EnumSubclinicService(code: 'FEE_030', display: 'Dịch vụ khám đi kèm'),
+  EnumSubclinicService(code: 'FEE_031', display: 'Điện tim'),
+  EnumSubclinicService(code: 'FEE_032', display: 'Điện não'),
+  EnumSubclinicService(code: 'FEE_033', display: 'Hóa chất'),
+  EnumSubclinicService(code: 'FEE_034', display: 'Dịch vụ điều trị ban ngày'),
+  EnumSubclinicService(code: 'FEE_035', display: 'Khám chuyên khoa'),
+  EnumSubclinicService(code: 'FEE_036', display: 'Điều trị, tham vấn tâm lý'),
+  EnumSubclinicService(code: 'FEE_037', display: 'Đo lưu huyết não'),
+  EnumSubclinicService(code: 'FEE_038', display: 'Test tâm lý'),
+  EnumSubclinicService(code: 'FEE_040', display: 'Covid'),
+  EnumSubclinicService(code: 'FEE_041', display: 'Dịch truyền'),
+];

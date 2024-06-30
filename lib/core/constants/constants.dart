@@ -144,6 +144,7 @@ String kPageSize = 'page_size';
 String kOwner = 'owner';
 String kService = 'service';
 String kReportCode = 'report_code';
+String kAmount = 'amount';
 
 // Streatment Sheet
 String kDoctor = 'doctor';

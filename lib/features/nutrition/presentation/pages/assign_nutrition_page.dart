@@ -280,7 +280,7 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                         },
                         icon: const Icon(
                           Icons.swap_horiz_rounded,
-                          size: 25,
+                          size: 28,
                           color: Colors.blue,
                         ),
                       )),
@@ -521,28 +521,6 @@ class _AssignNutritionPageState extends State<AssignNutritionPage> {
                                       ),
                                     ),
                                   ),
-                                  // TableCell(
-                                  //   child: Container(
-                                  //     alignment: Alignment.center,
-                                  //     padding: const EdgeInsets.all(8),
-                                  //     child: Text(
-                                  //       e.genderName!,
-                                  //       style: Theme.of(context).textTheme.bodyMedium,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // TableCell(
-                                  //   child: Container(
-                                  //     alignment: Alignment.center,
-                                  //     padding: const EdgeInsets.all(8),
-                                  //     child: Text(
-                                  //       e.location!.isNotEmpty
-                                  //           ? e.location!.first.display!
-                                  //           : '',
-                                  //       style: Theme.of(context).textTheme.bodyMedium,
-                                  //     ),
-                                  //   ),
-                                  // ),
                                 ]);
                           })
                           // }

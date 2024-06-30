@@ -13,7 +13,7 @@ import 'package:medical_examination_app/features/home/presentation/pages/welcome
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_signal_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/add_streatment_sheet_page.dart';
-import 'package:medical_examination_app/features/medical_examine/presentation/pages/clinical_service_request_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/clinical_service_request_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_care_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/edit_streatment_sheet_page.dart';
 import 'package:medical_examination_app/features/medical_examine/presentation/pages/medical_examination_page.dart';
@@ -22,7 +22,7 @@ import 'package:medical_examination_app/features/medical_examine/presentation/pr
 import 'package:medical_examination_app/features/nutrition/presentation/pages/assign_nutrition_page.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/pages/nutrition_assignation_history_page.dart';
 import 'package:medical_examination_app/features/nutrition/presentation/providers/nutrition_provider.dart';
-import 'package:medical_examination_app/features/patient/presentation/pages/assign_service_page.dart';
+import 'package:medical_examination_app/features/patient/presentation/pages/subclinic_service_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/create_patient_profile.dart';
 import 'package:medical_examination_app/features/patient/presentation/pages/search_patient_page.dart';
 import 'package:medical_examination_app/features/patient/presentation/providers/patient_provider.dart';
